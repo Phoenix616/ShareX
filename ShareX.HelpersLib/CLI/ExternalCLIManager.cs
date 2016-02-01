@@ -2,7 +2,7 @@
 
 /*
     ShareX - A program that allows you to take screenshots and share any file type
-    Copyright (c) 2007-2015 ShareX Team
+    Copyright (c) 2007-2016 ShareX Team
 
     This program is free software; you can redistribute it and/or
     modify it under the terms of the GNU General Public License
@@ -35,7 +35,8 @@ namespace ShareX.HelpersLib
         public event DataReceivedEventHandler OutputDataReceived;
         public event DataReceivedEventHandler ErrorDataReceived;
 
-        private Process process;
+        protected Process process;
+        protected bool processRunning;
 
         public virtual int Open(string path, string args = null)
         {
@@ -63,7 +64,17 @@ namespace ShareX.HelpersLib
                     process.Start();
                     if (psi.RedirectStandardOutput) process.BeginOutputReadLine();
                     if (psi.RedirectStandardError) process.BeginErrorReadLine();
-                    process.WaitForExit();
+
+                    try
+                    {
+                        processRunning = true;
+                        process.WaitForExit();
+                    }
+                    finally
+                    {
+                        processRunning = false;
+                    }
+
                     return process.ExitCode;
                 }
             }
@@ -95,7 +106,7 @@ namespace ShareX.HelpersLib
 
         public void WriteInput(string input)
         {
-            if (process != null && process.StartInfo != null && process.StartInfo.RedirectStandardInput)
+            if (processRunning && process != null && process.StartInfo != null && process.StartInfo.RedirectStandardInput)
             {
                 process.StandardInput.WriteLine(input);
             }
@@ -103,7 +114,7 @@ namespace ShareX.HelpersLib
 
         public virtual void Close()
         {
-            if (process != null)
+            if (processRunning && process != null)
             {
                 process.CloseMainWindow();
             }

@@ -2,7 +2,7 @@
 
 /*
     ShareX - A program that allows you to take screenshots and share any file type
-    Copyright (c) 2007-2015 ShareX Team
+    Copyright (c) 2007-2016 ShareX Team
 
     This program is free software; you can redistribute it and/or
     modify it under the terms of the GNU General Public License
@@ -47,7 +47,8 @@ namespace ShareX.HelpersLib
                 Select(x => new
                 {
                     Name = x.ToPrefixString(),
-                    Description = x.Description
+                    Description = x.Description,
+                    Category = x.Category
                 });
 
             foreach (var variable in variables)
@@ -58,7 +59,27 @@ namespace ShareX.HelpersLib
                     string text = ((ToolStripMenuItem)sender).Tag.ToString();
                     tb.AppendTextToSelection(text);
                 };
-                cms.Items.Add(tsmi);
+
+                if (string.IsNullOrWhiteSpace(variable.Category))
+                {
+                    cms.Items.Add(tsmi);
+                }
+                else
+                {
+                    ToolStripMenuItem tsmiParent;
+                    int index = cms.Items.IndexOfKey(variable.Category);
+                    if (0 > index)
+                    {
+                        tsmiParent = new ToolStripMenuItem { Text = variable.Category, Tag = variable.Category, Name = variable.Category };
+                        tsmiParent.HideImageMargin();
+                        cms.Items.Add(tsmiParent);
+                    }
+                    else
+                    {
+                        tsmiParent = cms.Items[index] as ToolStripMenuItem;
+                    }
+                    tsmiParent.DropDownItems.Add(tsmi);
+                }
             }
 
             cms.Items.Add(new ToolStripSeparator());
@@ -72,7 +93,12 @@ namespace ShareX.HelpersLib
                 if (cms.Items.Count > 0) cms.Show(tb, new Point(tb.Width + 1, 0));
             };
 
-            tb.Leave += (sender, e) =>
+            tb.GotFocus += (sender, e) =>
+            {
+                if (cms.Items.Count > 0) cms.Show(tb, new Point(tb.Width + 1, 0));
+            };
+
+            tb.LostFocus += (sender, e) =>
             {
                 if (cms.Visible) cms.Close();
             };

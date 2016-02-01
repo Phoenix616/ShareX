@@ -2,7 +2,7 @@
 
 /*
     ShareX - A program that allows you to take screenshots and share any file type
-    Copyright (c) 2007-2015 ShareX Team
+    Copyright (c) 2007-2016 ShareX Team
 
     This program is free software; you can redistribute it and/or
     modify it under the terms of the GNU General Public License
@@ -89,6 +89,10 @@ namespace ShareX.HelpersLib
         public static extern IntPtr FindWindowEx(IntPtr parentHwnd, IntPtr childAfterHwnd, IntPtr className, string windowText);
 
         [DllImport("user32.dll")]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        public static extern bool FlashWindowEx(ref FLASHWINFO pwfi);
+
+        [DllImport("user32.dll")]
         public static extern IntPtr GetActiveWindow();
 
         [DllImport("user32.dll")]
@@ -132,6 +136,10 @@ namespace ShareX.HelpersLib
         /// </summary>
         [DllImport("user32.dll")]
         public static extern IntPtr GetWindow(IntPtr hWnd, GetWindowConstants wCmd);
+
+        [DllImport("user32.dll")]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        public static extern bool GetScrollInfo(IntPtr hwnd, int fnBar, ref SCROLLINFO lpsi);
 
         [DllImport("user32.dll")]
         public static extern int GetSystemMetrics(int smIndex);

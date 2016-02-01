@@ -2,7 +2,7 @@
 
 /*
     ShareX - A program that allows you to take screenshots and share any file type
-    Copyright (c) 2007-2015 ShareX Team
+    Copyright (c) 2007-2016 ShareX Team
 
     This program is free software; you can redistribute it and/or
     modify it under the terms of the GNU General Public License
@@ -106,7 +106,7 @@ namespace ShareX.HistoryLib
                             writer.WriteStartElement("HistoryItem");
                             writer.WriteElementIfNotEmpty("Filename", historyItem.Filename);
                             writer.WriteElementIfNotEmpty("Filepath", historyItem.Filepath);
-                            writer.WriteElementIfNotEmpty("DateTimeUtc", historyItem.DateTimeUtc.ToString("o"));
+                            writer.WriteElementIfNotEmpty("DateTimeUtc", historyItem.DateTime.ToString("o"));
                             writer.WriteElementIfNotEmpty("Type", historyItem.Type);
                             writer.WriteElementIfNotEmpty("Host", historyItem.Host);
                             writer.WriteElementIfNotEmpty("URL", historyItem.URL);
@@ -146,7 +146,7 @@ namespace ShareX.HistoryLib
                         DateTime dateTime;
                         if (DateTime.TryParse(child.Value, out dateTime))
                         {
-                            hi.DateTimeUtc = dateTime;
+                            hi.DateTime = dateTime;
                         }
                         break;
                     case "Type":

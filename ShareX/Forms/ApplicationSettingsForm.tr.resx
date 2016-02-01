@@ -267,4 +267,13 @@
   <data name="llTranslators.Text" xml:space="preserve">
     <value>ShareX i kendi dilinize çevirmek için bize yardım edin!</value>
   </data>
+  <data name="btnChromeSupport.Text" xml:space="preserve">
+    <value>Chrome eklenti desteği...</value>
+  </data>
+  <data name="cbSteamShowInApp.Text" xml:space="preserve">
+    <value>ShareX açık iken Steam de "Uygulamada" olarak göster</value>
+  </data>
+  <data name="tpIntegration.Text" xml:space="preserve">
+    <value>Entegrasyon</value>
+  </data>
 </root>

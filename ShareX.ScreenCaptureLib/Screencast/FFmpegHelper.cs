@@ -2,7 +2,7 @@
 
 /*
     ShareX - A program that allows you to take screenshots and share any file type
-    Copyright (c) 2007-2015 ShareX Team
+    Copyright (c) 2007-2016 ShareX Team
 
     This program is free software; you can redistribute it and/or
     modify it under the terms of the GNU General Public License
@@ -44,8 +44,13 @@ namespace ShareX.ScreenCaptureLib
 
         public const int libmp3lame_qscale_end = 9;
 
+        public event Action RecordingStarted;
+
         public StringBuilder Output { get; private set; }
         public ScreencastOptions Options { get; private set; }
+
+        private bool recordingStarted;
+        private int closeTryCount = 0;
 
         public FFmpegHelper(ScreencastOptions options)
         {
@@ -63,30 +68,45 @@ namespace ShareX.ScreenCaptureLib
                 if (!string.IsNullOrEmpty(e.Data))
                 {
                     Output.AppendLine(e.Data);
+
+                    if (!recordingStarted && e.Data.Contains("Press [q] to stop", StringComparison.InvariantCultureIgnoreCase))
+                    {
+                        recordingStarted = true;
+                        OnRecordingStarted();
+                    }
                 }
             }
         }
 
         public bool Record()
         {
-            return Run(Options.FFmpeg.CLIPath, Options.GetFFmpegCommands());
+            recordingStarted = false;
+            return Run(Options.FFmpeg.FFmpegPath, Options.GetFFmpegCommands());
+        }
+
+        protected void OnRecordingStarted()
+        {
+            if (RecordingStarted != null)
+            {
+                RecordingStarted();
+            }
         }
 
         public bool EncodeGIF(string input, string output)
         {
             bool result;
 
-            string palettePath = Path.Combine(Path.GetDirectoryName(Options.FFmpeg.CLIPath), "palette.png");
+            string palettePath = Path.Combine(Path.GetDirectoryName(Options.FFmpeg.FFmpegPath), "palette.png");
 
             try
             {
                 // https://ffmpeg.org/ffmpeg-filters.html#palettegen-1
-                result = Run(Options.FFmpeg.CLIPath, string.Format("-y -i \"{0}\" -vf \"palettegen=stats_mode={2}\" \"{1}\"", input, palettePath, Options.FFmpeg.GIFStatsMode));
+                result = Run(Options.FFmpeg.FFmpegPath, string.Format("-y -i \"{0}\" -vf \"palettegen=stats_mode={2}\" \"{1}\"", input, palettePath, Options.FFmpeg.GIFStatsMode));
 
                 if (result)
                 {
                     // https://ffmpeg.org/ffmpeg-filters.html#paletteuse
-                    result = Run(Options.FFmpeg.CLIPath, string.Format("-y -i \"{0}\" -i \"{1}\" -lavfi \"paletteuse=dither={3}\" \"{2}\"", input, palettePath, output, Options.FFmpeg.GIFDither));
+                    result = Run(Options.FFmpeg.FFmpegPath, string.Format("-y -i \"{0}\" -i \"{1}\" -lavfi \"paletteuse=dither={3}\" \"{2}\"", input, palettePath, output, Options.FFmpeg.GIFDither));
                 }
             }
             finally
@@ -115,10 +135,10 @@ namespace ShareX.ScreenCaptureLib
         {
             DirectShowDevices devices = new DirectShowDevices();
 
-            if (File.Exists(Options.FFmpeg.CLIPath))
+            if (File.Exists(Options.FFmpeg.FFmpegPath))
             {
                 string arg = "-list_devices true -f dshow -i dummy";
-                Open(Options.FFmpeg.CLIPath, arg);
+                Open(Options.FFmpeg.FFmpegPath, arg);
                 string output = Output.ToString();
                 string[] lines = output.Lines();
                 bool isVideo = true;
@@ -160,7 +180,18 @@ namespace ShareX.ScreenCaptureLib
 
         public override void Close()
         {
-            WriteInput("q");
+            if (processRunning)
+            {
+                if (closeTryCount >= 2)
+                {
+                    process.Kill();
+                }
+                else
+                {
+                    WriteInput("q");
+                    closeTryCount++;
+                }
+            }
         }
     }
 

@@ -2,7 +2,7 @@
 
 /*
     ShareX - A program that allows you to take screenshots and share any file type
-    Copyright (c) 2007-2015 ShareX Team
+    Copyright (c) 2007-2016 ShareX Team
 
     This program is free software; you can redistribute it and/or
     modify it under the terms of the GNU General Public License
@@ -51,6 +51,8 @@ namespace ShareX.HelpersLib
         private static readonly string ShellExtIcon = ApplicationPath + ",0";
         private static readonly string ShellExtPath = ApplicationPath + " \"%1\"";
 
+        private static readonly string ChromeNativeMessagingHosts = @"SOFTWARE\Google\Chrome\NativeMessagingHosts\com.getsharex.sharex";
+
         public static bool CheckStartWithWindows()
         {
             try
@@ -94,7 +96,7 @@ namespace ShareX.HelpersLib
         {
             try
             {
-                return CheckRegistry(ShellExtMenuFilesCmd) && CheckRegistry(ShellExtMenuDirectoryCmd);
+                return CheckRegistry(ShellExtMenuFilesCmd, null, ShellExtPath) && CheckRegistry(ShellExtMenuDirectoryCmd, null, ShellExtPath);
             }
             catch (Exception e)
             {
@@ -143,6 +145,16 @@ namespace ShareX.HelpersLib
             RemoveRegistry(ShellExtMenuDirectory);
             RemoveRegistry(ShellExtMenuFoldersCmd);
             RemoveRegistry(ShellExtMenuFolders);
+        }
+
+        public static void RegisterChromeSupport(string filepath)
+        {
+            CreateRegistry(ChromeNativeMessagingHosts, filepath);
+        }
+
+        public static void UnregisterChromeSupport()
+        {
+            RemoveRegistry(ChromeNativeMessagingHosts);
         }
 
         public static ExternalProgram FindProgram(string name, string filename)

@@ -2,7 +2,7 @@
 
 /*
     ShareX - A program that allows you to take screenshots and share any file type
-    Copyright (c) 2007-2015 ShareX Team
+    Copyright (c) 2007-2016 ShareX Team
 
     This program is free software; you can redistribute it and/or
     modify it under the terms of the GNU General Public License
@@ -23,6 +23,7 @@
 
 #endregion License Information (GPL v3)
 
+using ShareX.HelpersLib;
 using System;
 
 namespace ShareX.ScreenCaptureLib
@@ -30,11 +31,12 @@ namespace ShareX.ScreenCaptureLib
     public class FFmpegOptions
     {
         // General
+        public bool OverrideCLIPath { get; set; }
+        public string CLIPath { get; set; }
         public string VideoSource { get; set; }
         public string AudioSource { get; set; }
         public FFmpegVideoCodec VideoCodec { get; set; }
         public FFmpegAudioCodec AudioCodec { get; set; }
-        public string CLIPath { get; set; }
         public string UserArgs { get; set; }
         public bool UseCustomCommands { get; set; }
         public string CustomCommands { get; set; }
@@ -52,6 +54,33 @@ namespace ShareX.ScreenCaptureLib
         public int AAC_bitrate { get; set; }  // kbit/s
         public int Vorbis_qscale { get; set; }
         public int MP3_qscale { get; set; }
+
+        public string FFmpegPath
+        {
+            get
+            {
+#if STEAM
+                if (!OverrideCLIPath)
+                {
+                    if (NativeMethods.Is64Bit())
+                    {
+                        return Helpers.GetAbsolutePath("ffmpeg-x64.exe");
+                    }
+                    else
+                    {
+                        return Helpers.GetAbsolutePath("ffmpeg.exe");
+                    }
+                }
+#endif
+
+                if (!string.IsNullOrEmpty(CLIPath))
+                {
+                    return Helpers.GetAbsolutePath(CLIPath);
+                }
+
+                return "";
+            }
+        }
 
         public string Extension
         {
@@ -116,17 +145,17 @@ namespace ShareX.ScreenCaptureLib
         public FFmpegOptions()
         {
             // General
+            OverrideCLIPath = false;
             VideoSource = FFmpegHelper.SourceGDIGrab;
             AudioSource = FFmpegHelper.SourceNone;
             VideoCodec = FFmpegVideoCodec.libx264;
             AudioCodec = FFmpegAudioCodec.libvoaacenc;
-            CLIPath = "ffmpeg.exe";
             UserArgs = "";
             ShowError = true;
 
             // Video
             x264_CRF = 30;
-            x264_Preset = FFmpegPreset.veryfast;
+            x264_Preset = FFmpegPreset.ultrafast;
             VPx_bitrate = 3000;
             XviD_qscale = 10;
             GIFStatsMode = FFmpegPaletteGenStatsMode.full;
@@ -136,6 +165,11 @@ namespace ShareX.ScreenCaptureLib
             AAC_bitrate = 128;
             Vorbis_qscale = 3;
             MP3_qscale = 4;
+        }
+
+        public FFmpegOptions(string ffmpegPath) : this()
+        {
+            CLIPath = ffmpegPath;
         }
     }
 }

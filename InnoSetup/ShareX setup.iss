@@ -47,26 +47,30 @@ Name: "de"; MessagesFile: "compiler:Languages\German.isl"
 
 [Tasks]
 Name: "CreateDesktopIcon"; Description: "Create a desktop shortcut"; GroupDescription: "Additional shortcuts:"
+Name: "CreateContextMenuButton"; Description: "Show ""Upload with ShareX"" button in Windows Explorer context menu"; GroupDescription: "Additional shortcuts:"
 Name: "CreateSendToIcon"; Description: "Create a send to shortcut"; GroupDescription: "Additional shortcuts:"
 Name: "CreateQuickLaunchIcon"; Description: "Create a quick launch shortcut"; GroupDescription: "Additional shortcuts:"; OnlyBelowVersion: 0,6.1
-Name: "CreateStartupIcon"; Description: "Launch {#AppName} automatically at Windows startup"; GroupDescription: "Other tasks:"
+Name: "CreateStartupIcon"; Description: "Run ShareX when Windows starts"; GroupDescription: "Other tasks:"
 
 [Files]
 Source: "{#AppParentDirectory}\ShareX.exe"; DestDir: {app}; Flags: ignoreversion
 Source: "{#AppParentDirectory}\ShareX.exe.config"; DestDir: {app}; Flags: ignoreversion
 Source: "{#AppParentDirectory}\*.dll"; DestDir: {app}; Flags: ignoreversion
-Source: "{#AppParentDirectory}\*.css"; DestDir: {app}; Flags: ignoreversion
-Source: "{#AppParentDirectory}\*.txt"; DestDir: {app}; Flags: ignoreversion
+Source: "..\Licenses\*.txt"; DestDir: {app}\Licenses; Flags: ignoreversion
 Source: "Output\Recorder-devices-setup.exe"; DestDir: {app}; Flags: ignoreversion
+Source: "..\..\ShareX_Chrome\ShareX_Chrome\bin\Release\ShareX_Chrome.exe"; DestDir: {app}; Flags: ignoreversion
 
-Source: "{#AppParentDirectory}\tr\*.resources.dll"; DestDir: {app}\Languages\tr; Flags: ignoreversion
 Source: "{#AppParentDirectory}\de\*.resources.dll"; DestDir: {app}\Languages\de; Flags: ignoreversion
+Source: "{#AppParentDirectory}\es\*.resources.dll"; DestDir: {app}\Languages\es; Flags: ignoreversion
 Source: "{#AppParentDirectory}\fr\*.resources.dll"; DestDir: {app}\Languages\fr; Flags: ignoreversion
-Source: "{#AppParentDirectory}\zh-CN\*.resources.dll"; DestDir: {app}\Languages\zh-CN; Flags: ignoreversion
 Source: "{#AppParentDirectory}\hu\*.resources.dll"; DestDir: {app}\Languages\hu; Flags: ignoreversion
 Source: "{#AppParentDirectory}\ko-KR\*.resources.dll"; DestDir: {app}\Languages\ko-KR; Flags: ignoreversion
-Source: "{#AppParentDirectory}\es\*.resources.dll"; DestDir: {app}\Languages\es; Flags: ignoreversion
 Source: "{#AppParentDirectory}\nl-NL\*.resources.dll"; DestDir: {app}\Languages\nl-NL; Flags: ignoreversion
+Source: "{#AppParentDirectory}\pt-BR\*.resources.dll"; DestDir: {app}\Languages\pt-BR; Flags: ignoreversion
+Source: "{#AppParentDirectory}\ru\*.resources.dll"; DestDir: {app}\Languages\ru; Flags: ignoreversion
+Source: "{#AppParentDirectory}\tr\*.resources.dll"; DestDir: {app}\Languages\tr; Flags: ignoreversion
+Source: "{#AppParentDirectory}\vi-VN\*.resources.dll"; DestDir: {app}\Languages\vi-VN; Flags: ignoreversion
+Source: "{#AppParentDirectory}\zh-CN\*.resources.dll"; DestDir: {app}\Languages\zh-CN; Flags: ignoreversion
 
 [Icons]
 Name: "{group}\{#AppName}"; Filename: "{app}\{#AppFilename}"; WorkingDir: "{app}"
@@ -86,6 +90,12 @@ Filename: regsvr32; WorkingDir: {app}; Parameters: "/s /u audio_sniffer.dll"; Ch
 Filename: regsvr32; WorkingDir: {app}; Parameters: "/s /u audio_sniffer-x64.dll"; Check: IsWin64
 
 [Registry]
+Root: "HKCU"; Subkey: "Software\Classes\*\shell\{#AppName}"; ValueType: string; ValueData: "Upload with {#AppName}"; Tasks: CreateContextMenuButton
+Root: "HKCU"; Subkey: "Software\Classes\*\shell\{#AppName}"; ValueType: string; ValueName: "Icon"; ValueData: """{app}\{#AppFilename}"",0"; Tasks: CreateContextMenuButton
+Root: "HKCU"; Subkey: "Software\Classes\*\shell\{#AppName}\command"; ValueType: string; ValueData: """{app}\{#AppFilename}"" ""%1"""; Tasks: CreateContextMenuButton
+Root: "HKCU"; Subkey: "Software\Classes\Directory\shell\{#AppName}"; ValueType: string; ValueData: "Upload with {#AppName}"; Tasks: CreateContextMenuButton
+Root: "HKCU"; Subkey: "Software\Classes\Directory\shell\{#AppName}"; ValueType: string; ValueName: "Icon"; ValueData: """{app}\{#AppFilename}"",0"; Tasks: CreateContextMenuButton
+Root: "HKCU"; Subkey: "Software\Classes\Directory\shell\{#AppName}\command"; ValueType: string; ValueData: """{app}\{#AppFilename}"" ""%1"""; Tasks: CreateContextMenuButton
 Root: "HKCU"; Subkey: "Software\Classes\*\shell\{#AppName}"; Flags: dontcreatekey uninsdeletekey
 Root: "HKCU"; Subkey: "Software\Classes\Directory\shell\{#AppName}"; Flags: dontcreatekey uninsdeletekey
 Root: "HKCU"; Subkey: "Software\Classes\Folder\shell\{#AppName}"; Flags: dontcreatekey uninsdeletekey

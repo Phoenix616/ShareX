@@ -159,19 +159,10 @@
   <data name="btnCustomUploaderExamples.Text" xml:space="preserve">
     <value>Ejemplos...</value>
   </data>
-  <data name="btnCustomUploaderArgEdit.Text" xml:space="preserve">
-    <value>Actualizar</value>
-  </data>
-  <data name="btnCustomUploaderRegexpEdit.Text" xml:space="preserve">
-    <value>Actualizar</value>
-  </data>
   <data name="btnCustomUploaderUpdate.Text" xml:space="preserve">
     <value>Actualizar</value>
   </data>
   <data name="btnGoogleDriveRefreshFolders.Text" xml:space="preserve">
-    <value>Refrescar lista de carpetas</value>
-  </data>
-  <data name="btnHubicRefreshFolders.Text" xml:space="preserve">
     <value>Refrescar lista de carpetas</value>
   </data>
   <data name="btnBoxRefreshFolders.Text" xml:space="preserve">
@@ -311,14 +302,8 @@ Por ejemplo, si el balde se llama balde.ejemplo.com entonces URL será http://ba
   <data name="cbUpasteIsPublic.Text" xml:space="preserve">
     <value>¿Es carga pública?</value>
   </data>
-  <data name="chArgumentsName.Text" xml:space="preserve">
-    <value>Nombre</value>
-  </data>
   <data name="chGoogleDriveTitle.Text" xml:space="preserve">
     <value>Título</value>
-  </data>
-  <data name="chHubicFolderName.Text" xml:space="preserve">
-    <value>Nombre de la carpeta</value>
   </data>
   <data name="chImgurDescription.Text" xml:space="preserve">
     <value>Descripción</value>
@@ -328,9 +313,6 @@ Por ejemplo, si el balde se llama balde.ejemplo.com entonces URL será http://ba
   </data>
   <data name="chBoxFoldersName.Text" xml:space="preserve">
     <value>Nombre de la carpeta</value>
-  </data>
-  <data name="chArgumentsValue.Text" xml:space="preserve">
-    <value>Valor</value>
   </data>
   <data name="chImgurTitle.Text" xml:space="preserve">
     <value>Título</value>
@@ -347,9 +329,6 @@ Por ejemplo, si el balde se llama balde.ejemplo.com entonces URL será http://ba
   <data name="chkEmailConfirm.Text" xml:space="preserve">
     <value>Confirmar antes de enviar</value>
   </data>
-  <data name="cbHubicPublishLink.Text" xml:space="preserve">
-    <value>Crear un enlace compartible (válido por 30 días)</value>
-  </data>
   <data name="cbImgurUploadSelectedAlbum.Text" xml:space="preserve">
     <value>Subir imágenes al álbum seleccionado</value>
   </data>
@@ -360,7 +339,7 @@ Por ejemplo, si el balde se llama balde.ejemplo.com entonces URL será http://ba
     <value>Crear URL compartible</value>
   </data>
   <data name="cbOwnCloudDirectLink.Text" xml:space="preserve">
-    <value>Enlace directo (Añade "&amp;&amp;descargar" a la URL)</value>
+    <value>Enlace directo (Añade "&amp;descargar" a la URL)</value>
   </data>
   <data name="cbOwnCloudCreateShare.Text" xml:space="preserve">
     <value>Crear URL compartible</value>
@@ -379,9 +358,6 @@ Esto significa que se pueden perder de Amazon S3 en algún momento.</value>
   <data name="chPicasaName.Text" xml:space="preserve">
     <value>Nombre</value>
   </data>
-  <data name="gbCustomUploaderArguments.Text" xml:space="preserve">
-    <value>Argumentos</value>
-  </data>
   <data name="gpJiraServer.Text" xml:space="preserve">
     <value>Servidor Jira</value>
   </data>
@@ -393,9 +369,6 @@ Esto significa que se pueden perder de Amazon S3 en algún momento.</value>
   </data>
   <data name="gbCustomUploaders.Text" xml:space="preserve">
     <value>Cargadores</value>
-  </data>
-  <data name="gbCustomUploaderRegexp.Text" xml:space="preserve">
-    <value>Regex de respuesta</value>
   </data>
   <data name="gbMinusUpload.Text" xml:space="preserve">
     <value>Subir imágenes a</value>
@@ -531,9 +504,6 @@ Esto significa que se pueden perder de Amazon S3 en algún momento.</value>
   </data>
   <data name="lblHastebinCustomDomain.Text" xml:space="preserve">
     <value>Dominio personalizado:</value>
-  </data>
-  <data name="lblHubicSelectedFolder.Text" xml:space="preserve">
-    <value>Carpeta seleccionada:</value>
   </data>
   <data name="lblImageShackUsername.Text" xml:space="preserve">
     <value>Nombre de usuario:</value>
@@ -729,9 +699,6 @@ Esto significa que se pueden perder de Amazon S3 en algún momento.</value>
   </data>
   <data name="lblPicasaAlbumID.Text" xml:space="preserve">
     <value>Identificación del álbum para subir (vacío = No subida álbum):</value>
-  </data>
-  <data name="lblHubicSelectedFolderNote.Text" xml:space="preserve">
-    <value>Nota: Puede hacer doble clic en el nombre de carpeta para ir dentro de esa carpeta.</value>
   </data>
   <data name="lblDropboxPathTip.Text" xml:space="preserve">
     <value>Si utiliza la carpeta "Público", una url compartible ya se generó. No es necesario activar la opción "Crear URL compartible".</value>

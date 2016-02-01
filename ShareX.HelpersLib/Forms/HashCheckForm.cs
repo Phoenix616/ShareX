@@ -2,7 +2,7 @@
 
 /*
     ShareX - A program that allows you to take screenshots and share any file type
-    Copyright (c) 2007-2015 ShareX Team
+    Copyright (c) 2007-2016 ShareX Team
 
     This program is free software; you can redistribute it and/or
     modify it under the terms of the GNU General Public License
@@ -30,14 +30,14 @@ using System.Windows.Forms;
 
 namespace ShareX.HelpersLib
 {
-    public partial class HashCheckForm : Form
+    public partial class HashCheckForm : BaseForm
     {
         private HashCheck hashCheck;
+        private Translator translator;
 
         public HashCheckForm()
         {
             InitializeComponent();
-            Icon = ShareXResources.Icon;
 
             cbHashType.Items.AddRange(Helpers.GetEnumDescriptions<HashType>());
             cbHashType.SelectedIndex = (int)HashType.SHA1;
@@ -45,7 +45,11 @@ namespace ShareX.HelpersLib
             hashCheck = new HashCheck();
             hashCheck.FileCheckProgressChanged += fileCheck_FileCheckProgressChanged;
             hashCheck.FileCheckCompleted += fileCheck_FileCheckCompleted;
+
+            translator = new Translator();
         }
+
+        #region File hash check
 
         private void btnFilePathBrowse_Click(object sender, EventArgs e)
         {
@@ -73,7 +77,7 @@ namespace ShareX.HelpersLib
         private void fileCheck_FileCheckProgressChanged(float progress)
         {
             pbProgress.Value = (int)progress;
-            lblProgressPercentage.Text = progress.ToString("0.##") + "%";
+            lblProgressPercentage.Text = (int)progress + "%";
         }
 
         private void fileCheck_FileCheckCompleted(string result, bool cancelled)
@@ -129,5 +133,88 @@ namespace ShareX.HelpersLib
                 }
             }
         }
+
+        #endregion File hash check
+
+        #region Text conversions
+
+        private void FillConversionInfo()
+        {
+            FillConversionInfo(translator.Text);
+        }
+
+        private void FillConversionInfo(string text)
+        {
+            if (translator != null)
+            {
+                if (!string.IsNullOrEmpty(text))
+                {
+                    translator.EncodeText(text);
+                    txtHashCheckText.Text = translator.Text;
+                    txtHashCheckBinary.Text = translator.BinaryText;
+                    txtHashCheckHex.Text = translator.HexadecimalText;
+                    txtHashCheckASCII.Text = translator.ASCIIText;
+                    txtHashCheckBase64.Text = translator.Base64;
+                    txtHashCheckHash.Text = translator.HashToString();
+                }
+                else
+                {
+                    translator.Clear();
+                    txtHashCheckText.Text = txtHashCheckBinary.Text = txtHashCheckHex.Text = txtHashCheckASCII.Text = txtHashCheckBase64.Text = txtHashCheckHash.Text = "";
+                }
+            }
+        }
+
+        private void btnHashCheckCopyAll_Click(object sender, EventArgs e)
+        {
+            if (translator != null)
+            {
+                string text = translator.ToString();
+
+                if (!string.IsNullOrEmpty(text))
+                {
+                    ClipboardHelpers.CopyText(text);
+                }
+            }
+        }
+
+        private void btnHashCheckEncodeText_Click(object sender, EventArgs e)
+        {
+            FillConversionInfo(txtHashCheckText.Text);
+        }
+
+        private void btnHashCheckDecodeBinary_Click(object sender, EventArgs e)
+        {
+            string binary = txtHashCheckBinary.Text;
+            translator.DecodeBinary(binary);
+            FillConversionInfo();
+            txtHashCheckBinary.Text = binary;
+        }
+
+        private void btnHashCheckDecodeHex_Click(object sender, EventArgs e)
+        {
+            string hex = txtHashCheckHex.Text;
+            translator.DecodeHex(hex);
+            FillConversionInfo();
+            txtHashCheckHex.Text = hex;
+        }
+
+        private void btnHashCheckDecodeASCII_Click(object sender, EventArgs e)
+        {
+            string ascii = txtHashCheckASCII.Text;
+            translator.DecodeASCII(ascii);
+            FillConversionInfo();
+            txtHashCheckASCII.Text = ascii;
+        }
+
+        private void btnHashCheckDecodeBase64_Click(object sender, EventArgs e)
+        {
+            string base64 = txtHashCheckBase64.Text;
+            translator.DecodeBase64(base64);
+            FillConversionInfo();
+            txtHashCheckBase64.Text = base64;
+        }
+
+        #endregion Text conversions
     }
 }

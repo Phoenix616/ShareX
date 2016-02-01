@@ -135,7 +135,10 @@
   <data name="$this.Text" xml:space="preserve">
     <value>ShareX - Tâches après la capture</value>
   </data>
-  <data name="chAfterCapture.Text" xml:space="preserve">
-    <value>Tâches</value>
+  <data name="lblFileName.Text" xml:space="preserve">
+    <value>Nom du fichier:</value>
+  </data>
+  <data name="tpAfterUpload.Text" xml:space="preserve">
+    <value>Après la mise en ligne</value>
   </data>
 </root>

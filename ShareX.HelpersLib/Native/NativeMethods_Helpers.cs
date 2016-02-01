@@ -2,7 +2,7 @@
 
 /*
     ShareX - A program that allows you to take screenshots and share any file type
-    Copyright (c) 2007-2015 ShareX Team
+    Copyright (c) 2007-2016 ShareX Team
 
     This program is free software; you can redistribute it and/or
     modify it under the terms of the GNU General Public License
@@ -45,16 +45,23 @@ namespace ShareX.HelpersLib
         {
             if (handle.ToInt32() > 0)
             {
-                int length = GetWindowTextLength(handle);
-
-                if (length > 0)
+                try
                 {
-                    StringBuilder sb = new StringBuilder(length + 1);
+                    int length = GetWindowTextLength(handle);
 
-                    if (GetWindowText(handle, sb, sb.Capacity) > 0)
+                    if (length > 0)
                     {
-                        return sb.ToString();
+                        StringBuilder sb = new StringBuilder(length + 1);
+
+                        if (GetWindowText(handle, sb, sb.Capacity) > 0)
+                        {
+                            return sb.ToString();
+                        }
                     }
+                }
+                catch (Exception e)
+                {
+                    DebugHelper.WriteException(e);
                 }
             }
 
@@ -456,6 +463,18 @@ namespace ShareX.HelpersLib
             bool retVal;
             IsWow64Process(Process.GetCurrentProcess().Handle, out retVal);
             return retVal;
+        }
+
+        public static bool FlashWindowEx(Form frm, uint flashCount = uint.MaxValue)
+        {
+            FLASHWINFO fInfo = new FLASHWINFO();
+            fInfo.cbSize = Convert.ToUInt32(Marshal.SizeOf(fInfo));
+            fInfo.hwnd = frm.Handle;
+            fInfo.dwFlags = (uint)FlashWindow.FLASHW_ALL | (uint)FlashWindow.FLASHW_TIMERNOFG;
+            fInfo.uCount = flashCount;
+            fInfo.dwTimeout = 0;
+
+            return FlashWindowEx(ref fInfo);
         }
     }
 }

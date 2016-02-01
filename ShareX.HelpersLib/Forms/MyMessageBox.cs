@@ -2,7 +2,7 @@
 
 /*
     ShareX - A program that allows you to take screenshots and share any file type
-    Copyright (c) 2007-2015 ShareX Team
+    Copyright (c) 2007-2016 ShareX Team
 
     This program is free software; you can redistribute it and/or
     modify it under the terms of the GNU General Public License
@@ -29,7 +29,7 @@ using System.Windows.Forms;
 
 namespace ShareX.HelpersLib
 {
-    public class MyMessageBox : Form
+    public class MyMessageBox : BaseForm
     {
         private const int LabelHorizontalPadding = 15;
         private const int LabelVerticalPadding = 20;
@@ -52,6 +52,8 @@ namespace ShareX.HelpersLib
             StartPosition = FormStartPosition.CenterScreen;
             MinimizeBox = false;
             MaximizeBox = false;
+
+            Shown += MyMessageBox_Shown;
 
             Label labelText = new Label();
             labelText.Margin = new Padding(0);
@@ -146,6 +148,11 @@ namespace ShareX.HelpersLib
             panel.Location = new Point(0, labelPanel.Bottom + LabelVerticalPadding);
             panel.Size = new Size(labelPanel.Width + (LabelHorizontalPadding * 2), button1.Height + (ButtonPadding * 2));
             ClientSize = new Size(panel.Width, labelPanel.Height + (LabelVerticalPadding * 2) + panel.Height);
+        }
+
+        private void MyMessageBox_Shown(object sender, System.EventArgs e)
+        {
+            this.ShowActivate();
         }
 
         public static DialogResult Show(string text, string caption, MessageBoxButtons buttons = MessageBoxButtons.OK)

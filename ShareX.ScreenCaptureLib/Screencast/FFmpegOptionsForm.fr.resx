@@ -217,4 +217,23 @@ De même, pour l'encodage de qualité constante, vous conserverez simplement le 
   <data name="lblHelperDevices.Text" xml:space="preserve">
     <value>Installe la source vidéo/audio "screen-capture-recorder" et "virtual-audio-capturer".</value>
   </data>
+  <data name="cbGIFStatsMode.ToolTip" xml:space="preserve">
+    <value>La valeur par défaut est "full".</value>
+  </data>
+  <data name="cbGIFDither.ToolTip" xml:space="preserve">
+    <value>La valeur par défaut est "sierra2_4a".</value>
+  </data>
+  <data name="cbOverrideFFmpegPath.Text" xml:space="preserve">
+    <value>Utiliser un chemin personnalisé</value>
+  </data>
+  <data name="lblGIFStatsMode.Text" xml:space="preserve">
+    <value>Mode de palette:</value>
+  </data>
+  <data name="pbAudioCodecWarning.ToolTip" xml:space="preserve">
+    <value>Ce codec audio n'est pas supporté par le récipient vidéo sélectionné.</value>
+  </data>
+  <data name="pbx264PresetWarning.ToolTip" xml:space="preserve">
+    <value>Pour un encodage en temps réel comme l'enregistrement d'écran, il est recommandé de sélectionner le préréglage le plus rapide possible.
+Sinon, il ne peut pas suivre l'enregistrement et il y aura beaucoup de sauts d'images.</value>
+  </data>
 </root>

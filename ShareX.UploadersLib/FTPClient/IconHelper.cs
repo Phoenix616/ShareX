@@ -2,7 +2,7 @@
 
 /*
     ShareX - A program that allows you to take screenshots and share any file type
-    Copyright (c) 2007-2015 ShareX Team
+    Copyright (c) 2007-2016 ShareX Team
 
     This program is free software; you can redistribute it and/or
     modify it under the terms of the GNU General Public License
@@ -188,7 +188,7 @@ namespace ShareX.UploadersLib
         public const uint BIF_EDITBOX = 0x0010;
         public const uint BIF_VALIDATE = 0x0020;
         public const uint BIF_NEWDIALOGSTYLE = 0x0040;
-        public const uint BIF_USENEWUI = (BIF_NEWDIALOGSTYLE | BIF_EDITBOX);
+        public const uint BIF_USENEWUI = BIF_NEWDIALOGSTYLE | BIF_EDITBOX;
         public const uint BIF_BROWSEINCLUDEURLS = 0x0080;
         public const uint BIF_BROWSEFORCOMPUTER = 0x1000;
         public const uint BIF_BROWSEFORPRINTER = 0x2000;

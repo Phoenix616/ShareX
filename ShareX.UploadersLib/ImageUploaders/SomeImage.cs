@@ -2,7 +2,7 @@
 
 /*
     ShareX - A program that allows you to take screenshots and share any file type
-    Copyright (c) 2007-2015 ShareX Team
+    Copyright (c) 2007-2016 ShareX Team
 
     This program is free software; you can redistribute it and/or
     modify it under the terms of the GNU General Public License
@@ -22,6 +22,8 @@
 */
 
 #endregion License Information (GPL v3)
+
+// Credits: https://github.com/DanielMcAssey
 
 using Newtonsoft.Json;
 using System.Collections.Generic;
@@ -64,14 +66,14 @@ namespace ShareX.UploadersLib.ImageUploaders
             return result;
         }
     }
-}
 
-public class SomeImageResponse
-{
-    public string success { get; set; }
-    public string imageid { get; set; }
-    public string imagelink { get; set; }
-    public string thumblink { get; set; }
-    public string embedhtml { get; set; }
-    public string embedbb { get; set; }
+    public class SomeImageResponse
+    {
+        public string success { get; set; }
+        public string imageid { get; set; }
+        public string imagelink { get; set; }
+        public string thumblink { get; set; }
+        public string embedhtml { get; set; }
+        public string embedbb { get; set; }
+    }
 }

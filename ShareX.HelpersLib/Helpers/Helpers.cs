@@ -2,7 +2,7 @@
 
 /*
     ShareX - A program that allows you to take screenshots and share any file type
-    Copyright (c) 2007-2015 ShareX Team
+    Copyright (c) 2007-2016 ShareX Team
 
     This program is free software; you can redistribute it and/or
     modify it under the terms of the GNU General Public License
@@ -24,6 +24,7 @@
 #endregion License Information (GPL v3)
 
 using Microsoft.Win32;
+using ShareX.HelpersLib;
 using ShareX.HelpersLib.Properties;
 using System;
 using System.Collections.Generic;
@@ -37,6 +38,7 @@ using System.Net;
 using System.Net.NetworkInformation;
 using System.Reflection;
 using System.Resources;
+using System.Runtime.InteropServices;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Security.Principal;
@@ -54,6 +56,8 @@ namespace ShareX.HelpersLib
         public const string AlphabetCapital = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"; // 65 ... 90
         public const string Alphabet = "abcdefghijklmnopqrstuvwxyz"; // 97 ... 122
         public const string Alphanumeric = Numbers + AlphabetCapital + Alphabet;
+        public const string AlphanumericInverse = Numbers + Alphabet + AlphabetCapital;
+        public const string Hexadecimal = Numbers + "ABCDEF";
         public const string URLCharacters = Alphanumeric + "-._~"; // 45 46 95 126
         public const string URLPathCharacters = URLCharacters + "/"; // 47
         public const string ValidURLCharacters = URLPathCharacters + ":?#[]@!$&'()*+,;= ";
@@ -101,6 +105,11 @@ namespace ShareX.HelpersLib
             return filePath;
         }
 
+        public static string AppendExtension(string filePath, string extension)
+        {
+            return filePath.TrimEnd('.') + '.' + extension.TrimStart('.');
+        }
+
         private static bool IsValidFile(string filePath, Type enumType)
         {
             string ext = GetFilenameExtension(filePath);
@@ -138,9 +147,14 @@ namespace ShareX.HelpersLib
             return EDataType.File;
         }
 
+        public static string AddZeroes(string input, int digits = 2)
+        {
+            return input.PadLeft(digits, '0');
+        }
+
         public static string AddZeroes(int number, int digits = 2)
         {
-            return number.ToString().PadLeft(digits, '0');
+            return AddZeroes(number.ToString(), digits);
         }
 
         public static string HourTo12(int hour)
@@ -195,10 +209,18 @@ namespace ShareX.HelpersLib
             return Encoding.UTF8.GetString(Enumerable.Range(1, 255).Select(i => (byte)i).ToArray());
         }
 
-        public static string GetValidFileName(string fileName)
+        public static string GetValidFileName(string fileName, string separator = "")
         {
             char[] invalidFileNameChars = Path.GetInvalidFileNameChars();
-            return new string(fileName.Where(c => !invalidFileNameChars.Contains(c)).ToArray());
+            if (string.IsNullOrEmpty(separator))
+            {
+                return new string(fileName.Where(c => !invalidFileNameChars.Contains(c)).ToArray());
+            }
+            else
+            {
+                invalidFileNameChars.ForEach(x => fileName = fileName.Replace(x.ToString(), separator));
+                return fileName.Trim().Replace(separator + separator, separator);
+            }
         }
 
         public static string GetValidFolderPath(string folderPath)
@@ -529,14 +551,31 @@ namespace ShareX.HelpersLib
 
         public static void PlaySoundAsync(Stream stream)
         {
-            TaskEx.Run(() =>
+            if (stream != null)
             {
-                using (stream)
-                using (SoundPlayer soundPlayer = new SoundPlayer(stream))
+                TaskEx.Run(() =>
                 {
-                    soundPlayer.PlaySync();
-                }
-            });
+                    using (stream)
+                    using (SoundPlayer soundPlayer = new SoundPlayer(stream))
+                    {
+                        soundPlayer.PlaySync();
+                    }
+                });
+            }
+        }
+
+        public static void PlaySoundAsync(string filepath)
+        {
+            if (!string.IsNullOrEmpty(filepath) && File.Exists(filepath))
+            {
+                TaskEx.Run(() =>
+                {
+                    using (SoundPlayer soundPlayer = new SoundPlayer(filepath))
+                    {
+                        soundPlayer.PlaySync();
+                    }
+                });
+            }
         }
 
         public static bool BrowseFile(string title, TextBox tb, string initialDirectory = "")
@@ -577,7 +616,7 @@ namespace ShareX.HelpersLib
             return false;
         }
 
-        public static bool BrowseFolder(string title, TextBox tb, string initialDirectory = "")
+        public static bool BrowseFolder(string title, TextBox tb, string initialDirectory = "", bool detectSpecialFolders = true)
         {
             using (FolderSelectDialog fsd = new FolderSelectDialog())
             {
@@ -596,12 +635,47 @@ namespace ShareX.HelpersLib
 
                 if (fsd.ShowDialog())
                 {
-                    tb.Text = fsd.FileName;
+                    tb.Text = detectSpecialFolders ? GetVariableFolderPath(fsd.FileName) : fsd.FileName;
                     return true;
                 }
             }
 
             return false;
+        }
+
+        public static string GetVariableFolderPath(string folderPath)
+        {
+            if (!string.IsNullOrEmpty(folderPath))
+            {
+                try
+                {
+                    GetEnums<Environment.SpecialFolder>().ForEach(x => folderPath = folderPath.Replace(Environment.GetFolderPath(x), $"%{x}%", StringComparison.InvariantCultureIgnoreCase));
+                }
+                catch (Exception e)
+                {
+                    DebugHelper.WriteException(e);
+                }
+            }
+
+            return folderPath;
+        }
+
+        public static string ExpandFolderVariables(string folderPath)
+        {
+            if (!string.IsNullOrEmpty(folderPath))
+            {
+                try
+                {
+                    GetEnums<Environment.SpecialFolder>().ForEach(x => folderPath = folderPath.Replace($"%{x}%", Environment.GetFolderPath(x), StringComparison.InvariantCultureIgnoreCase));
+                    folderPath = Environment.ExpandEnvironmentVariables(folderPath);
+                }
+                catch (Exception e)
+                {
+                    DebugHelper.WriteException(e);
+                }
+            }
+
+            return folderPath;
         }
 
         public static bool WaitWhile(Func<bool> check, int interval, int timeout = -1)
@@ -848,7 +922,7 @@ namespace ShareX.HelpersLib
         {
             if (!Path.IsPathRooted(path)) // Is relative path?
             {
-                path = Path.Combine(Application.StartupPath, path);
+                path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, path);
             }
 
             return Path.GetFullPath(path);
@@ -863,6 +937,90 @@ namespace ShareX.HelpersLib
         public static bool IsAdministrator()
         {
             return new WindowsPrincipal(WindowsIdentity.GetCurrent()).IsInRole(WindowsBuiltInRole.Administrator);
+        }
+
+        public static string RepeatGenerator(int count, Func<string> generator)
+        {
+            string result = "";
+            for (int x = count; x > 0; x--)
+            {
+                result += generator();
+            }
+            return result;
+        }
+
+        public static DateTime UnixToDateTime(long unix)
+        {
+            long timeInTicks = unix * TimeSpan.TicksPerSecond;
+            return new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc).AddTicks(timeInTicks);
+        }
+
+        public static long DateTimeToUnix(DateTime dateTime)
+        {
+            DateTime date = dateTime.ToUniversalTime();
+            long ticks = date.Ticks - new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc).Ticks;
+            return ticks / TimeSpan.TicksPerSecond;
+        }
+
+        public static bool IsRunning(string name)
+        {
+            try
+            {
+                Mutex mutex = Mutex.OpenExisting(name);
+                mutex.ReleaseMutex();
+            }
+            catch
+            {
+                return false;
+            }
+
+            return true;
+        }
+
+        public static void ShowError(Exception e)
+        {
+            MessageBox.Show(e.ToString(), "ShareX - Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        }
+
+        public static void CopyAll(string sourceDirectory, string targetDirectory)
+        {
+            DirectoryInfo diSource = new DirectoryInfo(sourceDirectory);
+            DirectoryInfo diTarget = new DirectoryInfo(targetDirectory);
+
+            CopyAll(diSource, diTarget);
+        }
+
+        public static void CopyAll(DirectoryInfo source, DirectoryInfo target)
+        {
+            if (!Directory.Exists(target.FullName))
+            {
+                Directory.CreateDirectory(target.FullName);
+            }
+
+            foreach (FileInfo fi in source.GetFiles())
+            {
+                fi.CopyTo(Path.Combine(target.FullName, fi.Name), true);
+            }
+
+            foreach (DirectoryInfo diSourceSubDir in source.GetDirectories())
+            {
+                DirectoryInfo nextTargetSubDir = target.CreateSubdirectory(diSourceSubDir.Name);
+                CopyAll(diSourceSubDir, nextTargetSubDir);
+            }
+        }
+
+        public static T ByteArrayToStructure<T>(byte[] bytes) where T : struct
+        {
+            GCHandle handle = GCHandle.Alloc(bytes, GCHandleType.Pinned);
+
+            try
+            {
+                return (T)Marshal.PtrToStructure(handle.AddrOfPinnedObject(), typeof(T));
+            }
+            finally
+            {
+                handle.Free();
+            }
         }
     }
 }

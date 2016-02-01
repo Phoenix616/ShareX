@@ -2,7 +2,7 @@
 
 /*
     ShareX - A program that allows you to take screenshots and share any file type
-    Copyright (c) 2007-2015 ShareX Team
+    Copyright (c) 2007-2016 ShareX Team
 
     This program is free software; you can redistribute it and/or
     modify it under the terms of the GNU General Public License
@@ -264,7 +264,7 @@ namespace ShareX.HelpersLib
 
         public static long ToUnix(this DateTime dateTime)
         {
-            return (dateTime.Ticks - 621355968000000000) / 10000000;
+            return Helpers.DateTimeToUnix(dateTime);
         }
 
         public static void AppendTextToSelection(this TextBox tb, string text)
@@ -410,10 +410,15 @@ namespace ShareX.HelpersLib
             return bmp;
         }
 
+        public static Bitmap CreateEmptyBitmap(this Image img, PixelFormat pixelFormat)
+        {
+            return img.CreateEmptyBitmap(0, 0, pixelFormat);
+        }
+
         public static string GetDescription(this Type type)
         {
             DescriptionAttribute[] attributes = (DescriptionAttribute[])type.GetCustomAttributes(typeof(DescriptionAttribute), false);
-            return (attributes.Length > 0) ? attributes[0].Description : type.Name;
+            return attributes.Length > 0 ? attributes[0].Description : type.Name;
         }
 
         public static IEnumerable<T> TakeLast<T>(this IEnumerable<T> source, int count)
@@ -453,6 +458,11 @@ namespace ShareX.HelpersLib
             {
                 NativeMethods.SendMessage(textBox.Handle, (int)NativeMethods.EM_SETCUEBANNER, showCueWhenFocus ? 1 : 0, watermarkText);
             }
+        }
+
+        public static void HideImageMargin(this ToolStripDropDownItem tsddi)
+        {
+            ((ToolStripDropDownMenu)tsddi.DropDown).ShowImageMargin = false;
         }
     }
 }

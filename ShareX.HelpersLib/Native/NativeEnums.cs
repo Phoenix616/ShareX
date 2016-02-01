@@ -2,7 +2,7 @@
 
 /*
     ShareX - A program that allows you to take screenshots and share any file type
-    Copyright (c) 2007-2015 ShareX Team
+    Copyright (c) 2007-2016 ShareX Team
 
     This program is free software; you can redistribute it and/or
     modify it under the terms of the GNU General Public License
@@ -1862,12 +1862,12 @@ namespace ShareX.HelpersLib
         /// <summary>
         /// Combines the <see cref="WS_EX_CLIENTEDGE"/> and <see cref="WS_EX_WINDOWEDGE"/> styles.
         /// </summary>
-        WS_EX_OVERLAPPEDWINDOW = (WS_EX_WINDOWEDGE | WS_EX_CLIENTEDGE),
+        WS_EX_OVERLAPPEDWINDOW = WS_EX_WINDOWEDGE | WS_EX_CLIENTEDGE,
 
         /// <summary>
         /// Combines the <see cref="WS_EX_WINDOWEDGE"/> and <see cref="WS_EX_TOPMOST"/> styles.
         /// </summary>
-        WS_EX_PALETTEWINDOW = (WS_EX_WINDOWEDGE | WS_EX_TOOLWINDOW | WS_EX_TOPMOST),
+        WS_EX_PALETTEWINDOW = WS_EX_WINDOWEDGE | WS_EX_TOOLWINDOW | WS_EX_TOPMOST,
         //#endif /* WINVER >= 0x0400 */
 
         //#if(_WIN32_WINNT >= 0x0500)
@@ -2766,5 +2766,81 @@ namespace ShareX.HelpersLib
         ///Clear key
         ///</summary>
         OEM_CLEAR = 0xFE
+    }
+
+    public enum FlashWindow : uint
+    {
+        /// <summary>
+        /// Stop flashing. The system restores the window to its original state.
+        /// </summary>
+        FLASHW_STOP = 0,
+        /// <summary>
+        /// Flash the window caption
+        /// </summary>
+        FLASHW_CAPTION = 1,
+        /// <summary>
+        /// Flash the taskbar button.
+        /// </summary>
+        FLASHW_TRAY = 2,
+        /// <summary>
+        /// Flash both the window caption and taskbar button.
+        /// This is equivalent to setting the FLASHW_CAPTION | FLASHW_TRAY flags.
+        /// </summary>
+        FLASHW_ALL = 3,
+        /// <summary>
+        /// Flash continuously, until the FLASHW_STOP flag is set.
+        /// </summary>
+        FLASHW_TIMER = 4,
+        /// <summary>
+        /// Flash continuously until the window comes to the foreground.
+        /// </summary>
+        FLASHW_TIMERNOFG = 12
+    }
+
+    public enum ScrollBarCommands
+    {
+        SB_LINEUP = 0,
+        SB_LINELEFT = 0,
+        SB_LINEDOWN = 1,
+        SB_LINERIGHT = 1,
+        SB_PAGEUP = 2,
+        SB_PAGELEFT = 2,
+        SB_PAGEDOWN = 3,
+        SB_PAGERIGHT = 3,
+        SB_THUMBPOSITION = 4,
+        SB_THUMBTRACK = 5,
+        SB_TOP = 6,
+        SB_LEFT = 6,
+        SB_BOTTOM = 7,
+        SB_RIGHT = 7,
+        SB_ENDSCROLL = 8
+    }
+
+    public enum SBOrientation : int
+    {
+        SB_HORZ = 0x0,
+        SB_VERT = 0x1,
+        SB_CTL = 0x2,
+        SB_BOTH = 0x3
+    }
+
+    public enum ScrollInfoMask : uint
+    {
+        SIF_RANGE = 0x1,
+        SIF_PAGE = 0x2,
+        SIF_POS = 0x4,
+        SIF_DISABLENOSCROLL = 0x8,
+        SIF_TRACKPOS = 0x10,
+        SIF_ALL = SIF_RANGE | SIF_PAGE | SIF_POS | SIF_TRACKPOS
+    }
+
+    public enum BI_COMPRESSION : int
+    {
+        BI_RGB = 0,
+        BI_RLE8 = 1,
+        BI_RLE4 = 2,
+        BI_BITFIELDS = 3,
+        BI_JPEG = 4,
+        BI_PNG = 5
     }
 }

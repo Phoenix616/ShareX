@@ -2,7 +2,7 @@
 
 /*
     ShareX - A program that allows you to take screenshots and share any file type
-    Copyright (c) 2007-2015 ShareX Team
+    Copyright (c) 2007-2016 ShareX Team
 
     This program is free software; you can redistribute it and/or
     modify it under the terms of the GNU General Public License
@@ -25,7 +25,9 @@
 
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using ShareX.HelpersLib;
 using ShareX.UploadersLib.HelperClasses;
+using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.ComponentModel;
@@ -177,6 +179,11 @@ namespace ShareX.UploadersLib.ImageUploaders
 
         public override UploadResult Upload(Stream stream, string fileName)
         {
+            return InternalUpload(stream, fileName, true);
+        }
+
+        private UploadResult InternalUpload(Stream stream, string fileName, bool refreshTokenOnError)
+        {
             Dictionary<string, string> args = new Dictionary<string, string>();
             NameValueCollection headers;
 
@@ -200,6 +207,7 @@ namespace ShareX.UploadersLib.ImageUploaders
                 headers.Add("Authorization", "Client-ID " + AuthInfo.Client_ID);
             }
 
+            WebExceptionReturnResponse = true;
             UploadResult result = UploadData(stream, "https://api.imgur.com/3/image", fileName, "image", args, headers);
 
             if (!string.IsNullOrEmpty(result.Response))
@@ -231,7 +239,6 @@ namespace ShareX.UploadersLib.ImageUploaders
                                 result.URL = "https://imgur.com/" + imageData.id;
                             }
 
-                            int index = result.URL.LastIndexOf('.');
                             string thumbnail = string.Empty;
 
                             switch (ThumbnailType)
@@ -262,7 +269,22 @@ namespace ShareX.UploadersLib.ImageUploaders
                     }
                     else
                     {
-                        HandleErrors(imgurResponse);
+                        ImgurErrorData errorData = ((JObject)imgurResponse.data).ToObject<ImgurErrorData>();
+
+                        if (errorData != null)
+                        {
+                            if (UploadMethod == AccountType.User && refreshTokenOnError &&
+                                errorData.error.Equals("The access token provided is invalid.", StringComparison.InvariantCultureIgnoreCase) && RefreshAccessToken())
+                            {
+                                DebugHelper.WriteLine("Imgur access token refreshed, reuploading image.");
+
+                                return InternalUpload(stream, fileName, false);
+                            }
+
+                            string errorMessage = string.Format("Imgur upload failed: ({0}) {1}", imgurResponse.status, errorData.error);
+                            Errors.Clear();
+                            Errors.Add(errorMessage);
+                        }
                     }
                 }
             }
@@ -320,8 +342,6 @@ namespace ShareX.UploadersLib.ImageUploaders
         public bool favorite { get; set; }
         public bool? nsfw { get; set; }
         public string vote { get; set; }
-        public string account_url { get; set; }
-        public int? account_id { get; set; }
         public string comment_preview { get; set; }
     }
 
@@ -335,7 +355,7 @@ namespace ShareX.UploadersLib.ImageUploaders
         public string cover_width { get; set; }
         public string cover_height { get; set; }
         public string account_url { get; set; }
-        public int? account_id { get; set; }
+        public long? account_id { get; set; }
         public string privacy { get; set; }
         public string layout { get; set; }
         public int views { get; set; }

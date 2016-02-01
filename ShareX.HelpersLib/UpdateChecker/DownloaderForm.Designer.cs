@@ -31,12 +31,12 @@
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(DownloaderForm));
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.txtChangelog = new System.Windows.Forms.TextBox();
-            this.lblProgress = new HelpersLib.BlackStyleLabel();
-            this.cbShowChangelog = new HelpersLib.BlackStyleCheckBox();
-            this.lblStatus = new HelpersLib.BlackStyleLabel();
-            this.lblFilename = new HelpersLib.BlackStyleLabel();
-            this.btnAction = new HelpersLib.BlackStyleButton();
-            this.pbProgress = new HelpersLib.BlackStyleProgressBar();
+            this.lblProgress = new ShareX.HelpersLib.BlackStyleLabel();
+            this.cbShowChangelog = new ShareX.HelpersLib.BlackStyleCheckBox();
+            this.lblStatus = new ShareX.HelpersLib.BlackStyleLabel();
+            this.lblFilename = new ShareX.HelpersLib.BlackStyleLabel();
+            this.btnAction = new ShareX.HelpersLib.BlackStyleButton();
+            this.pbProgress = new ShareX.HelpersLib.BlackStyleProgressBar();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.SuspendLayout();
             // 
@@ -125,7 +125,6 @@
             this.Name = "DownloaderForm";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.UpdaterForm_FormClosing);
             this.Shown += new System.EventHandler(this.DownloaderForm_Shown);
-            this.Paint += new System.Windows.Forms.PaintEventHandler(this.UpdaterForm_Paint);
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();

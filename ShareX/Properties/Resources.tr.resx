@@ -423,7 +423,7 @@ Lütfen başka bir kısayol seçin veya çakışan uygulamayı kapatın ve Share
     <value>Adresi kopyalamak için sol tıklayın. Adresi açmak için sağ tıklayın.</value>
   </data>
   <data name="MainForm_AfterShownJobs_You_can_single_left_click_the_ShareX_tray_icon_to_start_region_capture_" xml:space="preserve">
-    <value>Bildirim alanındaki ShareX simgesine sol tuş ile bir kere tıklıyara bölge yakalama başlatabilirsiniz.</value>
+    <value>Bildirim alanındaki ShareX simgesine sol tuş ile bir kere tıklıyarak bölge yakalama başlatabilirsiniz.</value>
   </data>
   <data name="MainForm_UpdateToggleHotkeyButton_Disable_hotkeys" xml:space="preserve">
     <value>Kısayolları devre dışı bırak</value>
@@ -445,5 +445,38 @@ Lütfen başka bir kısayol seçin veya çakışan uygulamayı kapatın ve Share
   </data>
   <data name="WebpageCaptureForm_UpdateControls_Stop" xml:space="preserve">
     <value>Durdur</value>
+  </data>
+  <data name="UploadTask_DoUploadJob_You_are_attempting_to_upload_a_large_file" xml:space="preserve">
+    <value>Büyük bir dosya yüklüyorsunuz.
+Devam etmek istediğinizden emin misiniz?</value>
+  </data>
+  <data name="UploadTask_DownloadAndUpload_Downloading" xml:space="preserve">
+    <value>İndiriliyor</value>
+  </data>
+  <data name="ChromeForm_btnRegister_Click_Chrome_support_enabled_" xml:space="preserve">
+    <value>Chrome desteği aktif edildi.</value>
+  </data>
+  <data name="ChromeForm_btnUnregister_Click_Chrome_support_disabled_" xml:space="preserve">
+    <value>Chrome desteği devre dışı bırakıldı.</value>
+  </data>
+  <data name="TaskHelpers_OpenImageEditor_Image_editor___How_to_load_image_" xml:space="preserve">
+    <value>Resim düzenleyici - Resim nasıl açılsın?</value>
+  </data>
+  <data name="TaskHelpers_OpenImageEditor_Your_clipboard_contains_image" xml:space="preserve">
+    <value>Panonuzda resim bulunmaktadır, bunu resim düzenleyicide açmak ister misiniz?
+
+Evet tuşuna basarsanız panonuzdaki resim açılır. Veya hayır tuşuna basarak resim dosyası seçebilirsiniz.</value>
+  </data>
+  <data name="ApplicationSettingsForm_cbSteamShowInApp_CheckedChanged_For_settings_to_take_effect_ShareX_needs_to_be_reopened_from_Steam_" xml:space="preserve">
+    <value>Ayarların geçerli olabilmesi için ShareX in Steam den yeniden açılması gerekmektedir.</value>
+  </data>
+  <data name="AboutForm_AboutForm_Changelog" xml:space="preserve">
+    <value>Değişim günlüğü</value>
+  </data>
+  <data name="ImageData_Write_Error" xml:space="preserve">
+    <value>Resim buraya kaydedilemedi: {0}</value>
+  </data>
+  <data name="HotkeyManager_ShowFailedHotkeys_These_applications_could_be_conflicting_" xml:space="preserve">
+    <value>Bu uygulamalar çakışıyor olabilir:</value>
   </data>
 </root>

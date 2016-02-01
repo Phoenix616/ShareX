@@ -2,7 +2,7 @@
 
 /*
     ShareX - A program that allows you to take screenshots and share any file type
-    Copyright (c) 2007-2015 ShareX Team
+    Copyright (c) 2007-2016 ShareX Team
 
     This program is free software; you can redistribute it and/or
     modify it under the terms of the GNU General Public License
@@ -34,7 +34,7 @@ using System.Windows.Forms;
 
 namespace ShareX.HistoryLib
 {
-    public partial class HistoryForm : Form
+    public partial class HistoryForm : BaseForm
     {
         public string HistoryPath { get; private set; }
         public int MaxItemCount { get; set; }
@@ -46,7 +46,6 @@ namespace ShareX.HistoryLib
         public HistoryForm(string historyPath, int maxItemCount = -1)
         {
             InitializeComponent();
-            Icon = ShareXResources.Icon;
             Text = "ShareX - " + string.Format(Resources.HistoryForm_HistoryForm_History_, historyPath);
 
             HistoryPath = historyPath;
@@ -93,7 +92,7 @@ namespace ShareX.HistoryLib
                 }
             }
 
-            return tempHistoryItems.OrderByDescending(x => x.DateTimeUtc).ToArray();
+            return tempHistoryItems.OrderByDescending(x => x.DateTime).ToArray();
         }
 
         private void ApplyFiltersAndAdd()
@@ -124,7 +123,7 @@ namespace ShareX.HistoryLib
 
                 if (!string.IsNullOrEmpty(host))
                 {
-                    result = result.Where(x => !string.IsNullOrEmpty(x.Host) && x.Host.IndexOf(host, StringComparison.InvariantCultureIgnoreCase) >= 0);
+                    result = result.Where(x => !string.IsNullOrEmpty(x.Host) && x.Host.Contains(host, StringComparison.InvariantCultureIgnoreCase));
                 }
             }
 
@@ -138,7 +137,7 @@ namespace ShareX.HistoryLib
 
                     if (cbFilenameFilterMethod.SelectedIndex == 0) // Contains
                     {
-                        result = result.Where(x => x.Filename.IndexOf(filenameFilter, rule) >= 0);
+                        result = result.Where(x => x.Filename.Contains(filenameFilter, rule));
                     }
                     else if (cbFilenameFilterMethod.SelectedIndex == 1) // Starts with
                     {
@@ -161,8 +160,7 @@ namespace ShareX.HistoryLib
                 DateTime toDate = dtpFilterTo.Value.Date;
 
                 result = from hi in result
-                         let date = FastDateTime.ToLocalTime(hi.DateTimeUtc).Date
-                         where date >= fromDate && date <= toDate
+                         where hi.DateTime.Date >= fromDate && hi.DateTime.Date <= toDate
                          select hi;
             }
 
@@ -197,7 +195,7 @@ namespace ShareX.HistoryLib
             for (int i = 0; i < historyItems.Length; i++)
             {
                 HistoryItem hi = historyItems[i];
-                ListViewItem lvi = listViewItems[i] = new ListViewItem(hi.DateTimeUtc.ToLocalTime().ToString());
+                ListViewItem lvi = listViewItems[i] = new ListViewItem(hi.DateTime.ToString());
                 lvi.SubItems.Add(hi.Filename);
                 lvi.SubItems.Add(hi.Type);
                 lvi.SubItems.Add(hi.Host);

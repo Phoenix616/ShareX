@@ -136,7 +136,7 @@
     <value>Paramètres</value>
   </data>
   <data name="tpCapture.Text" xml:space="preserve">
-    <value>Capture</value>
+    <value>Capturer</value>
   </data>
   <data name="lblAfterTaskNotification.Text" xml:space="preserve">
     <value>Après que la tâche soit effectuée:</value>
@@ -199,7 +199,7 @@
     <value>Qualité GIF:</value>
   </data>
   <data name="lblThumbnailHeight.Text" xml:space="preserve">
-    <value>Hauteur</value>
+    <value>Hauteur:</value>
   </data>
   <data name="chkClipboardUploadURLContents.Text" xml:space="preserve">
     <value>Si le presse-papier contient l'URL d'un fichier alors le télécharger et le mettre en ligne</value>
@@ -333,15 +333,6 @@
   <data name="chkShowImageEffectsWindowAfterCapture.Text" xml:space="preserve">
     <value>Afficher la fenêtre des effets d'image après la capture</value>
   </data>
-  <data name="chkShowAfterUploadForm.Text" xml:space="preserve">
-    <value>Afficher la fenêtre "Après la mise en ligne" après que la tâche soit terminée</value>
-  </data>
-  <data name="chkShowBeforeUploadForm.Text" xml:space="preserve">
-    <value>Afficher la fenêtre "Avant la mise en ligne" pour changer dynamiquement la destination avant la mise en ligne</value>
-  </data>
-  <data name="cbShowAfterCaptureTasksForm.Text" xml:space="preserve">
-    <value>Afficher la fenêtre "tâches de post capture" après que la capture soit faite</value>
-  </data>
   <data name="cbShowCursor.Text" xml:space="preserve">
     <value>Afficher le curseur dans les captures d'écran</value>
   </data>
@@ -396,9 +387,6 @@
   <data name="chkUseDefaultImageSettings.Text" xml:space="preserve">
     <value>Utiliser les paramètres d'image dans les paramètres des tâches de la fenêtre principale</value>
   </data>
-  <data name="chkUseDefaultIndexerSettings.Text" xml:space="preserve">
-    <value>Utiliser les paramètres de l'indexeur dans les paramètres des tâches de la fenêtre principale</value>
-  </data>
   <data name="cbFileUploadUseNamePattern.Text" xml:space="preserve">
     <value>Utiliser un modèle de nom aussi pour la mise en ligne de fichiers plutôt que le nom du fichier réel</value>
   </data>
@@ -440,5 +428,20 @@
   </data>
   <data name="cbScreenRecorderShowCursor.Text" xml:space="preserve">
     <value>Montrer le curseur dans l'enregistrement</value>
+  </data>
+  <data name="tpTools.Text" xml:space="preserve">
+    <value>Outils</value>
+  </data>
+  <data name="chkUseDefaultToolsSettings.Text" xml:space="preserve">
+    <value>Utiliser les paramètres d'outils dans les paramètres des tâches de la fenêtre principale</value>
+  </data>
+  <data name="tpVideoThumbnailer.Text" xml:space="preserve">
+    <value>Générateur de miniatures de vidéo</value>
+  </data>
+  <data name="tpScrollingCapture.Text" xml:space="preserve">
+    <value>Capture avec défilement</value>
+  </data>
+  <data name="cbRegionCaptureUseWindowPattern.Text" xml:space="preserve">
+    <value>Utiliser le modèle du nom de la fenêtre pour la capture de région (ShareX va essayer de détecter la fenêtre derrière la sélection)</value>
   </data>
 </root>

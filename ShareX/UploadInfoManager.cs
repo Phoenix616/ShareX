@@ -2,7 +2,7 @@
 
 /*
     ShareX - A program that allows you to take screenshots and share any file type
-    Copyright (c) 2007-2015 ShareX Team
+    Copyright (c) 2007-2016 ShareX Team
 
     This program is free software; you can redistribute it and/or
     modify it under the terms of the GNU General Public License
@@ -85,7 +85,7 @@ namespace ShareX
         {
             if (lv != null && lv.SelectedItems != null && lv.SelectedItems.Count > 0)
             {
-                SelectedItems = lv.SelectedItems.Cast<ListViewItem>().Select(x => x.Tag as UploadTask).Where(x => x != null && x.Info != null).
+                SelectedItems = lv.SelectedItems.Cast<ListViewItem>().Select(x => x.Tag as WorkerTask).Where(x => x != null && x.Info != null).
                     Select(x => new UploadInfoStatus(x.Info)).ToArray();
             }
             else
@@ -290,7 +290,7 @@ namespace ShareX
 
                 if (!string.IsNullOrEmpty(errors))
                 {
-                    using (ErrorForm form = new ErrorForm(Resources.UploadInfoManager_ShowErrors_Upload_errors, errors, Program.LogsFilePath, Links.URL_ISSUES))
+                    using (ErrorForm form = new ErrorForm(Resources.UploadInfoManager_ShowErrors_Upload_errors, errors, Program.LogsFilePath, Links.URL_ISSUES, false))
                     {
                         form.ShowDialog();
                     }
@@ -312,9 +312,12 @@ namespace ShareX
         {
             if (IsItemSelected)
             {
-                foreach (string filepath in SelectedItems.Where(x => x.IsFileExist).Select(x => x.Info.FilePath))
+                foreach (string filepath in SelectedItems.Select(x => x.Info.FilePath))
                 {
-                    FileSystem.DeleteFile(filepath, UIOption.OnlyErrorDialogs, RecycleOption.SendToRecycleBin);
+                    if (!string.IsNullOrEmpty(filepath) && File.Exists(filepath))
+                    {
+                        FileSystem.DeleteFile(filepath, UIOption.OnlyErrorDialogs, RecycleOption.SendToRecycleBin);
+                    }
                 }
             }
         }
@@ -340,7 +343,6 @@ namespace ShareX
             {
                 using (ResponseForm form = new ResponseForm(SelectedItem.Info.Result.Response))
                 {
-                    form.Icon = ShareXResources.Icon;
                     form.ShowDialog();
                 }
             }

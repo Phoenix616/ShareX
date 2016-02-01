@@ -2,7 +2,7 @@
 
 /*
     ShareX - A program that allows you to take screenshots and share any file type
-    Copyright (c) 2007-2015 ShareX Team
+    Copyright (c) 2007-2016 ShareX Team
 
     This program is free software; you can redistribute it and/or
     modify it under the terms of the GNU General Public License
@@ -28,7 +28,7 @@ using System.Windows.Forms;
 
 namespace ShareX.HelpersLib
 {
-    public class TrayForm : Form
+    public class TrayForm : BaseForm
     {
         protected NotifyIcon TrayIcon = null;
 
@@ -38,6 +38,7 @@ namespace ShareX.HelpersLib
         {
             components = new Container();
             TrayIcon = new NotifyIcon(components);
+            TrayIcon.Text = "ShareX";
         }
 
         protected override void SetVisibleCore(bool value)

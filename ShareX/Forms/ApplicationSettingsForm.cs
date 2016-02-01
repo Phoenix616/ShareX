@@ -2,7 +2,7 @@
 
 /*
     ShareX - A program that allows you to take screenshots and share any file type
-    Copyright (c) 2007-2015 ShareX Team
+    Copyright (c) 2007-2016 ShareX Team
 
     This program is free software; you can redistribute it and/or
     modify it under the terms of the GNU General Public License
@@ -34,7 +34,7 @@ using System.Windows.Forms;
 
 namespace ShareX
 {
-    public partial class ApplicationSettingsForm : Form
+    public partial class ApplicationSettingsForm : BaseForm
     {
         private bool loaded;
         private const int MaxBufferSizePower = 14;
@@ -48,8 +48,6 @@ namespace ShareX
 
         private void LoadSettings()
         {
-            Icon = ShareXResources.Icon;
-
             // General
 
             foreach (SupportedLanguage language in Helpers.GetEnums<SupportedLanguage>())
@@ -67,14 +65,22 @@ namespace ShareX
             cbShowTray.Checked = Program.Settings.ShowTray;
             cbSilentRun.Enabled = Program.Settings.ShowTray;
             cbSilentRun.Checked = Program.Settings.SilentRun;
-            cbStartWithWindows.Checked = ShortcutHelpers.CheckShortcut(Environment.SpecialFolder.Startup); //RegistryHelper.CheckStartWithWindows();
-            cbSendToMenu.Checked = ShortcutHelpers.CheckShortcut(Environment.SpecialFolder.SendTo);
-            cbShellContextMenu.Checked = RegistryHelpers.CheckShellContextMenu();
             cbTrayIconProgressEnabled.Checked = Program.Settings.TrayIconProgressEnabled;
             cbTaskbarProgressEnabled.Enabled = TaskbarManager.IsPlatformSupported;
             cbTaskbarProgressEnabled.Checked = Program.Settings.TaskbarProgressEnabled;
             cbRememberMainFormPosition.Checked = Program.Settings.RememberMainFormPosition;
             cbRememberMainFormSize.Checked = Program.Settings.RememberMainFormSize;
+
+            // Integration
+            cbStartWithWindows.Checked = IntegrationHelpers.CheckStartupShortcut();
+            cbShellContextMenu.Checked = IntegrationHelpers.CheckShellContextMenuButton();
+            cbSendToMenu.Checked = IntegrationHelpers.CheckSendToMenuButton();
+
+#if STEAM
+            cbSteamShowInApp.Checked = IntegrationHelpers.CheckSteamShowInApp();
+#else
+            gbSteam.Visible = false;
+#endif
 
             // Paths
             txtPersonalFolderPath.Text = Program.ReadPersonalPathConfig();
@@ -167,6 +173,9 @@ namespace ShareX
                 case SupportedLanguage.PortugueseBrazil:
                     icon = Resources.br;
                     break;
+                case SupportedLanguage.Russian:
+                    icon = Resources.ru;
+                    break;
                 case SupportedLanguage.SimplifiedChinese:
                     icon = Resources.cn;
                     break;
@@ -175,6 +184,9 @@ namespace ShareX
                     break;
                 case SupportedLanguage.Turkish:
                     icon = Resources.tr;
+                    break;
+                case SupportedLanguage.Vietnamese:
+                    icon = Resources.vn;
                     break;
             }
 
@@ -237,11 +249,11 @@ namespace ShareX
 
             if (string.IsNullOrEmpty(personalPath))
             {
-                personalPath = Program.DefaultPersonalPath;
+                personalPath = Program.DefaultPersonalFolder;
             }
             else
             {
-                personalPath = Environment.ExpandEnvironmentVariables(personalPath);
+                personalPath = Helpers.ExpandFolderVariables(personalPath);
                 personalPath = Helpers.GetAbsolutePath(personalPath);
             }
 
@@ -272,31 +284,6 @@ namespace ShareX
             Program.Settings.SilentRun = cbSilentRun.Checked;
         }
 
-        private void cbStartWithWindows_CheckedChanged(object sender, EventArgs e)
-        {
-            if (loaded)
-            {
-                //RegistryHelper.SetStartWithWindows(cbStartWithWindows.Checked);
-                ShortcutHelpers.SetShortcut(cbStartWithWindows.Checked, Environment.SpecialFolder.Startup, "-silent");
-            }
-        }
-
-        private void cbSendToMenu_CheckedChanged(object sender, EventArgs e)
-        {
-            if (loaded)
-            {
-                ShortcutHelpers.SetShortcut(cbSendToMenu.Checked, Environment.SpecialFolder.SendTo);
-            }
-        }
-
-        private void cbShellContextMenu_CheckedChanged(object sender, EventArgs e)
-        {
-            if (loaded)
-            {
-                RegistryHelpers.SetShellContextMenu(cbShellContextMenu.Checked);
-            }
-        }
-
         private void cbTrayIconProgressEnabled_CheckedChanged(object sender, EventArgs e)
         {
             Program.Settings.TrayIconProgressEnabled = cbTrayIconProgressEnabled.Checked;
@@ -324,6 +311,47 @@ namespace ShareX
 
         #endregion General
 
+        #region Integration
+
+        private void cbStartWithWindows_CheckedChanged(object sender, EventArgs e)
+        {
+            if (loaded)
+            {
+                IntegrationHelpers.CreateStartupShortcut(cbStartWithWindows.Checked);
+            }
+        }
+
+        private void cbShellContextMenu_CheckedChanged(object sender, EventArgs e)
+        {
+            if (loaded)
+            {
+                IntegrationHelpers.CreateShellContextMenuButton(cbShellContextMenu.Checked);
+            }
+        }
+
+        private void cbSendToMenu_CheckedChanged(object sender, EventArgs e)
+        {
+            if (loaded)
+            {
+                IntegrationHelpers.CreateSendToMenuButton(cbSendToMenu.Checked);
+            }
+        }
+
+        private void btnChromeSupport_Click(object sender, EventArgs e)
+        {
+            new ChromeForm().Show();
+        }
+
+        private void cbSteamShowInApp_CheckedChanged(object sender, EventArgs e)
+        {
+            if (loaded)
+            {
+                IntegrationHelpers.SteamShowInApp(cbSteamShowInApp.Checked);
+            }
+        }
+
+        #endregion Integration
+
         #region Paths
 
         private void txtPersonalFolderPath_TextChanged(object sender, EventArgs e)
@@ -333,7 +361,7 @@ namespace ShareX
 
         private void btnBrowsePersonalFolderPath_Click(object sender, EventArgs e)
         {
-            Helpers.BrowseFolder(Resources.ApplicationSettingsForm_btnBrowsePersonalFolderPath_Click_Choose_ShareX_personal_folder_path, txtPersonalFolderPath, Program.PersonalPath);
+            Helpers.BrowseFolder(Resources.ApplicationSettingsForm_btnBrowsePersonalFolderPath_Click_Choose_ShareX_personal_folder_path, txtPersonalFolderPath, Program.PersonalFolder);
         }
 
         private void btnOpenPersonalFolder_Click(object sender, EventArgs e)
@@ -355,7 +383,7 @@ namespace ShareX
 
         private void btnBrowseCustomScreenshotsPath_Click(object sender, EventArgs e)
         {
-            Helpers.BrowseFolder(Resources.ApplicationSettingsForm_btnBrowseCustomScreenshotsPath_Click_Choose_screenshots_folder_path, txtCustomScreenshotsPath, Program.PersonalPath);
+            Helpers.BrowseFolder(Resources.ApplicationSettingsForm_btnBrowseCustomScreenshotsPath_Click_Choose_screenshots_folder_path, txtCustomScreenshotsPath, Program.PersonalFolder);
         }
 
         private void txtSaveImageSubFolderPattern_TextChanged(object sender, EventArgs e)

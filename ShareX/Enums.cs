@@ -2,7 +2,7 @@
 
 /*
     ShareX - A program that allows you to take screenshots and share any file type
-    Copyright (c) 2007-2015 ShareX Team
+    Copyright (c) 2007-2016 ShareX Team
 
     This program is free software; you can redistribute it and/or
     modify it under the terms of the GNU General Public License
@@ -23,11 +23,20 @@
 
 #endregion License Information (GPL v3)
 
+using Newtonsoft.Json;
 using System;
 using System.ComponentModel;
 
 namespace ShareX
 {
+    public enum ShareXBuild
+    {
+        Debug,
+        Release,
+        Steam,
+        Unknown
+    }
+
     public enum SupportedLanguage
     {
         Automatic, // Localized
@@ -45,12 +54,16 @@ namespace ShareX
         Korean,
         [Description("Português-Brasil (Portuguese-Brazil)")]
         PortugueseBrazil,
+        [Description("Русский (Russian)")]
+        Russian,
         [Description("简体中文 (Simplified Chinese)")]
         SimplifiedChinese,
         [Description("Español (Spanish)")]
         Spanish,
         [Description("Türkçe (Turkish)")]
-        Turkish
+        Turkish,
+        [Description("Tiếng Việt (Vietnamese)")]
+        Vietnamese
     }
 
     public enum TaskJob
@@ -60,7 +73,8 @@ namespace ShareX
         FileUpload,
         TextUpload,
         ShortenURL,
-        ShareURL
+        ShareURL,
+        DownloadUpload
     }
 
     public enum TaskStatus
@@ -76,36 +90,33 @@ namespace ShareX
     public enum AfterCaptureTasks // Localized
     {
         None = 0,
-        AddImageEffects = 1,
-        AnnotateImage = 1 << 1,
-        CopyImageToClipboard = 1 << 2,
-        SendImageToPrinter = 1 << 3,
-        SaveImageToFile = 1 << 4,
-        SaveImageToFileWithDialog = 1 << 5,
-        SaveThumbnailImageToFile = 1 << 6,
-        PerformActions = 1 << 7,
-        CopyFileToClipboard = 1 << 8,
-        CopyFilePathToClipboard = 1 << 9,
-        UploadImageToHost = 1 << 10,
-        DeleteFile = 1 << 11
+        ShowAfterCaptureWindow = 1,
+        AddImageEffects = 1 << 1,
+        AnnotateImage = 1 << 2,
+        CopyImageToClipboard = 1 << 3,
+        SendImageToPrinter = 1 << 4,
+        SaveImageToFile = 1 << 5,
+        SaveImageToFileWithDialog = 1 << 6,
+        SaveThumbnailImageToFile = 1 << 7,
+        PerformActions = 1 << 8,
+        CopyFileToClipboard = 1 << 9,
+        CopyFilePathToClipboard = 1 << 10,
+        ShowInExplorer = 1 << 11,
+        ShowBeforeUploadWindow = 1 << 12,
+        UploadImageToHost = 1 << 13,
+        DeleteFile = 1 << 14
     }
 
     [Flags]
     public enum AfterUploadTasks // Localized
     {
         None = 0,
-        UseURLShortener = 1,
-        ShareURL = 1 << 1,
-        CopyURLToClipboard = 1 << 2,
-        OpenURL = 1 << 3,
-        ShowQRCode = 1 << 4
-    }
-
-    public enum AfterCaptureFormResult
-    {
-        Cancel,
-        Continue,
-        Copy
+        ShowAfterUploadWindow = 1,
+        UseURLShortener = 1 << 1,
+        ShareURL = 1 << 2,
+        CopyURLToClipboard = 1 << 3,
+        OpenURL = 1 << 4,
+        ShowQRCode = 1 << 5
     }
 
     public enum CaptureType
@@ -115,7 +126,6 @@ namespace ShareX
         ActiveMonitor,
         Window,
         ActiveWindow,
-        RectangleWindow,
         Rectangle,
         Polygon,
         Freehand,
@@ -130,6 +140,7 @@ namespace ShareX
         LastRegion
     }
 
+    [JsonConverter(typeof(HotkeyTypeEnumConverter))]
     public enum HotkeyType // Localized + Category
     {
         None,
@@ -146,7 +157,6 @@ namespace ShareX
         ActiveWindow,
         ActiveMonitor,
         RectangleRegion,
-        WindowRectangle,
         RectangleAnnotate,
         RectangleLight,
         RectangleTransparent,
@@ -154,6 +164,7 @@ namespace ShareX
         FreeHandRegion,
         CustomRegion,
         LastRegion,
+        ScrollingCapture,
         CaptureWebpage,
         AutoCapture,
         StartAutoCapture,
@@ -175,6 +186,8 @@ namespace ShareX
         Ruler,
         Automate,
         IndexFolder,
+        ImageCombiner,
+        VideoThumbnailer,
         FTPClient,
         TweetMessage,
         MonitorTest,
@@ -227,5 +240,10 @@ namespace ShareX
     public enum ImagePreviewVisibility
     {
         Show, Hide, Automatic
+    }
+
+    public enum ScreenRecordState
+    {
+        Waiting, BeforeStart, AfterStart, AfterRecordingStart, AfterStop
     }
 }

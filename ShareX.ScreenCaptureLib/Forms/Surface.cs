@@ -2,7 +2,7 @@
 
 /*
     ShareX - A program that allows you to take screenshots and share any file type
-    Copyright (c) 2007-2015 ShareX Team
+    Copyright (c) 2007-2016 ShareX Team
 
     This program is free software; you can redistribute it and/or
     modify it under the terms of the GNU General Public License
@@ -37,7 +37,7 @@ using System.Windows.Forms;
 
 namespace ShareX.ScreenCaptureLib
 {
-    public class Surface : Form
+    public class Surface : BaseForm
     {
         public Image SurfaceImage { get; set; }
         public SurfaceOptions Config { get; set; }
@@ -51,7 +51,7 @@ namespace ShareX.ScreenCaptureLib
 
         protected TextureBrush darkBackgroundBrush, lightBackgroundBrush;
         protected GraphicsPath regionFillPath, regionDrawPath;
-        protected Pen borderPen, borderDotPen, textBackgroundPenWhite, textBackgroundPenBlack;
+        protected Pen borderPen, borderDotPen, textBackgroundPenWhite, textBackgroundPenBlack, markerPen;
         protected Brush nodeBackgroundBrush, textBackgroundBrush;
         protected Font textFont, infoFont;
         protected Stopwatch timerStart, timerFPS;
@@ -86,6 +86,7 @@ namespace ShareX.ScreenCaptureLib
             textBackgroundBrush = new SolidBrush(Color.FromArgb(75, Color.Black));
             textBackgroundPenWhite = new Pen(Color.FromArgb(50, Color.White));
             textBackgroundPenBlack = new Pen(Color.FromArgb(150, Color.Black));
+            markerPen = new Pen(Color.FromArgb(200, Color.Red)) { DashStyle = DashStyle.Dash };
         }
 
         private void InitializeComponent()
@@ -94,8 +95,8 @@ namespace ShareX.ScreenCaptureLib
             AutoScaleDimensions = new SizeF(6F, 13F);
             AutoScaleMode = AutoScaleMode.Font;
             StartPosition = FormStartPosition.Manual;
-            Bounds = ScreenRectangle;
             FormBorderStyle = FormBorderStyle.None;
+            Bounds = ScreenRectangle;
             SetStyle(ControlStyles.OptimizedDoubleBuffer | ControlStyles.UserPaint | ControlStyles.AllPaintingInWmPaint, true);
             Text = "ShareX - " + Resources.Surface_InitializeComponent_Region_capture;
             ShowInTaskbar = false;
@@ -244,6 +245,11 @@ namespace ShareX.ScreenCaptureLib
             return ShapeCaptureHelpers.GetRegionImage(SurfaceImage, regionFillPath, regionDrawPath, Config);
         }
 
+        public virtual WindowInfo GetWindowInfo()
+        {
+            return null;
+        }
+
         public void Close(SurfaceResult result)
         {
             Result = result;
@@ -301,7 +307,7 @@ namespace ShareX.ScreenCaptureLib
                 }
             }
 
-            borderDotPen.DashOffset = (float)timerStart.Elapsed.TotalSeconds * 10;
+            borderDotPen.DashOffset = (float)timerStart.Elapsed.TotalSeconds * -15;
         }
 
         protected virtual void Draw(Graphics g)
@@ -411,6 +417,7 @@ namespace ShareX.ScreenCaptureLib
             if (textBackgroundBrush != null) textBackgroundBrush.Dispose();
             if (textBackgroundPenWhite != null) textBackgroundPenWhite.Dispose();
             if (textBackgroundPenBlack != null) textBackgroundPenBlack.Dispose();
+            if (markerPen != null) markerPen.Dispose();
 
             if (regionFillPath != null)
             {
@@ -426,6 +433,57 @@ namespace ShareX.ScreenCaptureLib
             }
 
             base.Dispose(disposing);
+        }
+
+        public static bool SelectRegion(out Rectangle rect)
+        {
+            return SelectRegion(out rect, new SurfaceOptions());
+        }
+
+        public static bool SelectRegion(out Rectangle rect, SurfaceOptions options)
+        {
+            using (RectangleRegion surface = new RectangleRegion())
+            {
+                surface.Config = options;
+                surface.Config.ShowTips = false;
+                surface.Config.QuickCrop = true;
+                surface.Config.DetectWindows = true;
+                surface.Prepare();
+                surface.ShowDialog();
+
+                if (surface.Result == SurfaceResult.Region)
+                {
+                    if (surface.AreaManager.IsCurrentAreaValid)
+                    {
+                        rect = CaptureHelpers.ClientToScreen(surface.AreaManager.CurrentArea);
+                        return true;
+                    }
+                }
+                else if (surface.Result == SurfaceResult.Fullscreen)
+                {
+                    rect = CaptureHelpers.GetScreenBounds();
+                    return true;
+                }
+                else if (surface.Result == SurfaceResult.Monitor)
+                {
+                    Screen[] screens = Screen.AllScreens;
+
+                    if (surface.MonitorIndex < screens.Length)
+                    {
+                        Screen screen = screens[surface.MonitorIndex];
+                        rect = screen.Bounds;
+                        return true;
+                    }
+                }
+                else if (surface.Result == SurfaceResult.ActiveMonitor)
+                {
+                    rect = CaptureHelpers.GetActiveScreenBounds();
+                    return true;
+                }
+            }
+
+            rect = Rectangle.Empty;
+            return false;
         }
     }
 }

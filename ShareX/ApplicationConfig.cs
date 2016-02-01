@@ -2,7 +2,7 @@
 
 /*
     ShareX - A program that allows you to take screenshots and share any file type
-    Copyright (c) 2007-2015 ShareX Team
+    Copyright (c) 2007-2016 ShareX Team
 
     This program is free software; you can redistribute it and/or
     modify it under the terms of the GNU General Public License
@@ -24,7 +24,6 @@
 #endregion License Information (GPL v3)
 
 using ShareX.HelpersLib;
-using ShareX.MediaLib;
 using ShareX.UploadersLib;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -44,7 +43,6 @@ namespace ShareX
         public int NameParserAutoIncrementNumber = 0;
         public RecentItem[] RecentLinks = null;
         public bool DisableHotkeys = false;
-        public VideoThumbnailOptions VideoThumbnailOptions = new VideoThumbnailOptions();
 
         public ApplicationConfig()
         {
@@ -54,6 +52,7 @@ namespace ShareX
         #region Main Form
 
         public bool ShowMenu = true;
+        public bool ShowColumns = true;
         public ImagePreviewVisibility ImagePreview = ImagePreviewVisibility.Automatic;
         public int PreviewSplitterDistance = 335;
 
@@ -95,7 +94,7 @@ namespace ShareX
         public int BufferSizePower = 5;
         public List<ClipboardFormat> ClipboardContentFormats = new List<ClipboardFormat>();
 
-        public int MaxUploadFailRetry = 0;
+        public int MaxUploadFailRetry = 1;
         public bool UseSecondaryUploaders = false;
         public List<ImageDestination> SecondaryImageUploaders = new List<ImageDestination>();
         public List<TextDestination> SecondaryTextUploaders = new List<TextDestination>();
@@ -121,17 +120,25 @@ namespace ShareX
         [Category("Application"), DefaultValue(false), Description("Calculate and show file sizes in binary units (KiB, MiB etc.)")]
         public bool BinaryUnits { get; set; }
 
-        [Category("Application"), DefaultValue(false), Description("Show most recent task first.")]
+        [Category("Application"), DefaultValue(false), Description("Show most recent task first in main window.")]
         public bool ShowMostRecentTaskFirst { get; set; }
 
-        [Category("Application"), DefaultValue(false), Description("By default copying \"Bitmap\" to clipboard. Alternative method copying \"PNG and DIB\" to clipboard.")]
-        public bool UseAlternativeClipboardCopyImage { get; set; }
+        [Category("Application"), DefaultValue(true), Description("Default .NET method can't copy image with alpha channel to clipboard. Alternatively, when this setting is false, ShareX copies \"PNG\" and 32 bit \"DIB\" to clipboard in order to retain image transparency. If you are experiencing issues then set this setting to true to use the default .NET method.")]
+        public bool UseDefaultClipboardCopyImage { get; set; }
+
+        [Category("Application"), DefaultValue(false), Description("Default .NET method can't get image with alpha channel from clipboard. Alternatively, when this setting is false, ShareX checks if clipboard contains \"PNG\" or 32 bit \"DIB\" in order to retain image transparency. If you are experiencing issues then set this setting to true to use the default .NET method.")]
+        public bool UseDefaultClipboardGetImage { get; set; }
+
+        [Category("Application"), DefaultValue(true), Description("Because default .NET image copying not supports alpha channel, background of image will be black. This option will fill background white.")]
+        public bool DefaultClipboardCopyImageFillBackground { get; set; }
 
         [Category("Application"), DefaultValue(false), Description("Show only customized tasks in main window workflows.")]
         public bool WorkflowsOnlyShowEdited { get; set; }
 
+#if !STEAM
         [Category("Application"), DefaultValue(true), Description("Automatically check updates.")]
         public bool AutoCheckUpdate { get; set; }
+#endif
 
         [Category("Application"), DefaultValue(true), Description("Automatically expand capture menu when you open the tray menu.")]
         public bool TrayAutoExpandCaptureMenu { get; set; }
@@ -145,17 +152,14 @@ namespace ShareX
         [Category("Application"), DefaultValue(true), Description("Show tips in main window list when list is empty.")]
         public bool ShowMainWindowTip { get; set; }
 
-        [Category("Application"), DefaultValue(true), Description("Saves recent links so when ShareX reopened it will remember them.")]
-        public bool RecentLinksRemember { get; set; }
-
-        [Category("Application"), DefaultValue(10), Description("In recent links tray menu max how many links to show.")]
-        public int RecentLinksMaxCount { get; set; }
+        [Category("Application"), DefaultValue(100), Description("Large file size defined in MiB or MB. ShareX will warn before uploading large files. 0 disables this feature.")]
+        public int LargeFileSizeWarning { get; set; }
 
         [Category("Application"), DefaultValue(""), Description("URLs will open using this path instead of default browser. Example path: chrome.exe")]
         [Editor(typeof(ExeFileNameEditor), typeof(UITypeEditor))]
         public string BrowserPath { get; set; }
 
-        [Category("Application"), DefaultValue(false), Description("Automatically detect external changes to UploaderConfig file and load settigns to memory.")]
+        [Category("Application"), DefaultValue(false), Description("Automatically detect external changes to UploaderConfig file and load settings to memory.")]
         public bool DetectUploaderConfigFileChanges { get; set; }
 
         [Category("Clipboard upload"), DefaultValue(true), Description("Show clipboard content viewer when using clipboard upload in main window.")]
@@ -183,6 +187,15 @@ namespace ShareX
 
         [Category("Drag and drop window"), DefaultValue(255), Description("When you drag file to drop window then opacity will change to this.")]
         public int DropHoverOpacity { get; set; }
+
+        [Category("Recent links"), DefaultValue(true), Description("Saves recent links so when ShareX reopened it will remember them.")]
+        public bool RecentLinksRemember { get; set; }
+
+        [Category("Recent links"), DefaultValue(10), Description("In recent links tray menu max how many links to show.")]
+        public int RecentLinksMaxCount { get; set; }
+
+        [Category("Recent links"), DefaultValue(false), Description("Show most recent link first in recent links tray menu.")]
+        public bool ShowMostRecentLinkFirst { get; set; }
 
         #endregion Advanced
 

@@ -366,16 +366,6 @@ namespace ShareX.UploadersLib.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
         /// </summary>
-        internal static System.Drawing.Icon Hubic {
-            get {
-                object obj = ResourceManager.GetObject("Hubic", resourceCulture);
-                return ((System.Drawing.Icon)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
-        /// </summary>
         internal static System.Drawing.Icon ImageShack {
             get {
                 object obj = ResourceManager.GetObject("ImageShack", resourceCulture);
@@ -427,16 +417,6 @@ namespace ShareX.UploadersLib.Properties {
         internal static System.Drawing.Icon Lambda {
             get {
                 object obj = ResourceManager.GetObject("Lambda", resourceCulture);
-                return ((System.Drawing.Icon)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
-        /// </summary>
-        internal static System.Drawing.Icon LnkU {
-            get {
-                object obj = ResourceManager.GetObject("LnkU", resourceCulture);
                 return ((System.Drawing.Icon)(obj));
             }
         }
@@ -859,10 +839,50 @@ namespace ShareX.UploadersLib.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
         /// </summary>
+        internal static System.Drawing.Icon Pomf {
+            get {
+                object obj = ResourceManager.GetObject("Pomf", resourceCulture);
+                return ((System.Drawing.Icon)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Please select one of the Pomf uploaders from &quot;Destination settings window -&gt; Pomf tab&quot;..
+        /// </summary>
+        internal static string Pomf_Upload_Please_select_one_of_the_Pomf_uploaders_from__Destination_settings_window____Pomf_tab__ {
+            get {
+                return ResourceManager.GetString("Pomf_Upload_Please_select_one_of_the_Pomf_uploaders_from__Destination_settings_wi" +
+                        "ndow____Pomf_tab__", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
+        /// </summary>
         internal static System.Drawing.Icon Pushbullet {
             get {
                 object obj = ResourceManager.GetObject("Pushbullet", resourceCulture);
                 return ((System.Drawing.Icon)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap question_button {
+            get {
+                object obj = ResourceManager.GetObject("question-button", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap Seafile {
+            get {
+                object obj = ResourceManager.GetObject("Seafile", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
             }
         }
         
@@ -882,6 +902,26 @@ namespace ShareX.UploadersLib.Properties {
         internal static System.Drawing.Bitmap server_network {
             get {
                 object obj = ResourceManager.GetObject("server_network", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
+        /// </summary>
+        internal static System.Drawing.Icon Streamable {
+            get {
+                object obj = ResourceManager.GetObject("Streamable", resourceCulture);
+                return ((System.Drawing.Icon)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap Sul {
+            get {
+                object obj = ResourceManager.GetObject("Sul", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

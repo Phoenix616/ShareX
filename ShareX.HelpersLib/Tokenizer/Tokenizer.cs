@@ -2,7 +2,7 @@
 
 /*
     ShareX - A program that allows you to take screenshots and share any file type
-    Copyright (c) 2007-2015 ShareX Team
+    Copyright (c) 2007-2016 ShareX Team
 
     This program is free software; you can redistribute it and/or
     modify it under the terms of the GNU General Public License
@@ -23,6 +23,7 @@
 
 #endregion License Information (GPL v3)
 
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -39,6 +40,8 @@ namespace ShareX.HelpersLib
         public char LiteralEscapeChar { get; set; }
         public bool KeepWhitespace { get; set; }
         public bool AutoParseLiteral { get; set; }
+
+        private List<Token> tokens;
 
         public Tokenizer()
         {
@@ -58,7 +61,7 @@ namespace ShareX.HelpersLib
 
         public List<Token> Tokenize(string text)
         {
-            List<Token> tokens = new List<Token>();
+            tokens = new List<Token>();
             Token currentToken = null;
             char currentChar;
 
@@ -174,6 +177,18 @@ namespace ShareX.HelpersLib
                 if (double.TryParse(token.Text, out result))
                 {
                     token.Type = TokenType.Numeric;
+
+                    if (tokens.Count > 1)
+                    {
+                        Token previousToken = tokens[tokens.Count - 2];
+
+                        if (previousToken != null && previousToken.Type == TokenType.Symbol && previousToken.Text.Equals("-", StringComparison.InvariantCulture))
+                        {
+                            tokens.Remove(previousToken);
+                            token.Position--;
+                            token.Text = "-" + token.Text;
+                        }
+                    }
                 }
                 else if (Keywords.Contains(token.Text))
                 {

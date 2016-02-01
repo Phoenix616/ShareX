@@ -2,7 +2,7 @@
 
 /*
     ShareX - A program that allows you to take screenshots and share any file type
-    Copyright (c) 2007-2015 ShareX Team
+    Copyright (c) 2007-2016 ShareX Team
 
     This program is free software; you can redistribute it and/or
     modify it under the terms of the GNU General Public License
@@ -44,11 +44,14 @@ namespace ShareX.UploadersLib
         public delegate void ProgressEventHandler(ProgressManager progress);
         public event ProgressEventHandler ProgressChanged;
 
+        public event Action<string> EarlyURLCopyRequested;
+
         public List<string> Errors { get; private set; }
         public bool IsUploading { get; protected set; }
         public int BufferSize { get; set; }
         public bool AllowReportProgress { get; set; }
-        public bool ThrowWebExceptions { get; set; }
+        public bool WebExceptionReturnResponse { get; set; }
+        public bool WebExceptionThrow { get; set; }
 
         public bool IsError
         {
@@ -65,10 +68,8 @@ namespace ShareX.UploadersLib
         public Uploader()
         {
             Errors = new List<string>();
-            IsUploading = false;
             BufferSize = 8192;
             AllowReportProgress = true;
-            ThrowWebExceptions = false;
 
             ServicePointManager.DefaultConnectionLimit = 25;
             ServicePointManager.Expect100Continue = false;
@@ -80,6 +81,14 @@ namespace ShareX.UploadersLib
             if (ProgressChanged != null)
             {
                 ProgressChanged(progress);
+            }
+        }
+
+        protected void OnEarlyURLCopyRequested(string url)
+        {
+            if (EarlyURLCopyRequested != null && !string.IsNullOrEmpty(url))
+            {
+                EarlyURLCopyRequested(url);
             }
         }
 
@@ -205,7 +214,7 @@ namespace ShareX.UploadersLib
             {
                 if (!StopUploadRequested)
                 {
-                    if (ThrowWebExceptions && e is WebException) throw;
+                    if (WebExceptionThrow && e is WebException) throw;
                     AddWebError(e);
                 }
             }
@@ -231,7 +240,7 @@ namespace ShareX.UploadersLib
         }
 
         protected string SendRequestURLEncoded(string url, Dictionary<string, string> arguments, NameValueCollection headers = null, CookieCollection cookies = null,
-            HttpMethod method = HttpMethod.POST)
+            HttpMethod method = HttpMethod.POST, ResponseType responseType = ResponseType.Text)
         {
             string query = CreateQuery(arguments);
             byte[] data = Encoding.UTF8.GetBytes(query);
@@ -240,16 +249,16 @@ namespace ShareX.UploadersLib
             {
                 stream.Write(data, 0, data.Length);
 
-                return SendRequestStream(url, stream, "application/x-www-form-urlencoded", headers, cookies, method);
+                return SendRequestStream(url, stream, "application/x-www-form-urlencoded", headers, cookies, method, responseType);
             }
         }
 
         protected string SendRequestStream(string url, Stream stream, string contentType, NameValueCollection headers = null,
-            CookieCollection cookies = null, HttpMethod method = HttpMethod.POST)
+            CookieCollection cookies = null, HttpMethod method = HttpMethod.POST, ResponseType responseType = ResponseType.Text)
         {
             using (HttpWebResponse response = GetResponse(url, stream, null, contentType, headers, cookies, method))
             {
-                return ResponseToString(response);
+                return ResponseToString(response, responseType);
             }
         }
 
@@ -301,7 +310,7 @@ namespace ShareX.UploadersLib
             {
                 if (!StopUploadRequested)
                 {
-                    if (ThrowWebExceptions && e is WebException) throw;
+                    if (WebExceptionThrow && e is WebException) throw;
                     AddWebError(e);
                 }
             }
@@ -362,8 +371,17 @@ namespace ShareX.UploadersLib
             {
                 if (!StopUploadRequested)
                 {
-                    if (ThrowWebExceptions && e is WebException) throw;
-                    AddWebError(e);
+                    if (WebExceptionThrow && e is WebException)
+                    {
+                        throw;
+                    }
+
+                    string response = AddWebError(e);
+
+                    if (WebExceptionReturnResponse && e is WebException)
+                    {
+                        result.Response = response;
+                    }
                 }
             }
             finally
@@ -412,6 +430,13 @@ namespace ShareX.UploadersLib
         private HttpWebRequest PrepareWebRequest(HttpMethod method, string url, NameValueCollection headers = null, CookieCollection cookies = null)
         {
             HttpWebRequest request = (HttpWebRequest)WebRequest.Create(url);
+
+            if (headers != null && headers["Accept"] != null)
+            {
+                request.Accept = headers["Accept"];
+                headers.Remove("Accept");
+            }
+
             request.Method = method.ToString();
             if (headers != null) request.Headers.Add(headers);
             request.CookieContainer = new CookieContainer();
@@ -453,7 +478,7 @@ namespace ShareX.UploadersLib
 
         private string CreateBoundary()
         {
-            return new string('-', 20) + FastDateTime.Now.Ticks.ToString("x");
+            return new string('-', 20) + DateTime.Now.Ticks.ToString("x");
         }
 
         private byte[] MakeInputContent(string boundary, string name, string value)
@@ -548,6 +573,8 @@ namespace ShareX.UploadersLib
                                 sbHeaders.AppendFormat("{0}: \"{1}\"{2}", key, value, Environment.NewLine);
                             }
                             return sbHeaders.ToString().Trim();
+                        case ResponseType.LocationHeader:
+                            return response.Headers["Location"];
                     }
                 }
             }

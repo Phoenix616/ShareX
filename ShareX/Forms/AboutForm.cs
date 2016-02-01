@@ -2,7 +2,7 @@
 
 /*
     ShareX - A program that allows you to take screenshots and share any file type
-    Copyright (c) 2007-2015 ShareX Team
+    Copyright (c) 2007-2016 ShareX Team
 
     This program is free software; you can redistribute it and/or
     modify it under the terms of the GNU General Public License
@@ -32,50 +32,74 @@ using System.Windows.Forms;
 
 namespace ShareX
 {
-    public partial class AboutForm : Form
+    public partial class AboutForm : BaseForm
     {
         public AboutForm()
         {
             InitializeComponent();
-            Icon = ShareXResources.Icon;
             lblProductName.Text = Program.Title;
+            pbLogo.Image = ShareXResources.Logo;
 
             rtbShareXInfo.AddContextMenu();
             rtbCredits.AddContextMenu();
 
-            uclUpdate.CheckUpdate(TaskHelpers.CheckUpdate);
+#if STEAM
+            uclUpdate.Visible = false;
+#else
+            pbSteam.Visible = false;
+            lblSteamBuild.Visible = false;
+
+            if (!Program.IsPortableApps)
+            {
+                uclUpdate.CheckUpdate(TaskHelpers.CheckUpdate);
+            }
+            else
+            {
+                uclUpdate.Visible = false;
+            }
+#endif
+
+            lblTeam.Text = "ShareX Team:";
+            lblBerk.Text = "Jaex (Berk)";
+            lblMike.Text = "mcored (Michael Delpach)";
 
             rtbShareXInfo.Text = string.Format(@"{0}: {1}
 {2}: {3}
-{4}: {5}", Resources.AboutForm_AboutForm_Website, Links.URL_WEBSITE, Resources.AboutForm_AboutForm_Project_page, Links.URL_PROJECT, Resources.AboutForm_AboutForm_Issues, Links.URL_ISSUES);
+{4}: {5}
+{6}: {7}",
+Resources.AboutForm_AboutForm_Website, Links.URL_WEBSITE, Resources.AboutForm_AboutForm_Project_page, Links.URL_PROJECT, Resources.AboutForm_AboutForm_Issues, Links.URL_ISSUES,
+Resources.AboutForm_AboutForm_Changelog, Links.URL_CHANGELOG);
 
             rtbCredits.Text = string.Format(@"{0}:
 
 Mega, Gist and Jira support: https://github.com/gpailler
 Web site: https://github.com/dmxt
-MediaCrush (Imgrush) support: https://github.com/SirCmpwn
 Amazon S3 and DreamObjects support: https://github.com/alanedwardes
 Gfycat support: https://github.com/Dinnerbone
 Copy support: https://github.com/KamilKZ
 AdFly support: https://github.com/LRNAB
 MediaFire support: https://github.com/michalx2
 Pushbullet support: https://github.com/BallisticLingonberries
-Lambda support: https://github.com/marcusant
+Lambda support: https://github.com/mstojcevich
 VideoBin support: https://github.com/corey-/
 Up1 support: https://github.com/Upload
-LnkU, CoinURL, QRnet, VURL, 2gp, SomeImage, OneTimeSecret, Polr support: https://github.com/DanielMcAssey
+CoinURL, QRnet, VURL, 2gp, SomeImage, OneTimeSecret, Polr support: https://github.com/DanielMcAssey
+Seafile support: https://github.com/zikeji
+Streamable support: https://github.com/streamablevideo
 
 {1}:
 
-Turkish: https://github.com/Jaex / https://github.com/muratmoon
-German: https://github.com/Starbug2
-French: https://github.com/nwies / https://github.com/Shadorc
+Turkish: https://github.com/Jaex & https://github.com/muratmoon
+German: https://github.com/Starbug2 & https://github.com/Kaeltis
+French: https://github.com/nwies & https://github.com/Shadorc
 Simplified Chinese: https://github.com/jiajiechan
 Hungarian: https://github.com/devBluestar
 Korean: https://github.com/123jimin
 Spanish: https://github.com/ovnisoftware
-Dutch: https://github.com/wforums
-Portuguese (Brazil): https://github.com/athosbr99 / https://github.com/RockyTV
+Dutch: https://github.com/canihavesomecoffee
+Portuguese (Brazil): https://github.com/RockyTV & https://github.com/athosbr99
+Vietnamese: https://github.com/thanhpd
+Russian: https://github.com/L1Q
 
 {2}:
 
@@ -85,28 +109,38 @@ SSH.NET: https://sshnet.codeplex.com
 Icons: http://p.yusukekamiyamane.com
 ImageListView: https://github.com/oozcitak/imagelistview
 FFmpeg: http://www.ffmpeg.org
-FFmpeg Windows builds: http://ffmpeg.zeranoe.com/builds
+Zeranoe FFmpeg: http://ffmpeg.zeranoe.com/builds
 7-Zip: http://www.7-zip.org
 SevenZipSharp: https://sevenzipsharp.codeplex.com
 DirectShow video and audio device: https://github.com/rdp/screen-capture-recorder-to-video-windows-free
 QrCode.Net: https://qrcodenet.codeplex.com
 System.Net.FtpClient: https://netftp.codeplex.com
-ResX Resource Manager: https://resxresourcemanager.codeplex.com
-AWSSDK: http://aws.amazon.com/sdk-for-net/
-BouncyCastle-PCL: https://github.com/onovotny/BouncyCastle-PCL
+AWS SDK: http://aws.amazon.com/sdk-for-net/
+CLR Security: http://clrsecurity.codeplex.com
+Steamworks.NET: https://github.com/rlabrecque/Steamworks.NET
 
-Copyright (c) 2007-2015 ShareX Team", Resources.AboutForm_AboutForm_Contributors, Resources.AboutForm_AboutForm_Translators, Resources.AboutForm_AboutForm_External_libraries);
+Trailer music credits: Track Name: Au5 - Inside (feat. Danyka Nadeau), Video Link: https://youtu.be/WrkyT-6ivjc, Buy Link: http://music.monstercat.com/track/inside-feat-danyka-nadeau, Label Channel: http://www.YouTube.com/Monstercat
+
+Running from:
+{3}
+
+Copyright (c) 2007-2016 ShareX Team", Resources.AboutForm_AboutForm_Contributors, Resources.AboutForm_AboutForm_Translators, Resources.AboutForm_AboutForm_External_libraries, Application.ExecutablePath);
         }
 
         private void AboutForm_Shown(object sender, EventArgs e)
         {
             this.ShowActivate();
-            cLogo.Start(50);
         }
 
-        private void lblProductName_Click(object sender, EventArgs e)
+        private void pbLogo_MouseDown(object sender, MouseEventArgs e)
         {
-            URLHelpers.OpenURL(Links.URL_VERSION_HISTORY);
+            cLogo.Start(50);
+            pbLogo.Visible = false;
+        }
+
+        private void pbSteam_Click(object sender, EventArgs e)
+        {
+            URLHelpers.OpenURL(Links.URL_STEAM);
         }
 
         private void pbBerkURL_Click(object sender, EventArgs e)
@@ -122,6 +156,11 @@ Copyright (c) 2007-2015 ShareX Team", Resources.AboutForm_AboutForm_Contributors
         private void rtb_LinkClicked(object sender, LinkClickedEventArgs e)
         {
             URLHelpers.OpenURL(e.LinkText);
+        }
+
+        private void AboutForm_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            CompanionCubeManager.Stop();
         }
 
         #region Animation
@@ -206,6 +245,20 @@ Copyright (c) 2007-2015 ShareX Team", Resources.AboutForm_AboutForm_Contributors
 
         private void cLogo_MouseDown(object sender, MouseEventArgs e)
         {
+#if STEAM
+            if (e.Button == MouseButtons.Middle)
+            {
+                cLogo.Stop();
+                CompanionCubeManager.Toggle();
+                return;
+            }
+
+            if (CompanionCubeManager.IsActive)
+            {
+                CompanionCubeManager.Stop();
+            }
+#endif
+
             if (!isEasterEggStarted)
             {
                 isPaused = !isPaused;
@@ -215,7 +268,6 @@ Copyright (c) 2007-2015 ShareX Team", Resources.AboutForm_AboutForm_Contributors
                 if (clickCount >= 10)
                 {
                     isEasterEggStarted = true;
-                    cLogo.Stop();
                     RunEasterEgg();
                 }
             }

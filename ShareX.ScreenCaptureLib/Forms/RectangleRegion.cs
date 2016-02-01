@@ -2,7 +2,7 @@
 
 /*
     ShareX - A program that allows you to take screenshots and share any file type
-    Copyright (c) 2007-2015 ShareX Team
+    Copyright (c) 2007-2016 ShareX Team
 
     This program is free software; you can redistribute it and/or
     modify it under the terms of the GNU General Public License
@@ -26,8 +26,10 @@
 using ShareX.HelpersLib;
 using ShareX.ScreenCaptureLib.Properties;
 using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Drawing2D;
+using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 
@@ -68,6 +70,9 @@ namespace ShareX.ScreenCaptureLib
 
         #endregion Screen ruler
 
+        public bool OneClickMode { get; set; }
+        public SimpleWindowInfo SelectedWindow { get; set; }
+
         private ColorBlinkAnimation colorBlinkAnimation = new ColorBlinkAnimation();
 
         public RectangleRegion()
@@ -81,9 +86,15 @@ namespace ShareX.ScreenCaptureLib
 
         private void RectangleRegion_MouseDown(object sender, MouseEventArgs e)
         {
-            if (ScreenColorPickerMode && e.Button == MouseButtons.Left)
+            if ((OneClickMode || ScreenColorPickerMode) && e.Button == MouseButtons.Left)
             {
                 CurrentPosition = InputManager.MousePosition;
+
+                if (OneClickMode)
+                {
+                    SelectedWindow = AreaManager.FindSelectedWindow();
+                }
+
                 Close(SurfaceResult.Region);
             }
         }
@@ -159,10 +170,10 @@ namespace ShareX.ScreenCaptureLib
 
             if (Config != null)
             {
-                AreaManager.WindowCaptureMode |= Config.ForceWindowCapture;
-                AreaManager.IncludeControls |= Config.IncludeControls;
+                AreaManager.WindowCaptureMode = Config.DetectWindows;
+                AreaManager.IncludeControls = Config.DetectControls;
 
-                if (AreaManager.WindowCaptureMode)
+                if (OneClickMode || AreaManager.WindowCaptureMode)
                 {
                     IntPtr handle = Handle;
 
@@ -171,7 +182,7 @@ namespace ShareX.ScreenCaptureLib
                         WindowsRectangleList wla = new WindowsRectangleList();
                         wla.IgnoreHandle = handle;
                         wla.IncludeChildWindows = AreaManager.IncludeControls;
-                        AreaManager.Windows = wla.GetWindowsRectangleList();
+                        AreaManager.Windows = wla.GetWindowInfoListAsync(5000);
                     });
                 }
             }
@@ -182,6 +193,11 @@ namespace ShareX.ScreenCaptureLib
             }
         }
 
+        public override WindowInfo GetWindowInfo()
+        {
+            return AreaManager.FindSelectedWindowInfo(CurrentPosition);
+        }
+
         protected override void Update()
         {
             base.Update();
@@ -190,13 +206,28 @@ namespace ShareX.ScreenCaptureLib
 
         protected override void Draw(Graphics g)
         {
-            RegionInfo[] areas = AreaManager.ValidAreas;
+            if (AreaManager.IsCreating && AreaManager.IsSnapResizing)
+            {
+                foreach (Size size in Config.SnapSizes)
+                {
+                    Rectangle snapRect = CaptureHelpers.CalculateNewRectangle(AreaManager.PositionOnClick, AreaManager.CurrentPosition, size);
+                    g.DrawRectangleProper(markerPen, snapRect);
+                }
+            }
 
-            if (areas.Length > 0 || !AreaManager.CurrentHoverArea.IsEmpty)
+            List<RegionInfo> areas = AreaManager.ValidAreas.ToList();
+            bool drawAreaExist = areas.Count > 0;
+
+            if (AreaManager.IsCurrentHoverAreaValid && areas.All(area => area.Area != AreaManager.CurrentHoverArea))
+            {
+                areas.Add(AreaManager.GetRegionInfo(AreaManager.CurrentHoverArea));
+            }
+
+            if (areas.Count > 0)
             {
                 UpdateRegionPath();
 
-                if (areas.Length > 0)
+                if (drawAreaExist)
                 {
                     if (Config.UseDimming)
                     {
@@ -348,6 +379,7 @@ namespace ShareX.ScreenCaptureLib
 
             if (AreaManager.IsCreating)
             {
+                sb.AppendLine(Resources.RectangleRegion_WriteTips__Insert__Stop_region_selection);
                 sb.AppendLine(Resources.RectangleRegion_WriteTips__Right_click__Cancel_region_selection);
                 sb.AppendLine(Resources.RectangleRegion_WriteTips__Esc__Cancel_capture);
             }
@@ -384,6 +416,7 @@ namespace ShareX.ScreenCaptureLib
             if (AreaManager.IsCreating)
             {
                 sb.AppendLine(Resources.RectangleRegion_WriteTips__Hold_Shift__Proportional_resizing);
+                sb.AppendLine(Resources.RectangleRegion_WriteTips__Hold_Alt__Snap_resizing_to_preset_sizes);
             }
 
             if (AreaManager.IsCurrentAreaValid)
@@ -552,7 +585,7 @@ namespace ShareX.ScreenCaptureLib
                 if (Config.ShowInfo)
                 {
                     infoTextRect.Location = new Point(x + (magnifier.Width / 2) - (infoTextRect.Width / 2), y + magnifier.Height + infoTextOffset);
-                    DrawInfoText(g, infoText, infoTextRect, 3);
+                    DrawInfoText(g, infoText, infoTextRect, infoTextPadding);
                 }
 
                 g.SetHighQuality();
@@ -651,13 +684,30 @@ namespace ShareX.ScreenCaptureLib
 
         public void UpdateRegionPath()
         {
-            regionFillPath = new GraphicsPath { FillMode = FillMode.Winding };
-            regionDrawPath = new GraphicsPath { FillMode = FillMode.Winding };
-
-            foreach (RegionInfo regionInfo in AreaManager.ValidAreas)
+            if (regionFillPath != null)
             {
-                AddShapePath(regionFillPath, regionInfo);
-                AddShapePath(regionDrawPath, regionInfo, -1);
+                regionFillPath.Dispose();
+                regionFillPath = null;
+            }
+
+            if (regionDrawPath != null)
+            {
+                regionDrawPath.Dispose();
+                regionDrawPath = null;
+            }
+
+            RegionInfo[] areas = AreaManager.ValidAreas;
+
+            if (areas != null && areas.Length > 0)
+            {
+                regionFillPath = new GraphicsPath { FillMode = FillMode.Winding };
+                regionDrawPath = new GraphicsPath { FillMode = FillMode.Winding };
+
+                foreach (RegionInfo regionInfo in AreaManager.ValidAreas)
+                {
+                    AddShapePath(regionFillPath, regionInfo);
+                    AddShapePath(regionDrawPath, regionInfo, -1);
+                }
             }
         }
 

@@ -288,9 +288,6 @@
   <data name="cbScreenshotDelay.Text" xml:space="preserve">
     <value>Atraso de captura de tela:</value>
   </data>
-  <data name="cbShowAfterCaptureTasksForm.Text" xml:space="preserve">
-    <value>Mostrar janela de "Tarefas pós-captura" após a realização da captura</value>
-  </data>
   <data name="cbThumbnailIfSmaller.Text" xml:space="preserve">
     <value>Criar miniatura somente se o tamanho da imagem for maior que o tamanho da miniatura</value>
   </data>
@@ -366,9 +363,6 @@
   <data name="chkScreenRecordAutoStart.Text" xml:space="preserve">
     <value>Começar a gravar depois de:</value>
   </data>
-  <data name="chkShowAfterUploadForm.Text" xml:space="preserve">
-    <value>Mostrar janela "Pós-upload" após a conclusão da tarefa</value>
-  </data>
   <data name="chkShowImageEffectsWindowAfterCapture.Text" xml:space="preserve">
     <value>Mostrar janela de efeitos de imagem após a captura</value>
   </data>
@@ -392,9 +386,6 @@
   </data>
   <data name="cbClipboardUploadShareURL.Text" xml:space="preserve">
     <value>Se a área de transferência contém um URL: compartilhar usando serviço de compartilhamento de URL</value>
-  </data>
-  <data name="chkShowBeforeUploadForm.Text" xml:space="preserve">
-    <value>Mostrar janela "Pré-upload" para alterar o destino antes do envio</value>
   </data>
   <data name="lblImageEffectsNote.Text" xml:space="preserve">
     <value>Você pode habilitar/desabilitar efeitos de imagem em "Tarefas pós-captura -&gt; Adicionar efeitos de imagem".</value>
@@ -429,13 +420,28 @@
   <data name="chkUseDefaultImageSettings.Text" xml:space="preserve">
     <value>Usar opções de imagem nas opções de tarefas da janela principal</value>
   </data>
-  <data name="chkUseDefaultIndexerSettings.Text" xml:space="preserve">
-    <value>Usar opções de indexer nas opções de tarefas da janela principal</value>
-  </data>
   <data name="chkUseDefaultUploadSettings.Text" xml:space="preserve">
     <value>Usar opções de upload nas opções de tarefas da janela principal</value>
   </data>
   <data name="cbClipboardUploadAutoIndexFolder.Text" xml:space="preserve">
     <value>Se a área de transferência contém o local de uma pasta: arquivar a pasta e enviar o índice</value>
+  </data>
+  <data name="cbScreenRecorderShowCursor.Text" xml:space="preserve">
+    <value>Mostrar cursor na gravação</value>
+  </data>
+  <data name="lblImageJPEGQualityHint.Text" xml:space="preserve">
+    <value>0 a 100</value>
+  </data>
+  <data name="chkUseDefaultToolsSettings.Text" xml:space="preserve">
+    <value>Usar opções de ferramentas nas opções de tarefas da janela principal</value>
+  </data>
+  <data name="tpTools.Text" xml:space="preserve">
+    <value>Ferramentas</value>
+  </data>
+  <data name="tpVideoThumbnailer.Text" xml:space="preserve">
+    <value>Miniaturizador de vídeo</value>
+  </data>
+  <data name="tpScrollingCapture.Text" xml:space="preserve">
+    <value>Captura rolante</value>
   </data>
 </root>

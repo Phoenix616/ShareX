@@ -2,7 +2,7 @@
 
 /*
     ShareX - A program that allows you to take screenshots and share any file type
-    Copyright (c) 2007-2015 ShareX Team
+    Copyright (c) 2007-2016 ShareX Team
 
     This program is free software; you can redistribute it and/or
     modify it under the terms of the GNU General Public License
@@ -112,6 +112,30 @@ namespace ShareX.HelpersLib
             string format = "0";
             if (decimalPlaces > 0) format += "." + new string('0', decimalPlaces);
             return number.ToString(format);
+        }
+
+        public static string ToBase(this int value, int radix, string digits)
+        {
+            if (string.IsNullOrEmpty(digits))
+            {
+                throw new ArgumentNullException("digits", string.Format("Digits must contain character value representations"));
+            }
+
+            radix = Math.Abs(radix);
+            if (radix > digits.Length || radix < 2)
+            {
+                throw new ArgumentOutOfRangeException("radix", radix, string.Format("Radix has to be > 2 and < {0}", digits.Length));
+            }
+
+            string result = string.Empty;
+            int quotient = Math.Abs(value);
+            while (0 < quotient)
+            {
+                int temp = quotient % radix;
+                result = digits[temp] + result;
+                quotient /= radix;
+            }
+            return result;
         }
     }
 }

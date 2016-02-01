@@ -235,4 +235,14 @@ Gelijkaardig kan er voor een constante kwaliteitsencoding een tragere preset gek
   <data name="nudXvidQscale.ToolTip" xml:space="preserve">
     <value>1 is de hoogste kwaliteit/grootste bestandsgrootte en 31 is de laagste kwaliteit/kleinste bestandsgrootte.</value>
   </data>
+  <data name="cbOverrideFFmpegPath.Text" xml:space="preserve">
+    <value>Gebruik afwijkend pad</value>
+  </data>
+  <data name="pbAudioCodecWarning.ToolTip" xml:space="preserve">
+    <value>Deze audio codec wordt niet ondersteund door de geselecteerde videocontainer.</value>
+  </data>
+  <data name="pbx264PresetWarning.ToolTip" xml:space="preserve">
+    <value>Voor realtime encoding (zoals schermopname) is het aangeraden om een zo snel mogelijke preset te kiezen.
+Anders kan het niet bijhouden met de opname en zullen er framedrops volgen.</value>
+  </data>
 </root>

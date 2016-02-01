@@ -71,6 +71,16 @@ namespace ShareX.ScreenCaptureLib.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap exclamation_button {
+            get {
+                object obj = ResourceManager.GetObject("exclamation_button", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to FFmpeg error.
         /// </summary>
         internal static string FFmpegHelper_Record_FFmpeg_error {
@@ -126,29 +136,83 @@ namespace ShareX.ScreenCaptureLib.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Ctrl: Drawing mode ░ Space: Fullscreen capture.
-        /// </summary>
-        internal static string RectangleAnnotate_DrawTips_Drawing_mode_off {
-            get {
-                return ResourceManager.GetString("RectangleAnnotate_DrawTips_Drawing_mode_off", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Ctrl: Region mode ░ Shift: Pen color ░ Mouse wheel: Pen size ░ Space: Fullscreen capture.
-        /// </summary>
-        internal static string RectangleAnnotate_DrawTips_Drawing_mode_on {
-            get {
-                return ResourceManager.GetString("RectangleAnnotate_DrawTips_Drawing_mode_on", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Rectangle capture annotate.
         /// </summary>
         internal static string RectangleAnnotate_InitializeComponent_Rectangle_capture_annotate {
             get {
                 return ResourceManager.GetString("RectangleAnnotate_InitializeComponent_Rectangle_capture_annotate", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to [1] Select capture mode.
+        /// </summary>
+        internal static string RectangleAnnotate_WriteTips__1__Select_capture_mode {
+            get {
+                return ResourceManager.GetString("RectangleAnnotate_WriteTips__1__Select_capture_mode", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to [2] Select rectangle drawing mode.
+        /// </summary>
+        internal static string RectangleAnnotate_WriteTips__2__Select_rectangle_drawing_mode {
+            get {
+                return ResourceManager.GetString("RectangleAnnotate_WriteTips__2__Select_rectangle_drawing_mode", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to [3] Select pen drawing mode.
+        /// </summary>
+        internal static string RectangleAnnotate_WriteTips__3__Select_pen_drawing_mode {
+            get {
+                return ResourceManager.GetString("RectangleAnnotate_WriteTips__3__Select_pen_drawing_mode", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to [Ctrl + Mouse wheel] Change border size.
+        /// </summary>
+        internal static string RectangleAnnotate_WriteTips__Ctrl___Mouse_wheel__Change_border_size {
+            get {
+                return ResourceManager.GetString("RectangleAnnotate_WriteTips__Ctrl___Mouse_wheel__Change_border_size", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to [Ctrl + Mouse wheel] Change pen size.
+        /// </summary>
+        internal static string RectangleAnnotate_WriteTips__Ctrl___Mouse_wheel__Change_pen_size {
+            get {
+                return ResourceManager.GetString("RectangleAnnotate_WriteTips__Ctrl___Mouse_wheel__Change_pen_size", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to [Mouse wheel] Swap modes.
+        /// </summary>
+        internal static string RectangleAnnotate_WriteTips__Mouse_wheel__Swap_modes {
+            get {
+                return ResourceManager.GetString("RectangleAnnotate_WriteTips__Mouse_wheel__Swap_modes", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to [Shift] Change border color.
+        /// </summary>
+        internal static string RectangleAnnotate_WriteTips__Shift__Change_border_color {
+            get {
+                return ResourceManager.GetString("RectangleAnnotate_WriteTips__Shift__Change_border_color", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to [Shift] Change pen color.
+        /// </summary>
+        internal static string RectangleAnnotate_WriteTips__Shift__Change_pen_color {
+            get {
+                return ResourceManager.GetString("RectangleAnnotate_WriteTips__Shift__Change_pen_color", resourceCulture);
             }
         }
         
@@ -310,6 +374,15 @@ namespace ShareX.ScreenCaptureLib.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to [Hold Alt] Snap selection to preset sizes.
+        /// </summary>
+        internal static string RectangleRegion_WriteTips__Hold_Alt__Snap_resizing_to_preset_sizes {
+            get {
+                return ResourceManager.GetString("RectangleRegion_WriteTips__Hold_Alt__Snap_resizing_to_preset_sizes", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to [Hold Ctrl] Resize / Move faster.
         /// </summary>
         internal static string RectangleRegion_WriteTips__Hold_Ctrl__Resize___Move_faster {
@@ -319,7 +392,7 @@ namespace ShareX.ScreenCaptureLib.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to [Hold left click] Start region selection.
+        ///   Looks up a localized string similar to [Hold left click] [Insert] Start region selection.
         /// </summary>
         internal static string RectangleRegion_WriteTips__Hold_Left_click__Start_region_selection {
             get {
@@ -360,6 +433,15 @@ namespace ShareX.ScreenCaptureLib.Properties {
         internal static string RectangleRegion_WriteTips__I___0__position_and_size_info {
             get {
                 return ResourceManager.GetString("RectangleRegion_WriteTips__I___0__position_and_size_info", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to [Release left click] [Insert] Finish region selection.
+        /// </summary>
+        internal static string RectangleRegion_WriteTips__Insert__Stop_region_selection {
+            get {
+                return ResourceManager.GetString("RectangleRegion_WriteTips__Insert__Stop_region_selection", resourceCulture);
             }
         }
         
@@ -472,7 +554,7 @@ namespace ShareX.ScreenCaptureLib.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to [Right click] Cancel region selection.
+        ///   Looks up a localized string similar to [Right click] [Delete] Cancel region selection.
         /// </summary>
         internal static string RectangleRegion_WriteTips__Right_click__Cancel_region_selection {
             get {
@@ -558,6 +640,24 @@ namespace ShareX.ScreenCaptureLib.Properties {
         internal static string ScreenRegion_Name_Monitor_0___X__1__Y__2__Width__3__Height__4_ {
             get {
                 return ResourceManager.GetString("ScreenRegion_Name_Monitor_0___X__1__Y__2__Width__3__Height__4_", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Stop capture.
+        /// </summary>
+        internal static string ScrollingCaptureForm_StartCapture_Stop_capture {
+            get {
+                return ResourceManager.GetString("ScrollingCaptureForm_StartCapture_Stop_capture", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Start capture.
+        /// </summary>
+        internal static string ScrollingCaptureForm_StopCapture_Start_capture {
+            get {
+                return ResourceManager.GetString("ScrollingCaptureForm_StopCapture_Start_capture", resourceCulture);
             }
         }
         

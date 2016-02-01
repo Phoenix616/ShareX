@@ -334,7 +334,7 @@
     <value>Falha ao procurar por atualizações</value>
   </data>
   <data name="UpdateMessageBox_UpdateMessageBox_" xml:space="preserve">
-    <value>Uma nova versão está disponível.
+    <value>Uma nova versão do {0} está disponível.
 Você gostaria de baixar e instalar?</value>
   </data>
   <data name="UpdateCheckerLabel_UpdateControls_A_newer_version_of_ShareX_is_available" xml:space="preserve">
@@ -545,7 +545,7 @@ Você gostaria de baixar e instalar?</value>
     <value>DNS definido com sucesso.</value>
   </data>
   <data name="DNSChangerForm_btnSave_Click_DNS_successfully_set__Reboot_is_required_" xml:space="preserve">
-    <value>DNs definido com sucesso. Requer reinicialização.</value>
+    <value>DNS definido com sucesso. Requer reinicialização.</value>
   </data>
   <data name="ExportImportControl_tsmiImportURL_Click_URL_to_download_settings_from" xml:space="preserve">
     <value>URL para baixar as configurações</value>
@@ -625,9 +625,6 @@ Você gostaria de baixar e instalar?</value>
   <data name="HotkeyType_UploadURL_Category" xml:space="preserve">
     <value>Upload</value>
   </data>
-  <data name="HotkeyType_WindowRectangle" xml:space="preserve">
-    <value>Capturar região (objetos)</value>
-  </data>
   <data name="HotkeyType_WindowRectangle_Category" xml:space="preserve">
     <value>Capturar tela</value>
   </data>
@@ -641,7 +638,7 @@ Você gostaria de baixar e instalar?</value>
     <value>{0} está atualizado</value>
   </data>
   <data name="CssFileNameEditor_EditValue_Browse_for_a_Cascading_Style_Sheet___" xml:space="preserve">
-    <value>Procurar um arquivo CSS...</value>
+    <value>Procurar por um arquivo CSS...</value>
   </data>
   <data name="ReplCodeMenuEntry_s_Current_second" xml:space="preserve">
     <value>Segundo atual</value>
@@ -662,8 +659,180 @@ Você gostaria de baixar e instalar?</value>
     <value>Nome do processo da janela ativa</value>
   </data>
   <data name="DownloaderForm_ChangeProgress_Progress" xml:space="preserve">
-    <value>Progresso: {0:0.0)%
+    <value>Progresso: {0:0.0}%
 Velocidade do download: {1:0.0} KB/s
 Tamanho do arquivo: {2:n0} / {3:n0} KB</value>
+  </data>
+  <data name="ReplCodeMenuEntry_ra_Random_alphanumeric_char" xml:space="preserve">
+    <value>Caractere aleatório alfanumérico</value>
+  </data>
+  <data name="ReplCodeMenuEntry_unix_Unix_timestamp" xml:space="preserve">
+    <value>Horário UNIX</value>
+  </data>
+  <data name="HotkeyType_StartAutoCapture" xml:space="preserve">
+    <value>Iniciar captura automática na última região utilizada</value>
+  </data>
+  <data name="ImageDestination_FileUploader" xml:space="preserve">
+    <value>Envio de arquivos</value>
+  </data>
+  <data name="TextDestination_FileUploader" xml:space="preserve">
+    <value>Envio de arquivos</value>
+  </data>
+  <data name="ReplCodeMenuEntry_w_Current_week_name__Local_language_" xml:space="preserve">
+    <value>Dia da semana (linguagem local)</value>
+  </data>
+  <data name="ReplCodeMenuEntry_w2_Current_week_name__English_" xml:space="preserve">
+    <value>Dia da semana (inglês)</value>
+  </data>
+  <data name="ReplCodeMenuEntry_mon_Current_month_name__Local_language_" xml:space="preserve">
+    <value>Mês atual (linguagem local)</value>
+  </data>
+  <data name="ReplCodeMenuEntry_mon2_Current_month_name__English_" xml:space="preserve">
+    <value>Mês atual (inglês)</value>
+  </data>
+  <data name="ReplCodeMenuEntry_i_Auto_increment_number" xml:space="preserve">
+    <value>Auto incrementar número. Acrescentar 0 à esquerda usando {n}</value>
+  </data>
+  <data name="ReplCodeMenuEntry_ms_Current_millisecond" xml:space="preserve">
+    <value>Milissegundo atual</value>
+  </data>
+  <data name="GIFQuality_Bit4" xml:space="preserve">
+    <value>Octree quantizer 16 cores</value>
+  </data>
+  <data name="GIFQuality_Bit8" xml:space="preserve">
+    <value>Octree quantizer 256 cores (devagar mas com qualidade melhor)</value>
+  </data>
+  <data name="GIFQuality_Default" xml:space="preserve">
+    <value>Codificação padrão .NET (rápida mas com qualidade mediana)</value>
+  </data>
+  <data name="HotkeyType_ScreenRecorderActiveWindow" xml:space="preserve">
+    <value>Gravar tela usando a região da janela ativa</value>
+  </data>
+  <data name="HotkeyType_ScreenRecorderGIF" xml:space="preserve">
+    <value>Gravar tela (GIF)</value>
+  </data>
+  <data name="HotkeyType_ScreenRecorderGIFActiveWindow" xml:space="preserve">
+    <value>Gravar tela usando a região da janela ativa (GIF)</value>
+  </data>
+  <data name="HotkeyType_StartScreenRecorder" xml:space="preserve">
+    <value>Gravar tela usando a última região utilizada</value>
+  </data>
+  <data name="HotkeyType_StartScreenRecorderGIF" xml:space="preserve">
+    <value>Gravar tela usando a última região utilizada (GIF)</value>
+  </data>
+  <data name="ImageDestination_CustomImageUploader" xml:space="preserve">
+    <value>Serviço de upload de imagem personalizado </value>
+  </data>
+  <data name="PopUpNotificationType_BalloonTip" xml:space="preserve">
+    <value>Mostrar diálogo de balão da bandeja</value>
+  </data>
+  <data name="PopUpNotificationType_ToastNotification" xml:space="preserve">
+    <value>Mostrar notificações toast com pé-visualizações</value>
+  </data>
+  <data name="ScreenRecordGIFEncoding_OctreeQuantizer" xml:space="preserve">
+    <value>Octree quantizer (qualidade média)</value>
+  </data>
+  <data name="ReplCodeMenuEntry_width_Gets_image_width" xml:space="preserve">
+    <value>Largura da imagem</value>
+  </data>
+  <data name="ResponseType_Headers" xml:space="preserve">
+    <value>Cabeçalhos de resposta</value>
+  </data>
+  <data name="ResponseType_Text" xml:space="preserve">
+    <value>Texto de resposta</value>
+  </data>
+  <data name="ReplCodeMenuEntry_uln_User_login_name" xml:space="preserve">
+    <value>Usuário</value>
+  </data>
+  <data name="ReplCodeMenuEntry_un_User_name" xml:space="preserve">
+    <value>Nome do usuário</value>
+  </data>
+  <data name="ReplCodeMenuEntry_pm_Gets_AM_PM" xml:space="preserve">
+    <value>Recebe AM/PM</value>
+  </data>
+  <data name="TextDestination_CustomTextUploader" xml:space="preserve">
+    <value>Serviço de upload de texto personalizado</value>
+  </data>
+  <data name="FileDestination_CustomFileUploader" xml:space="preserve">
+    <value>Serviço de upload de arquivo personalizado</value>
+  </data>
+  <data name="GIFQuality_Grayscale" xml:space="preserve">
+    <value>Paleta de tons de cinza quantizer 256 cores</value>
+  </data>
+  <data name="HotkeyType_ImageCombiner" xml:space="preserve">
+    <value>Mesclar imagens</value>
+  </data>
+  <data name="HotkeyType_ImageCombiner_Category" xml:space="preserve">
+    <value>Ferramentas</value>
+  </data>
+  <data name="HotkeyType_IRCClient" xml:space="preserve">
+    <value>Cliente IRC</value>
+  </data>
+  <data name="HotkeyType_IRCClient_Category" xml:space="preserve">
+    <value>Ferramentas</value>
+  </data>
+  <data name="HotkeyType_ScrollingCapture" xml:space="preserve">
+    <value>Captura rolante</value>
+  </data>
+  <data name="HotkeyType_ScrollingCapture_Category" xml:space="preserve">
+    <value>Gravar tela</value>
+  </data>
+  <data name="HotkeyType_VideoThumbnailer" xml:space="preserve">
+    <value>Miniaturizador de vídeo</value>
+  </data>
+  <data name="HotkeyType_VideoThumbnailer_Category" xml:space="preserve">
+    <value>Ferramentas</value>
+  </data>
+  <data name="ReplCodeMenuCategory_Computer" xml:space="preserve">
+    <value>Computador</value>
+  </data>
+  <data name="ReplCodeMenuCategory_Date_and_Time" xml:space="preserve">
+    <value>Data e hora</value>
+  </data>
+  <data name="ReplCodeMenuCategory_Image" xml:space="preserve">
+    <value>Imagem</value>
+  </data>
+  <data name="ReplCodeMenuCategory_Random" xml:space="preserve">
+    <value>Aleatório</value>
+  </data>
+  <data name="ReplCodeMenuCategory_Target" xml:space="preserve">
+    <value>Destino</value>
+  </data>
+  <data name="ReplCodeMenuEntry_guid_Random_guid" xml:space="preserve">
+    <value>GUID Aleatório</value>
+  </data>
+  <data name="ReplCodeMenuCategory_Incremental" xml:space="preserve">
+    <value>Incremental</value>
+  </data>
+  <data name="ReplCodeMenuEntry_ia_Auto_increment_alphanumeric" xml:space="preserve">
+    <value>Auto incrementar caracteres alfanuméricos maiúsculos e minúsculos. Acrescentar 0 à esquerda usando {n}</value>
+  </data>
+  <data name="ReplCodeMenuEntry_iAa_Auto_increment_alphanumeric_all" xml:space="preserve">
+    <value>Auto incrementar caracteres alfanuméricos maiúsculos e minúsculos. Acrescentar 0 à esquerda usando {n}</value>
+  </data>
+  <data name="ReplCodeMenuEntry_ib_Auto_increment_base_alphanumeric" xml:space="preserve">
+    <value>Auto incrementar por base {n} usando caracteres alfanuméricos (1 &lt; n &lt; 63)</value>
+  </data>
+  <data name="ReplCodeMenuEntry_ix_Auto_increment_hexadecimal" xml:space="preserve">
+    <value>Auto incrementar usando caracteres hexadecimais. Acrescentar 0 à esquerda usando {n}</value>
+  </data>
+  <data name="ReplCodeMenuEntry_rx_Random_hexadecimal" xml:space="preserve">
+    <value>Caractere hexadecimal aleatório. Repetir usando {n}</value>
+  </data>
+  <data name="ResponseType_LocationHeader" xml:space="preserve">
+    <value>Cabeçalho de localização</value>
+  </data>
+  <data name="UpdateMessageBox_UpdateMessageBox_Portable" xml:space="preserve">
+    <value>Uma nova versão de {0} está disponível.
+Gostaria de baixá-la?</value>
+  </data>
+  <data name="AfterCaptureTasks_ShowAfterCaptureWindow" xml:space="preserve">
+    <value>Mostrar janela "Pós-captura"</value>
+  </data>
+  <data name="AfterCaptureTasks_ShowBeforeUploadWindow" xml:space="preserve">
+    <value>Mostrar janela "Pré-upload"</value>
+  </data>
+  <data name="AfterUploadTasks_ShowAfterUploadWindow" xml:space="preserve">
+    <value>Mostrar janela "Pós-upload"</value>
   </data>
 </root>

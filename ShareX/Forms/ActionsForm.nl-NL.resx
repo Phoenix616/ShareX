@@ -141,4 +141,7 @@
   <data name="lblOutputExtension.Text" xml:space="preserve">
     <value>Extensie van resultaat: (Leeg = gebruik zelfde als origineel)</value>
   </data>
+  <data name="cbHiddenWindow.Text" xml:space="preserve">
+    <value>Verborgen scherm</value>
+  </data>
 </root>

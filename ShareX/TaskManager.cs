@@ -2,7 +2,7 @@
 
 /*
     ShareX - A program that allows you to take screenshots and share any file type
-    Copyright (c) 2007-2015 ShareX Team
+    Copyright (c) 2007-2016 ShareX Team
 
     This program is free software; you can redistribute it and/or
     modify it under the terms of the GNU General Public License
@@ -46,25 +46,28 @@ namespace ShareX
             }
         }
 
-        private static readonly List<UploadTask> Tasks = new List<UploadTask>();
+        private static readonly List<WorkerTask> Tasks = new List<WorkerTask>();
 
         public static readonly RecentManager RecentManager = new RecentManager();
 
         private static int lastIconStatus = -1;
 
-        public static void Start(UploadTask task)
+        public static void Start(WorkerTask task)
         {
-            Tasks.Add(task);
-            UpdateMainFormTip();
-            task.StatusChanged += task_StatusChanged;
-            task.UploadStarted += task_UploadStarted;
-            task.UploadProgressChanged += task_UploadProgressChanged;
-            task.UploadCompleted += task_UploadCompleted;
-            CreateListViewItem(task);
-            StartTasks();
+            if (task != null)
+            {
+                Tasks.Add(task);
+                UpdateMainFormTip();
+                task.StatusChanged += task_StatusChanged;
+                task.UploadStarted += task_UploadStarted;
+                task.UploadProgressChanged += task_UploadProgressChanged;
+                task.UploadCompleted += task_UploadCompleted;
+                CreateListViewItem(task);
+                StartTasks();
+            }
         }
 
-        public static void Remove(UploadTask task)
+        public static void Remove(WorkerTask task)
         {
             if (task != null)
             {
@@ -86,7 +89,7 @@ namespace ShareX
         private static void StartTasks()
         {
             int workingTasksCount = Tasks.Count(x => x.IsWorking);
-            UploadTask[] inQueueTasks = Tasks.Where(x => x.Status == TaskStatus.InQueue).ToArray();
+            WorkerTask[] inQueueTasks = Tasks.Where(x => x.Status == TaskStatus.InQueue).ToArray();
 
             if (inQueueTasks.Length > 0)
             {
@@ -110,7 +113,7 @@ namespace ShareX
 
         public static void StopAllTasks()
         {
-            foreach (UploadTask task in Tasks)
+            foreach (WorkerTask task in Tasks)
             {
                 if (task != null) task.Stop();
             }
@@ -121,13 +124,13 @@ namespace ShareX
             Program.MainForm.lblMainFormTip.Visible = Program.Settings.ShowMainWindowTip && Tasks.Count == 0;
         }
 
-        private static ListViewItem FindListViewItem(UploadTask task)
+        private static ListViewItem FindListViewItem(WorkerTask task)
         {
             if (ListViewControl != null)
             {
                 foreach (ListViewItem lvi in ListViewControl.Items)
                 {
-                    UploadTask tag = lvi.Tag as UploadTask;
+                    WorkerTask tag = lvi.Tag as WorkerTask;
 
                     if (tag != null && tag == task)
                     {
@@ -139,7 +142,7 @@ namespace ShareX
             return null;
         }
 
-        private static void ChangeListViewItemStatus(UploadTask task)
+        private static void ChangeListViewItemStatus(WorkerTask task)
         {
             if (ListViewControl != null)
             {
@@ -152,7 +155,7 @@ namespace ShareX
             }
         }
 
-        private static void CreateListViewItem(UploadTask task)
+        private static void CreateListViewItem(WorkerTask task)
         {
             if (ListViewControl != null)
             {
@@ -183,14 +186,14 @@ namespace ShareX
             }
         }
 
-        private static void task_StatusChanged(UploadTask task)
+        private static void task_StatusChanged(WorkerTask task)
         {
             DebugHelper.WriteLine("Task status: " + task.Status);
             ChangeListViewItemStatus(task);
             UpdateProgressUI();
         }
 
-        private static void task_UploadStarted(UploadTask task)
+        private static void task_UploadStarted(WorkerTask task)
         {
             TaskInfo info = task.Info;
 
@@ -208,7 +211,7 @@ namespace ShareX
             }
         }
 
-        private static void task_UploadProgressChanged(UploadTask task)
+        private static void task_UploadProgressChanged(WorkerTask task)
         {
             if (task.Status == TaskStatus.Working && ListViewControl != null)
             {
@@ -234,7 +237,7 @@ namespace ShareX
             }
         }
 
-        private static void task_UploadCompleted(UploadTask task)
+        private static void task_UploadCompleted(WorkerTask task)
         {
             try
             {
@@ -266,9 +269,9 @@ namespace ShareX
 
                             if (!info.TaskSettings.AdvancedSettings.DisableNotifications)
                             {
-                                if (task.Info.TaskSettings.GeneralSettings.PlaySoundAfterUpload)
+                                if (info.TaskSettings.GeneralSettings.PlaySoundAfterUpload)
                                 {
-                                    Helpers.PlaySoundAsync(Resources.ErrorSound);
+                                    TaskHelpers.PlayErrorSound(info.TaskSettings);
                                 }
 
                                 if (info.TaskSettings.GeneralSettings.PopUpNotification != PopUpNotificationType.None && Program.MainForm.niTray.Visible && !string.IsNullOrEmpty(errors))
@@ -303,7 +306,8 @@ namespace ShareX
 
                             if (!task.StopRequested && !string.IsNullOrEmpty(result))
                             {
-                                if (task.Info.TaskSettings.GeneralSettings.SaveHistory)
+                                if (info.TaskSettings.GeneralSettings.SaveHistory && (!info.TaskSettings.AdvancedSettings.HistorySaveOnlyURL ||
+                                   (!string.IsNullOrEmpty(info.Result.URL) || !string.IsNullOrEmpty(info.Result.ShortenedURL))))
                                 {
                                     HistoryManager.AddHistoryItemAsync(Program.HistoryFilePath, info.GetHistoryItem());
                                 }
@@ -321,9 +325,9 @@ namespace ShareX
 
                                 if (!info.TaskSettings.AdvancedSettings.DisableNotifications && info.Job != TaskJob.ShareURL)
                                 {
-                                    if (task.Info.TaskSettings.GeneralSettings.PlaySoundAfterUpload)
+                                    if (info.TaskSettings.GeneralSettings.PlaySoundAfterUpload)
                                     {
-                                        Helpers.PlaySoundAsync(Resources.TaskCompletedSound);
+                                        TaskHelpers.PlayTaskCompleteSound(info.TaskSettings);
                                     }
 
                                     if (!string.IsNullOrEmpty(info.TaskSettings.AdvancedSettings.BalloonTipContentFormat))
@@ -358,7 +362,7 @@ namespace ShareX
                                         }
                                     }
 
-                                    if (info.TaskSettings.GeneralSettings.ShowAfterUploadForm)
+                                    if (info.TaskSettings.AfterUploadJob.HasFlag(AfterUploadTasks.ShowAfterUploadWindow))
                                     {
                                         AfterUploadForm dlg = new AfterUploadForm(info);
                                         NativeMethods.ShowWindow(dlg.Handle, (int)WindowShowStyle.ShowNoActivate);
@@ -393,7 +397,7 @@ namespace ShareX
             bool isWorkingTasks = false;
             double averageProgress = 0;
 
-            IEnumerable<UploadTask> workingTasks = Tasks.Where(x => x != null && x.Status == TaskStatus.Working && x.Info != null);
+            IEnumerable<WorkerTask> workingTasks = Tasks.Where(x => x != null && x.Status == TaskStatus.Working && x.Info != null);
 
             if (workingTasks.Count() > 0)
             {

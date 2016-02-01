@@ -2,7 +2,7 @@
 
 /*
     ShareX - A program that allows you to take screenshots and share any file type
-    Copyright (c) 2007-2015 ShareX Team
+    Copyright (c) 2007-2016 ShareX Team
 
     This program is free software; you can redistribute it and/or
     modify it under the terms of the GNU General Public License
@@ -36,9 +36,25 @@ namespace ShareX.HelpersLib
 
         public event MessageAddedEventHandler MessageAdded;
 
+        public bool Async { get; set; } = true;
+        public bool DebugWrite { get; set; } = true;
+        public bool StoreInMemory { get; set; } = true;
+        public bool FileWrite { get; set; } = false;
+        public string LogFilePath { get; private set; }
+
         private readonly object loggerLock = new object();
-        private StringBuilder sbMessages = new StringBuilder(4096);
-        private int lastSaveIndex;
+        private StringBuilder sbMessages = new StringBuilder();
+
+        public Logger()
+        {
+        }
+
+        public Logger(string logFilePath)
+        {
+            FileWrite = true;
+            LogFilePath = logFilePath;
+            Helpers.CreateDirectoryIfNotExist(LogFilePath);
+        }
 
         protected void OnMessageAdded(string message)
         {
@@ -48,17 +64,49 @@ namespace ShareX.HelpersLib
             }
         }
 
-        public void WriteLine(string message = "")
+        public void WriteLine(string message)
+        {
+            if (!string.IsNullOrEmpty(message))
+            {
+                if (Async)
+                {
+                    TaskEx.Run(() => WriteLineInternal(message));
+                }
+                else
+                {
+                    WriteLineInternal(message);
+                }
+            }
+        }
+
+        private void WriteLineInternal(string message)
         {
             lock (loggerLock)
             {
-                if (!string.IsNullOrEmpty(message))
+                message = $"{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff} - {message}";
+
+                if (DebugWrite)
                 {
-                    message = string.Format("{0:yyyy-MM-dd HH:mm:ss.fff} - {1}", FastDateTime.Now, message);
+                    Debug.WriteLine(message);
                 }
 
-                sbMessages.AppendLine(message);
-                Debug.WriteLine(message);
+                if (StoreInMemory && sbMessages != null)
+                {
+                    sbMessages.AppendLine(message);
+                }
+
+                if (FileWrite && !string.IsNullOrEmpty(LogFilePath))
+                {
+                    try
+                    {
+                        File.AppendAllText(LogFilePath, message + Environment.NewLine, Encoding.UTF8);
+                    }
+                    catch (Exception e)
+                    {
+                        Debug.WriteLine(e);
+                    }
+                }
+
                 OnMessageAdded(message);
             }
         }
@@ -78,30 +126,14 @@ namespace ShareX.HelpersLib
             WriteException(exception.ToString(), message);
         }
 
-        public void SaveLog(string filepath)
-        {
-            lock (loggerLock)
-            {
-                if (sbMessages != null && sbMessages.Length > 0 && !string.IsNullOrEmpty(filepath))
-                {
-                    string messages = sbMessages.ToString(lastSaveIndex, sbMessages.Length - lastSaveIndex);
-
-                    if (!string.IsNullOrEmpty(messages))
-                    {
-                        Helpers.CreateDirectoryIfNotExist(filepath);
-                        File.AppendAllText(filepath, messages, Encoding.UTF8);
-                        lastSaveIndex = sbMessages.Length;
-                    }
-                }
-            }
-        }
-
         public void Clear()
         {
             lock (loggerLock)
             {
-                sbMessages.Length = 0;
-                lastSaveIndex = 0;
+                if (sbMessages != null)
+                {
+                    sbMessages.Clear();
+                }
             }
         }
 

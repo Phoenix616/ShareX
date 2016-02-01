@@ -2,7 +2,7 @@
 
 /*
     ShareX - A program that allows you to take screenshots and share any file type
-    Copyright (c) 2007-2015 ShareX Team
+    Copyright (c) 2007-2016 ShareX Team
 
     This program is free software; you can redistribute it and/or
     modify it under the terms of the GNU General Public License
@@ -27,6 +27,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using ShareX.HelpersLib.Properties;
 using System;
+using System.ComponentModel;
 using System.Globalization;
 using System.IO;
 using System.Text;
@@ -48,12 +49,15 @@ namespace ShareX.HelpersLib
         // Can't use generic class because not works in form designer
         public Type ObjectType { get; set; }
 
+        [DefaultValue(false)]
+        public bool ExportIgnoreNull { get; set; }
+
         public ExportImportControl()
         {
             InitializeComponent();
         }
 
-        private string Serialize(object obj)
+        public string Serialize(object obj)
         {
             if (obj != null)
             {
@@ -69,6 +73,7 @@ namespace ShareX.HelpersLib
                         JsonSerializer serializer = new JsonSerializer();
                         serializer.ContractResolver = new WritablePropertiesOnlyResolver();
                         serializer.Converters.Add(new StringEnumConverter());
+                        serializer.NullValueHandling = ExportIgnoreNull ? NullValueHandling.Ignore : NullValueHandling.Include;
                         serializer.TypeNameHandling = TypeNameHandling.Auto;
                         serializer.Serialize(textWriter, obj, ObjectType);
                     }
@@ -137,7 +142,7 @@ namespace ShareX.HelpersLib
             }
         }
 
-        private object Deserialize(string json)
+        public object Deserialize(string json)
         {
             try
             {

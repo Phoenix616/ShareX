@@ -2,7 +2,7 @@
 
 /*
     ShareX - A program that allows you to take screenshots and share any file type
-    Copyright (c) 2007-2015 ShareX Team
+    Copyright (c) 2007-2016 ShareX Team
 
     This program is free software; you can redistribute it and/or
     modify it under the terms of the GNU General Public License
@@ -27,7 +27,6 @@ using ShareX.HelpersLib.Properties;
 using System;
 using System.Diagnostics;
 using System.Drawing;
-using System.Drawing.Drawing2D;
 using System.Globalization;
 using System.IO;
 using System.Net;
@@ -36,7 +35,7 @@ using System.Windows.Forms;
 
 namespace ShareX.HelpersLib
 {
-    public partial class DownloaderForm : Form
+    public partial class DownloaderForm : BlackStyleForm
     {
         public delegate void DownloaderInstallEventHandler(string filePath);
         public event DownloaderInstallEventHandler InstallRequested;
@@ -60,7 +59,6 @@ namespace ShareX.HelpersLib
         private DownloaderForm()
         {
             InitializeComponent();
-            Icon = ShareXResources.Icon;
 
             fillRect = new Rectangle(0, 0, ClientSize.Width, ClientSize.Height);
 
@@ -92,16 +90,6 @@ namespace ShareX.HelpersLib
             URL = url;
             Filename = filename;
             lblFilename.Text = string.Format(Resources.DownloaderForm_DownloaderForm_Filename___0_, Filename);
-        }
-
-        private void UpdaterForm_Paint(object sender, PaintEventArgs e)
-        {
-            Graphics g = e.Graphics;
-
-            using (LinearGradientBrush brush = new LinearGradientBrush(fillRect, Color.FromArgb(80, 80, 80), Color.FromArgb(50, 50, 50), LinearGradientMode.Vertical))
-            {
-                g.FillRectangle(brush, fillRect);
-            }
         }
 
         private void DownloaderForm_Shown(object sender, EventArgs e)
@@ -215,7 +203,7 @@ namespace ShareX.HelpersLib
             if (fileDownloader != null)
             {
                 pbProgress.Value = (int)Math.Round(fileDownloader.DownloadPercentage);
-                lblProgress.Text = String.Format(CultureInfo.CurrentCulture, Resources.DownloaderForm_ChangeProgress_Progress,
+                lblProgress.Text = string.Format(CultureInfo.CurrentCulture, Resources.DownloaderForm_ChangeProgress_Progress,
                     fileDownloader.DownloadPercentage, fileDownloader.DownloadSpeed / 1024, fileDownloader.DownloadedSize / 1024, fileDownloader.FileSize / 1024);
             }
         }

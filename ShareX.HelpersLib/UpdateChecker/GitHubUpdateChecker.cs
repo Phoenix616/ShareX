@@ -2,7 +2,7 @@
 
 /*
     ShareX - A program that allows you to take screenshots and share any file type
-    Copyright (c) 2007-2015 ShareX Team
+    Copyright (c) 2007-2016 ShareX Team
 
     This program is free software; you can redistribute it and/or
     modify it under the terms of the GNU General Public License
@@ -80,12 +80,32 @@ namespace ShareX.HelpersLib
 
                         if (latestRelease.assets != null && latestRelease.assets.Count > 0)
                         {
+                            string extension;
+
+                            if (IsPortable)
+                            {
+                                extension = "portable.zip";
+                            }
+                            else
+                            {
+                                extension = ".exe";
+                            }
+
                             foreach (GitHubAsset asset in latestRelease.assets)
                             {
-                                if (asset != null && !string.IsNullOrEmpty(asset.name) && asset.name.EndsWith(".exe", StringComparison.InvariantCultureIgnoreCase))
+                                if (asset != null && !string.IsNullOrEmpty(asset.name) && asset.name.EndsWith(extension, StringComparison.InvariantCultureIgnoreCase))
                                 {
                                     Filename = asset.name;
-                                    DownloadURL = asset.url;
+
+                                    if (IsPortable)
+                                    {
+                                        DownloadURL = asset.browser_download_url;
+                                    }
+                                    else
+                                    {
+                                        DownloadURL = asset.url;
+                                    }
+
                                     RefreshStatus();
                                     return;
                                 }
@@ -193,5 +213,6 @@ namespace ShareX.HelpersLib
         public int download_count { get; set; }
         public string created_at { get; set; }
         public string updated_at { get; set; }
+        public string browser_download_url { get; set; }
     }
 }

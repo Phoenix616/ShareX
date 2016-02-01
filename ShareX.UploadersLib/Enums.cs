@@ -2,7 +2,7 @@
 
 /*
     ShareX - A program that allows you to take screenshots and share any file type
-    Copyright (c) 2007-2015 ShareX Team
+    Copyright (c) 2007-2016 ShareX Team
 
     This program is free software; you can redistribute it and/or
     modify it under the terms of the GNU General Public License
@@ -116,20 +116,24 @@ namespace ShareX.UploadersLib
         Localhostr,
         [Description("JIRA")]
         Jira,
-        //[Description("hubiC")]
-        //Hubic,
         [Description("Lambda")]
         Lambda,
-        [Description("Imgrush")]
-        Imgrush,
         [Description("VideoBin")]
         VideoBin,
-        [Description("MaxFile")]
-        MaxFile,
+        [Description("Pomf")]
+        Pomf,
+        [Description("Uguu")]
+        Uguu,
         [Description("Dropfile")]
         Dropfile,
         [Description("Up1")]
         Up1,
+        [Description("Seafile")]
+        Seafile,
+        [Description("s-ul")]
+        Sul,
+        [Description("Streamable")]
+        Streamable,
         SharedFolder, // Localized
         Email, // Localized
         CustomFileUploader // Localized
@@ -156,8 +160,6 @@ namespace ShareX.UploadersLib
         NLCM,
         [Description("adf.ly")]
         AdFly,
-        [Description("lnku.co")]
-        LnkU,
         [Description("coinurl.com")]
         CoinURL,
         [Description("qr.net")]
@@ -212,7 +214,8 @@ namespace ShareX.UploadersLib
     {
         Text,
         RedirectionURL,
-        Headers
+        Headers,
+        LocationHeader
     }
 
     public enum FTPProtocol
@@ -296,6 +299,13 @@ namespace ShareX.UploadersLib
         DELETE
     }
 
+    public enum CustomUploaderResponseParseType
+    {
+        Regex,
+        Json,
+        Xml
+    }
+
     public enum FTPSEncryption
     {
         /// <summary>
@@ -313,5 +323,12 @@ namespace ShareX.UploadersLib
         LoginRequired,
         LoginSuccessful,
         LoginFailed
+    }
+
+    public enum URLType
+    {
+        URL,
+        ThumbnailURL,
+        DeletionURL
     }
 }

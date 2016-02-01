@@ -2,7 +2,7 @@
 
 /*
     ShareX - A program that allows you to take screenshots and share any file type
-    Copyright (c) 2007-2015 ShareX Team
+    Copyright (c) 2007-2016 ShareX Team
 
     This program is free software; you can redistribute it and/or
     modify it under the terms of the GNU General Public License
@@ -24,12 +24,9 @@
 #endregion License Information (GPL v3)
 
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Text;
 
 namespace ShareX.Setup
 {
@@ -37,35 +34,59 @@ namespace ShareX.Setup
     {
         private enum SetupType
         {
-            Stable, // Build setup + create portable zip file
-            Beta // Build setup + upload it using "Debug/ShareX.exe"
+            Stable, // Build setup & create portable zip file
+            Portable, // Create portable zip file
+            PortableApps, // Create PortableApps folder
+            Beta, // Build setup & upload it using "Debug/ShareX.exe"
+            Steam // Create Steam folder
         }
 
-        private const SetupType Setup = SetupType.Beta;
+        private static readonly SetupType Setup = SetupType.Stable;
 
-        private static string parentDir = @"..\..\..\";
-        private static string binDir = Path.Combine(parentDir, @"ShareX\bin");
-        private static string releaseDir = Path.Combine(binDir, "Release");
-        private static string debugDir = Path.Combine(binDir, "Debug");
-        private static string releasePath = Path.Combine(releaseDir, "ShareX.exe");
-        private static string debugPath = Path.Combine(debugDir, "ShareX.exe");
-        private static string outputDir = Path.Combine(parentDir, @"InnoSetup\Output");
-        private static string portableDir = Path.Combine(outputDir, "ShareX-portable");
-        private static string innoSetupPath = @"C:\Program Files (x86)\Inno Setup 5\ISCC.exe";
-        private static string innoSetupScriptPath = Path.Combine(parentDir, @"InnoSetup\ShareX setup.iss");
+        private static readonly string parentDir = @"..\..\..\";
+        private static readonly string binDir = Path.Combine(parentDir, "ShareX", "bin");
+        private static readonly string releaseDir = Path.Combine(binDir, "Release");
+        private static readonly string debugDir = Path.Combine(binDir, "Debug");
+        private static readonly string steamDir = Path.Combine(binDir, "Steam");
+        private static readonly string debugPath = Path.Combine(debugDir, "ShareX.exe");
+        private static readonly string outputDir = Path.Combine(parentDir, "InnoSetup", "Output");
+        private static readonly string portableDir = Path.Combine(outputDir, "ShareX-portable");
+        private static readonly string steamOutputDir = Path.Combine(outputDir, "ShareX");
+        private static readonly string portableAppsDir = Path.Combine(parentDir, @"..\PortableApps\ShareXPortable\App\ShareX");
+        private static readonly string steamLauncherDir = Path.Combine(parentDir, @"..\ShareX_Steam\ShareX_Steam\bin\Release");
+        private static readonly string steamUpdatesDir = Path.Combine(steamOutputDir, "Updates");
+        private static readonly string chromeReleaseDir = Path.Combine(parentDir, @"..\ShareX_Chrome\ShareX_Chrome\bin\Release");
+        private static readonly string innoSetupPath = @"C:\Program Files (x86)\Inno Setup 5\ISCC.exe";
+        private static readonly string innoSetupScriptPath = Path.Combine(parentDir, "InnoSetup", "ShareX setup.iss");
+
+        private static string ReleaseDirectory => Setup == SetupType.Steam ? steamDir : releaseDir;
 
         private static void Main(string[] args)
         {
+            Console.WriteLine("Setup type: " + Setup);
+
             switch (Setup)
             {
                 case SetupType.Stable:
                     CompileSetup();
-                    CreatePortable();
+                    CreatePortable(portableDir);
+                    OpenOutputDirectory();
+                    break;
+                case SetupType.Portable:
+                    CreatePortable(portableDir);
+                    OpenOutputDirectory();
+                    break;
+                case SetupType.PortableApps:
+                    CreatePortable(portableAppsDir);
                     OpenOutputDirectory();
                     break;
                 case SetupType.Beta:
                     CompileSetup();
                     UploadLatestFile();
+                    break;
+                case SetupType.Steam:
+                    CreateSteamFolder();
+                    OpenOutputDirectory();
                     break;
             }
 
@@ -95,78 +116,105 @@ namespace ShareX.Setup
             Console.WriteLine("Setup file created.");
         }
 
-        private static void CreatePortable()
+        private static void CreateSteamFolder()
+        {
+            if (Directory.Exists(steamOutputDir))
+            {
+                Directory.Delete(steamOutputDir, true);
+            }
+
+            Directory.CreateDirectory(steamOutputDir);
+
+            CopyFile(Path.Combine(steamLauncherDir, "ShareX_Launcher.exe"), steamOutputDir);
+            CopyFile(Path.Combine(steamLauncherDir, "steam_appid.txt"), steamOutputDir);
+            CopyFile(Path.Combine(steamLauncherDir, "installscript.vdf"), steamOutputDir);
+            CopyFiles(steamLauncherDir, "*.dll", steamOutputDir);
+
+            CreatePortable(steamUpdatesDir);
+        }
+
+        private static void CreatePortable(string destination)
         {
             Console.WriteLine("Creating portable...");
 
-            if (Directory.Exists(portableDir))
+            if (Directory.Exists(destination))
             {
-                Directory.Delete(portableDir, true);
+                Directory.Delete(destination, true);
             }
 
-            Directory.CreateDirectory(portableDir);
+            Directory.CreateDirectory(destination);
 
-            List<string> files = new List<string>();
+            CopyFile(Path.Combine(ReleaseDirectory, "ShareX.exe"), destination);
+            CopyFile(Path.Combine(ReleaseDirectory, "ShareX.exe.config"), destination);
+            CopyFiles(ReleaseDirectory, "*.dll", destination);
+            CopyFiles(Path.Combine(parentDir, "Licenses"), "*.txt", Path.Combine(destination, "Licenses"));
+            CopyFile(Path.Combine(outputDir, "Recorder-devices-setup.exe"), destination);
+            CopyFile(Path.Combine(chromeReleaseDir, "ShareX_Chrome.exe"), destination);
 
-            string[] endsWith = new string[] { "ShareX.exe", "ShareX.exe.config", ".dll", ".css", ".txt", "Recorder-devices-setup.exe" };
-            string[] ignoreEndsWith = new string[] { };
-
-            foreach (string filepath in Directory.GetFiles(releaseDir))
-            {
-                if (endsWith.Any(x => filepath.EndsWith(x, StringComparison.InvariantCultureIgnoreCase)) &&
-                    ignoreEndsWith.All(x => !filepath.EndsWith(x, StringComparison.InvariantCultureIgnoreCase)))
-                {
-                    files.Add(filepath);
-                }
-            }
-
-            CopyFiles(files, portableDir);
-
-            string[] languages = new string[] { "de", "es", "fr", "hu", "ko-KR", "nl-NL", "tr", "zh-CN" };
+            string[] languages = new string[] { "de", "es", "fr", "hu", "ko-KR", "nl-NL", "pt-BR", "ru", "tr", "vi-VN", "zh-CN" };
 
             foreach (string language in languages)
             {
-                CopyFiles(Path.Combine(releaseDir, language + "\\*.resources.dll"), Path.Combine(portableDir, "Languages\\" + language));
+                CopyFiles(Path.Combine(ReleaseDirectory, language), "*.resources.dll", Path.Combine(destination, "Languages", language));
             }
 
-            File.WriteAllText(Path.Combine(portableDir, "PersonalPath.cfg"), "ShareX", Encoding.UTF8);
-
-            //FileVersionInfo versionInfo = FileVersionInfo.GetVersionInfo(Path.Combine(releaseDir, "ShareX.exe"));
-            //string zipFilename = string.Format("ShareX-{0}.{1}.{2}-portable.zip", versionInfo.ProductMajorPart, versionInfo.ProductMinorPart, versionInfo.ProductBuildPart);
-            string zipPath = Path.Combine(outputDir, "ShareX-portable.zip");
-
-            if (File.Exists(zipPath))
+            if (Setup == SetupType.Steam)
             {
-                File.Delete(zipPath);
+                // These git ignored
+                CopyFile(Path.Combine(parentDir, "Lib", "ffmpeg.exe"), destination);
+                CopyFile(Path.Combine(parentDir, "Lib", "ffmpeg-x64.exe"), destination);
             }
-
-            Zip(portableDir + "\\*.*", zipPath);
-
-            if (Directory.Exists(portableDir))
+            else if (Setup == SetupType.PortableApps)
             {
-                Directory.Delete(portableDir, true);
+                File.Create(Path.Combine(destination, "PortableApps")).Dispose();
+            }
+            else
+            {
+                File.Create(Path.Combine(destination, "Portable")).Dispose();
+
+                //FileVersionInfo versionInfo = FileVersionInfo.GetVersionInfo(Path.Combine(releaseDir, "ShareX.exe"));
+                //string zipFilename = string.Format("ShareX-{0}.{1}.{2}-portable.zip", versionInfo.ProductMajorPart, versionInfo.ProductMinorPart, versionInfo.ProductBuildPart);
+                string zipPath = Path.Combine(outputDir, "ShareX-portable.zip");
+
+                if (File.Exists(zipPath))
+                {
+                    File.Delete(zipPath);
+                }
+
+                Zip(destination + "\\*", zipPath);
+
+                if (Directory.Exists(destination))
+                {
+                    Directory.Delete(destination, true);
+                }
             }
 
             Console.WriteLine("Portable created.");
         }
 
-        private static void CopyFiles(IEnumerable files, string toFolder)
+        private static void CopyFiles(string[] files, string toFolder)
         {
+            if (!Directory.Exists(toFolder))
+            {
+                Directory.CreateDirectory(toFolder);
+            }
+
             foreach (string filepath in files)
             {
                 string filename = Path.GetFileName(filepath);
                 string dest = Path.Combine(toFolder, filename);
-
                 File.Copy(filepath, dest);
             }
         }
 
-        private static void CopyFiles(string path, string toFolder)
+        private static void CopyFile(string path, string toFolder)
         {
-            string directory = Path.GetDirectoryName(path);
-            string filename = Path.GetFileName(path);
-            if (!Directory.Exists(toFolder)) Directory.CreateDirectory(toFolder);
-            CopyFiles(Directory.GetFiles(directory, filename), toFolder);
+            CopyFiles(new string[] { path }, toFolder);
+        }
+
+        private static void CopyFiles(string directory, string searchPattern, string toFolder)
+        {
+            CopyFiles(Directory.GetFiles(directory, searchPattern), toFolder);
         }
 
         private static void Zip(string source, string target)

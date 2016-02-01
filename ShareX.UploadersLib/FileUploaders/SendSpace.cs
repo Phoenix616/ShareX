@@ -2,7 +2,7 @@
 
 /*
     ShareX - A program that allows you to take screenshots and share any file type
-    Copyright (c) 2007-2015 ShareX Team
+    Copyright (c) 2007-2016 ShareX Team
 
     This program is free software; you can redistribute it and/or
     modify it under the terms of the GNU General Public License
@@ -511,7 +511,7 @@ namespace ShareX.UploadersLib.FileUploaders
                 DateTime time;
                 while (!bw.CancellationPending)
                 {
-                    time = FastDateTime.Now;
+                    time = DateTime.Now;
                     try
                     {
                         progressInfo.ParseResponse(sendSpace.SendRequest(HttpMethod.POST, url));
@@ -526,7 +526,7 @@ namespace ShareX.UploadersLib.FileUploaders
                     catch
                     {
                     }
-                    elapsed = (int)(FastDateTime.Now - time).TotalMilliseconds;
+                    elapsed = (int)(DateTime.Now - time).TotalMilliseconds;
                     if (elapsed < interval)
                     {
                         Thread.Sleep(interval - elapsed);

@@ -2,7 +2,7 @@
 
 /*
     ShareX - A program that allows you to take screenshots and share any file type
-    Copyright (c) 2007-2015 ShareX Team
+    Copyright (c) 2007-2016 ShareX Team
 
     This program is free software; you can redistribute it and/or
     modify it under the terms of the GNU General Public License
@@ -31,15 +31,11 @@ using System.Windows.Forms;
 
 namespace ShareX.HelpersLib
 {
-    public partial class DebugForm : Form
+    public partial class DebugForm : BaseForm
     {
-        private Logger logger;
-
         public DebugForm(Logger logger)
         {
             InitializeComponent();
-            Icon = ShareXResources.Icon;
-            this.logger = logger;
 
             rtbDebug.Text = logger.ToString();
             rtbDebug.SelectionStart = rtbDebug.TextLength;
@@ -47,11 +43,7 @@ namespace ShareX.HelpersLib
             rtbDebug.AddContextMenu();
 
             logger.MessageAdded += logger_MessageAdded;
-        }
-
-        private void DebugForm_FormClosing(object sender, FormClosingEventArgs e)
-        {
-            logger.MessageAdded -= logger_MessageAdded;
+            FormClosing += (sender, e) => logger.MessageAdded -= logger_MessageAdded;
         }
 
         private void logger_MessageAdded(string message)

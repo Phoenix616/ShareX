@@ -2,7 +2,7 @@
 
 /*
     ShareX - A program that allows you to take screenshots and share any file type
-    Copyright (c) 2007-2015 ShareX Team
+    Copyright (c) 2007-2016 ShareX Team
 
     This program is free software; you can redistribute it and/or
     modify it under the terms of the GNU General Public License
@@ -34,7 +34,7 @@ using System.Windows.Forms;
 
 namespace ShareX.ImageEffectsLib
 {
-    public partial class ImageEffectsForm : Form
+    public partial class ImageEffectsForm : BaseForm
     {
         public Image DefaultImage { get; private set; }
 
@@ -43,7 +43,6 @@ namespace ShareX.ImageEffectsLib
         public ImageEffectsForm(Image img, List<ImageEffect> effects = null)
         {
             InitializeComponent();
-            Icon = ShareXResources.Icon;
             DefaultImage = img;
             eiImageEffects.ObjectType = typeof(List<ImageEffect>);
             AddAllEffectsToContextMenu();
@@ -116,7 +115,7 @@ namespace ShareX.ImageEffectsLib
         private void AddEffectToContextMenu(string groupName, params Type[] imageEffects)
         {
             ToolStripMenuItem tsmiParent = new ToolStripMenuItem(groupName);
-            ((ToolStripDropDownMenu)tsmiParent.DropDown).ShowImageMargin = false;
+            tsmiParent.HideImageMargin();
 
             cmsEffects.Items.Add(tsmiParent);
 
@@ -337,7 +336,7 @@ namespace ShareX.ImageEffectsLib
 
         private void tsmiLoadImageFromClipboard_Click(object sender, EventArgs e)
         {
-            Image img = Clipboard.GetImage();
+            Image img = ClipboardHelpers.GetImage();
 
             if (img != null)
             {

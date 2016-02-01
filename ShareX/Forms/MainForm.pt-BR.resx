@@ -198,12 +198,6 @@
   <data name="tsmiUploadSelectedFile.Text" xml:space="preserve">
     <value>Enviar</value>
   </data>
-  <data name="$this.Text" xml:space="preserve">
-    <value>ShareX</value>
-  </data>
-  <data name="niTray.Text" xml:space="preserve">
-    <value>ShareX</value>
-  </data>
   <data name="tsmiAutoCapture.Text" xml:space="preserve">
     <value>Captura automática...</value>
   </data>
@@ -259,7 +253,7 @@
     <value>Imagem</value>
   </data>
   <data name="tsmiCopyShortenedURL.Text" xml:space="preserve">
-    <value>URL encurtada</value>
+    <value>URL encurtado</value>
   </data>
   <data name="tsmiCopyText.Text" xml:space="preserve">
     <value>Texto</value>
@@ -340,7 +334,7 @@
     <value>Upload de pasta...</value>
   </data>
   <data name="tsmiTrayUploadURL.Text" xml:space="preserve">
-    <value>Upload da URL...</value>
+    <value>Upload do URL...</value>
   </data>
   <data name="tsmiTrayURLShorteners.Text" xml:space="preserve">
     <value>Encurtadores de URL</value>
@@ -364,7 +358,7 @@
     <value>Pasta de capturas de tela...</value>
   </data>
   <data name="tsmiShowDebugLog.Text" xml:space="preserve">
-    <value>Log de depuração...</value>
+    <value>Registro de depuração...</value>
   </data>
   <data name="tsmiShowErrors.Text" xml:space="preserve">
     <value>Mostrar erros</value>
@@ -418,7 +412,7 @@
     <value>Janela</value>
   </data>
   <data name="tsmiUploadURL.Text" xml:space="preserve">
-    <value>Upload da URL...</value>
+    <value>Upload do URL...</value>
   </data>
   <data name="tsmiMonitorTest.Text" xml:space="preserve">
     <value>Teste de monitor...</value>
@@ -615,9 +609,6 @@
   <data name="tsmiTrayWebpageCapture.Text" xml:space="preserve">
     <value>Captura de página da web...</value>
   </data>
-  <data name="tsmiTrayWindowRectangle.Text" xml:space="preserve">
-    <value>Região (objetos)</value>
-  </data>
   <data name="tsmiTrayWorkflows.Text" xml:space="preserve">
     <value>Workflows</value>
   </data>
@@ -627,13 +618,43 @@
   <data name="tsmiWebpageCapture.Text" xml:space="preserve">
     <value>Captura de página da web...</value>
   </data>
-  <data name="tsmiWindowRectangle.Text" xml:space="preserve">
-    <value>Região (objetos)</value>
-  </data>
   <data name="tsmiTrayVideoThumbnailer.Text" xml:space="preserve">
     <value>Miniaturizador de vídeo...</value>
   </data>
   <data name="tsmiVideoThumbnailer.Text" xml:space="preserve">
     <value>Miniaturizador de vídeo...</value>
+  </data>
+  <data name="tsmiImageCombiner.Text" xml:space="preserve">
+    <value>Mesclar imagens...</value>
+  </data>
+  <data name="tsmiScrollingCapture.Text" xml:space="preserve">
+    <value>Captura rolante...</value>
+  </data>
+  <data name="tsmiTrayImageCombiner.Text" xml:space="preserve">
+    <value>Mesclar imagens...</value>
+  </data>
+  <data name="tsmiTrayScrollingCapture.Text" xml:space="preserve">
+    <value>Captura rolante...</value>
+  </data>
+  <data name="tsmiTrayTestURLShortener.Text" xml:space="preserve">
+    <value>Testar encurtador de URL</value>
+  </data>
+  <data name="tsmiTrayTestURLSharing.Text" xml:space="preserve">
+    <value>Testar compartilhamento de URL</value>
+  </data>
+  <data name="tsmiTrayTestTextUpload.Text" xml:space="preserve">
+    <value>Testar envio de texto</value>
+  </data>
+  <data name="tsmiTrayTestImageUpload.Text" xml:space="preserve">
+    <value>Testar envio de imagem</value>
+  </data>
+  <data name="tsmiTrayTestFileUpload.Text" xml:space="preserve">
+    <value>Testar envio de arquivo</value>
+  </data>
+  <data name="tsmiTrayShowDebugLog.Text" xml:space="preserve">
+    <value>Log de depuração...</value>
+  </data>
+  <data name="tsmiTrayDebug.Text" xml:space="preserve">
+    <value>Depurar</value>
   </data>
 </root>

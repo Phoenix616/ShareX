@@ -5,11 +5,14 @@
 AppName={#AppName}
 AppVerName={#AppName} {#AppVersion}
 AppVersion={#AppVersion}
+ArchitecturesAllowed=x86 x64 ia64
+ArchitecturesInstallIn64BitMode=x64 ia64
 DefaultDirName={pf}\{#AppName}
 DefaultGroupName={#AppName}
 DirExistsWarning=no
 OutputBaseFilename=Recorder-devices-setup
 OutputDir=Output\
+ShowLanguageDialog=no
 
 [Languages]
 Name: "en"; MessagesFile: "compiler:Default.isl"

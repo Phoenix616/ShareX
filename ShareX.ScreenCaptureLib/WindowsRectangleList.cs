@@ -2,7 +2,7 @@
 
 /*
     ShareX - A program that allows you to take screenshots and share any file type
-    Copyright (c) 2007-2015 ShareX Team
+    Copyright (c) 2007-2016 ShareX Team
 
     This program is free software; you can redistribute it and/or
     modify it under the terms of the GNU General Public License
@@ -27,6 +27,7 @@ using ShareX.HelpersLib;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Threading;
 
 namespace ShareX.ScreenCaptureLib
 {
@@ -35,32 +36,63 @@ namespace ShareX.ScreenCaptureLib
         public IntPtr IgnoreHandle { get; set; }
         public bool IncludeChildWindows { get; set; }
 
-        private List<Rectangle> rectangles;
+        private List<SimpleWindowInfo> windows;
+        private HashSet<IntPtr> parentHandles;
 
-        public List<Rectangle> GetWindowsRectangleList()
+        public List<SimpleWindowInfo> GetWindowInfoListAsync(int timeout)
         {
-            rectangles = new List<Rectangle>();
+            List<SimpleWindowInfo> windowInfoList = null;
+
+            Thread t = new Thread(() =>
+            {
+                try
+                {
+                    windowInfoList = GetWindowInfoList();
+                }
+                catch
+                {
+                }
+            });
+
+            t.Start();
+
+            if (!t.Join(timeout))
+            {
+                t.Abort();
+            }
+
+            return windowInfoList;
+        }
+
+        public List<SimpleWindowInfo> GetWindowInfoList()
+        {
+            windows = new List<SimpleWindowInfo>();
+            parentHandles = new HashSet<IntPtr>();
+
             NativeMethods.EnumWindowsProc ewp = EvalWindow;
             NativeMethods.EnumWindows(ewp, IntPtr.Zero);
 
-            List<Rectangle> result = new List<Rectangle>();
+            List<SimpleWindowInfo> result = new List<SimpleWindowInfo>();
 
-            foreach (Rectangle rect in rectangles)
+            foreach (SimpleWindowInfo window in windows)
             {
                 bool rectVisible = true;
 
-                foreach (Rectangle rect2 in result)
+                if (!window.IsWindow)
                 {
-                    if (rect2.Contains(rect))
+                    foreach (SimpleWindowInfo window2 in result)
                     {
-                        rectVisible = false;
-                        break;
+                        if (window2.Rectangle.Contains(window.Rectangle))
+                        {
+                            rectVisible = false;
+                            break;
+                        }
                     }
                 }
 
                 if (rectVisible)
                 {
-                    result.Add(rect);
+                    result.Add(window);
                 }
             }
 
@@ -84,24 +116,27 @@ namespace ShareX.ScreenCaptureLib
                 return true;
             }
 
-            Rectangle rect;
+            SimpleWindowInfo windowInfo = new SimpleWindowInfo(handle);
 
             if (isWindow)
             {
-                rect = CaptureHelpers.GetWindowRectangle(handle);
+                windowInfo.IsWindow = true;
+                windowInfo.Rectangle = CaptureHelpers.GetWindowRectangle(handle);
             }
             else
             {
-                rect = NativeMethods.GetWindowRect(handle);
+                windowInfo.Rectangle = NativeMethods.GetWindowRect(handle);
             }
 
-            if (!rect.IsValid())
+            if (!windowInfo.Rectangle.IsValid())
             {
                 return true;
             }
 
-            if (IncludeChildWindows)
+            if (IncludeChildWindows && !parentHandles.Contains(handle))
             {
+                parentHandles.Add(handle);
+
                 NativeMethods.EnumWindowsProc ewp = EvalControl;
                 NativeMethods.EnumChildWindows(handle, ewp, IntPtr.Zero);
             }
@@ -110,13 +145,13 @@ namespace ShareX.ScreenCaptureLib
             {
                 Rectangle clientRect = NativeMethods.GetClientRect(handle);
 
-                if (clientRect.IsValid())
+                if (clientRect.IsValid() && clientRect != windowInfo.Rectangle)
                 {
-                    rectangles.Add(clientRect);
+                    windows.Add(new SimpleWindowInfo(handle, clientRect));
                 }
             }
 
-            rectangles.Add(rect);
+            windows.Add(windowInfo);
 
             return true;
         }

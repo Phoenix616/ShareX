@@ -2,7 +2,7 @@
 
 /*
     ShareX - A program that allows you to take screenshots and share any file type
-    Copyright (c) 2007-2015 ShareX Team
+    Copyright (c) 2007-2016 ShareX Team
 
     This program is free software; you can redistribute it and/or
     modify it under the terms of the GNU General Public License
@@ -33,14 +33,13 @@ using System.Windows.Forms;
 
 namespace ShareX.HelpersLib
 {
-    public partial class QRCodeForm : Form
+    public partial class QRCodeForm : BaseForm
     {
         public bool EditMode { get; set; }
 
         public QRCodeForm(string text = null)
         {
             InitializeComponent();
-            Icon = ShareXResources.Icon;
             ClientSize = new Size(400, 400);
 
             if (!string.IsNullOrEmpty(text))
@@ -54,9 +53,32 @@ namespace ShareX.HelpersLib
             {
                 EditMode = true;
                 txtQRCode.Visible = true;
-                txtQRCode.Text = "Text";
+
+                if (Clipboard.ContainsText())
+                {
+                    text = Clipboard.GetText();
+
+                    if (!string.IsNullOrEmpty(text) && URLHelpers.IsValidURLRegex(text))
+                    {
+                        txtQRCode.Text = text;
+                    }
+                    else
+                    {
+                        SetDefaultText();
+                    }
+                }
+                else
+                {
+                    SetDefaultText();
+                }
+
                 txtQRCode.SelectAll();
             }
+        }
+
+        private void SetDefaultText()
+        {
+            txtQRCode.Text = "Input text to convert";
         }
 
         private void txtQRCode_TextChanged(object sender, EventArgs e)

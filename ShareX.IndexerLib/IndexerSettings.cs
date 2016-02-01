@@ -2,7 +2,7 @@
 
 /*
     ShareX - A program that allows you to take screenshots and share any file type
-    Copyright (c) 2007-2015 ShareX Team
+    Copyright (c) 2007-2016 ShareX Team
 
     This program is free software; you can redistribute it and/or
     modify it under the terms of the GNU General Public License
@@ -53,9 +53,12 @@ namespace ShareX.IndexerLib
         [Category("Indexer / Text"), DefaultValue(false), Description("Adds empty line after folders.")]
         public bool AddEmptyLineAfterFolders { get; set; }
 
-        [Category("Indexer / HTML"), DefaultValue("IndexerDefault.css"), Description("Cascading Style Sheet file path.")]
+        [Category("Indexer / HTML"), DefaultValue(false), Description("Use custom Cascading Style Sheet file.")]
+        public bool UseCustomCSSFile { get; set; }
+
+        [Category("Indexer / HTML"), DefaultValue(""), Description("Custom Cascading Style Sheet file path.")]
         [Editor(typeof(CssFileNameEditor), typeof(UITypeEditor))]
-        public string CssFilePath { get; set; }
+        public string CustomCSSFilePath { get; set; }
 
         [Category("Indexer / HTML"), DefaultValue(false), Description("Add W3C validation icons. The W3C validation icons may be used on documents that successfully passed validation for a specific technology, using the W3C validation services.")]
         public bool AddValidationIcons { get; set; }

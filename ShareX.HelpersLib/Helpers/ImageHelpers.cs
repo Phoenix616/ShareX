@@ -2,7 +2,7 @@
 
 /*
     ShareX - A program that allows you to take screenshots and share any file type
-    Copyright (c) 2007-2015 ShareX Team
+    Copyright (c) 2007-2016 ShareX Team
 
     This program is free software; you can redistribute it and/or
     modify it under the terms of the GNU General Public License
@@ -60,6 +60,7 @@ using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -201,7 +202,22 @@ namespace ShareX.HelpersLib
 
         public static Image ResizeImageLimit(Image img, int maxPixels)
         {
-            return ResizeImageLimit(img, maxPixels, maxPixels);
+            double ratio = (double)img.Width / img.Height;
+            double x = Math.Sqrt(maxPixels / ratio);
+
+            int width, height;
+            if (ratio > 1)
+            {
+                width = (int)(ratio * x);
+                height = (int)(width / ratio);
+            }
+            else
+            {
+                height = (int)(ratio * x);
+                width = (int)(height / ratio);
+            }
+
+            return ResizeImage(img, width, height);
         }
 
         public static Image CropImage(Image img, Rectangle rect)
@@ -1108,15 +1124,29 @@ namespace ShareX.HelpersLib
 
         public static string OpenImageFileDialog()
         {
+            string[] images = OpenImageFileDialog(false);
+
+            if (images != null && images.Length > 0)
+            {
+                return images[0];
+            }
+
+            return null;
+        }
+
+        public static string[] OpenImageFileDialog(bool multiselect)
+        {
             using (OpenFileDialog ofd = new OpenFileDialog())
             {
                 ofd.Filter = "Image files (*.png, *.jpg, *.jpeg, *.jpe, *.jfif, *.gif, *.bmp, *.tif, *.tiff)|*.png;*.jpg;*.jpeg;*.jpe;*.jfif;*.gif;*.bmp;*.tif;*.tiff|" +
                     "PNG (*.png)|*.png|JPEG (*.jpg, *.jpeg, *.jpe, *.jfif)|*.jpg;*.jpeg;*.jpe;*.jfif|GIF (*.gif)|*.gif|BMP (*.bmp)|*.bmp|TIFF (*.tif, *.tiff)|*.tif;*.tiff|" +
                     "All files (*.*)|*.*";
 
+                ofd.Multiselect = multiselect;
+
                 if (ofd.ShowDialog() == DialogResult.OK)
                 {
-                    return ofd.FileName;
+                    return ofd.FileNames;
                 }
             }
 
@@ -1206,6 +1236,52 @@ namespace ShareX.HelpersLib
             }
 
             return null;
+        }
+
+        public static Image CombineImages(IEnumerable<Image> images, Orientation orientation = Orientation.Vertical, int space = 0)
+        {
+            int width, height;
+
+            int spaceSize = space * (images.Count() - 1);
+
+            if (orientation == Orientation.Vertical)
+            {
+                width = images.Max(x => x.Width);
+                height = images.Sum(x => x.Height) + spaceSize;
+            }
+            else
+            {
+                width = images.Sum(x => x.Width) + spaceSize;
+                height = images.Max(x => x.Height);
+            }
+
+            Bitmap bmp = new Bitmap(width, height);
+
+            using (Graphics g = Graphics.FromImage(bmp))
+            {
+                g.SetHighQuality();
+                int position = 0;
+
+                foreach (Image image in images)
+                {
+                    Rectangle rect;
+
+                    if (orientation == Orientation.Vertical)
+                    {
+                        rect = new Rectangle(0, position, image.Width, image.Height);
+                        position += image.Height + space;
+                    }
+                    else
+                    {
+                        rect = new Rectangle(position, 0, image.Width, image.Height);
+                        position += image.Width + space;
+                    }
+
+                    g.DrawImage(image, rect);
+                }
+            }
+
+            return bmp;
         }
     }
 }

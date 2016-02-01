@@ -2,7 +2,7 @@
 
 /*
     ShareX - A program that allows you to take screenshots and share any file type
-    Copyright (c) 2007-2015 ShareX Team
+    Copyright (c) 2007-2016 ShareX Team
 
     This program is free software; you can redistribute it and/or
     modify it under the terms of the GNU General Public License
@@ -27,7 +27,6 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
-using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -121,6 +120,19 @@ namespace ShareX.HelpersLib
             }
 
             return result.ToString();
+        }
+
+        public static string URLDecode(string url, int count = 1)
+        {
+            string temp = null;
+
+            for (int i = 0; i < count && url != temp; i++)
+            {
+                temp = url;
+                url = HttpUtility.UrlDecode(url);
+            }
+
+            return url;
         }
 
         public static string CombineURL(string url1, string url2)
@@ -251,27 +263,21 @@ namespace ShareX.HelpersLib
             return url;
         }
 
-        public static string GetFileName(string path, bool checkExtension = false, bool urlDecode = false)
+        public static string GetFileName(string path)
         {
-            if (urlDecode)
+            if (path.Contains('/'))
             {
-                string tempPath = null;
-
-                for (int i = 0; i < 10 && path != tempPath; i++)
-                {
-                    tempPath = path;
-                    path = HttpUtility.UrlDecode(path);
-                }
+                path = path.Substring(path.LastIndexOf('/') + 1);
             }
 
-            if (path.Contains("/"))
+            if (path.Contains('?'))
             {
-                path = path.Remove(0, path.LastIndexOf('/') + 1);
+                path = path.Remove(path.IndexOf('?'));
             }
 
-            if (checkExtension && !Path.HasExtension(path))
+            if (path.Contains('#'))
             {
-                return null;
+                path = path.Remove(path.IndexOf('#'));
             }
 
             return path;

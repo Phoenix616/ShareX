@@ -2,7 +2,7 @@
 
 /*
     ShareX - A program that allows you to take screenshots and share any file type
-    Copyright (c) 2007-2015 ShareX Team
+    Copyright (c) 2007-2016 ShareX Team
 
     This program is free software; you can redistribute it and/or
     modify it under the terms of the GNU General Public License
@@ -74,15 +74,15 @@ namespace ShareX.ScreenCaptureLib
 
     public enum FFmpegVideoCodec
     {
-        [Description("x264")]
+        [Description("x264 (mp4)")]
         libx264,
-        [Description("VP8 (WebM)")]
+        [Description("VP8 (webm)")]
         libvpx,
-        [Description("Xvid")]
+        [Description("Xvid (avi)")]
         libxvid,
-        [Description("Animated GIF")]
+        [Description("Animated GIF (gif)")]
         gif,
-        [Description("x265")]
+        [Description("x265 (mp4)")]
         libx265
     }
 
@@ -145,5 +145,36 @@ namespace ShareX.ScreenCaptureLib
         Ellipse,
         Triangle,
         Diamond
+    }
+
+    public enum RegionAnnotateMode
+    {
+        Capture,
+        Rectangle,
+        Pen
+    }
+
+    public enum ScrollingCaptureScrollMethod
+    {
+        [Description("Automatically try all methods until one works")]
+        Automatic,
+        [Description("Send scroll message to window or control")]
+        SendMessageScroll,
+        [Description("Simulate pressing \"Page down\" key")]
+        KeyPressPageDown,
+        [Description("Simulate mouse wheel scrolling")]
+        MouseWheel
+    }
+
+    public enum ScrollingCaptureScrollTopMethod
+    {
+        [Description("First simulate pressing \"Home\" key then send scroll top message")]
+        All,
+        [Description("Send scroll top message")]
+        SendMessageTop,
+        [Description("Simulate pressing \"Home\" key")]
+        KeyPressHome,
+        [Description("Disable scrolling to top")]
+        None
     }
 }

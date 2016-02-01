@@ -129,9 +129,6 @@
   <data name="btnCustomUploaderArgAdd.Text" xml:space="preserve">
     <value>Ekle</value>
   </data>
-  <data name="btnCustomUploaderArgEdit.Text" xml:space="preserve">
-    <value>Güncelle</value>
-  </data>
   <data name="btnCustomUploaderArgRemove.Text" xml:space="preserve">
     <value>Kaldır</value>
   </data>
@@ -152,9 +149,6 @@
   </data>
   <data name="btnCustomUploaderRegexpAdd.Text" xml:space="preserve">
     <value>Ekle</value>
-  </data>
-  <data name="btnCustomUploaderRegexpEdit.Text" xml:space="preserve">
-    <value>Güncelle</value>
   </data>
   <data name="btnCustomUploaderRegexpRemove.Text" xml:space="preserve">
     <value>Kaldır</value>
@@ -265,7 +259,7 @@
     <value>Cihaz:</value>
   </data>
   <data name="btnSendSpaceRegister.Text" xml:space="preserve">
-    <value>&amp;Kayıt...</value>
+    <value>Kayıt...</value>
   </data>
   <data name="btnPhotobucketAddAlbum.Text" xml:space="preserve">
     <value>Albüm ekle</value>
@@ -296,12 +290,6 @@
   </data>
   <data name="lblBitlyDomain.Text" xml:space="preserve">
     <value>Alan adı:</value>
-  </data>
-  <data name="chArgumentsName.Text" xml:space="preserve">
-    <value>Ad</value>
-  </data>
-  <data name="chArgumentsValue.Text" xml:space="preserve">
-    <value>Değer</value>
   </data>
   <data name="chBoxFoldersName.Text" xml:space="preserve">
     <value>Dizin adı</value>
@@ -335,9 +323,6 @@
   </data>
   <data name="btnGoogleDriveRefreshFolders.Text" xml:space="preserve">
     <value>Dizin listesini yenile</value>
-  </data>
-  <data name="gbCustomUploaderRegexp.Text" xml:space="preserve">
-    <value>Yanıtdan Regex</value>
   </data>
   <data name="btnMegaRegister.Text" xml:space="preserve">
     <value>Kayıt...</value>
@@ -650,9 +635,6 @@ Bir başka deyişle Amazon S3'den bazı durumlarda kaybolabilirler.</value>
   <data name="lblCustomUploaderFileForm.Text" xml:space="preserve">
     <value>Dosya form adı:</value>
   </data>
-  <data name="gbCustomUploaderArguments.Text" xml:space="preserve">
-    <value>Parametreler</value>
-  </data>
   <data name="btnFtpClient.Text" xml:space="preserve">
     <value>İstemci...</value>
   </data>
@@ -663,7 +645,7 @@ Bir başka deyişle Amazon S3'den bazı durumlarda kaybolabilirler.</value>
     <value>Yükleme için Albüm ID (Boş = Albüm yok):</value>
   </data>
   <data name="cbOwnCloudDirectLink.Text" xml:space="preserve">
-    <value>Direkt link (Adrese "&amp;&amp;download" ekler)</value>
+    <value>Direkt link (Adrese "&amp;download" ekler)</value>
   </data>
   <data name="lblPastebinExpiration.Text" xml:space="preserve">
     <value>Son kullanma:</value>
@@ -716,21 +698,6 @@ Bir başka deyişle Amazon S3'den bazı durumlarda kaybolabilirler.</value>
   <data name="lblOneDriveFolderID.Text" xml:space="preserve">
     <value>Seçili dizin:</value>
   </data>
-  <data name="btnHubicRefreshFolders.Text" xml:space="preserve">
-    <value>Dizin listesini yenile</value>
-  </data>
-  <data name="cbHubicPublishLink.Text" xml:space="preserve">
-    <value>Paylaşılabilir link oluştur (30 gün geçerli)</value>
-  </data>
-  <data name="chHubicFolderName.Text" xml:space="preserve">
-    <value>Dizin adı</value>
-  </data>
-  <data name="lblHubicSelectedFolder.Text" xml:space="preserve">
-    <value>Seçilmiş dizin:</value>
-  </data>
-  <data name="lblHubicSelectedFolderNote.Text" xml:space="preserve">
-    <value>Not: Dizin içine gitmek için dizin adına çift tıklayabilirsiniz.</value>
-  </data>
   <data name="lblLambdaInfo.Text" xml:space="preserve">
     <value>API anahtarını almak için Lambda sitesine giriş yapın https://lambda.sx/ adresinden ve sağ üstteki dişli tuşuna basın.</value>
   </data>
@@ -742,9 +709,6 @@ Bir başka deyişle Amazon S3'den bazı durumlarda kaybolabilirler.</value>
   </data>
   <data name="btnTwitterRemove.Text" xml:space="preserve">
     <value>Kaldır</value>
-  </data>
-  <data name="chTwitterAccount.Text" xml:space="preserve">
-    <value>İsim</value>
   </data>
   <data name="lblTwitterDescription.Text" xml:space="preserve">
     <value>İsim:</value>
@@ -770,14 +734,8 @@ Bir başka deyişle Amazon S3'den bazı durumlarda kaybolabilirler.</value>
   <data name="lblOneTimeSecretEmail.Text" xml:space="preserve">
     <value>Eposta:</value>
   </data>
-  <data name="lblLnkUAPIKey.Text" xml:space="preserve">
-    <value>API anahtarı:</value>
-  </data>
   <data name="lblOneTimeSecretAPIKey.Text" xml:space="preserve">
     <value>API anahtarı:</value>
-  </data>
-  <data name="lblCustomUploaderRegexTip.Text" xml:space="preserve">
-    <value>Regex çift tıklıyarak URL kısmında kullanabilirsiniz</value>
   </data>
   <data name="cbOwnCloud81Compatibility.Text" xml:space="preserve">
     <value>ownCloud 8.1+ uyumluluk</value>
@@ -787,5 +745,171 @@ Bir başka deyişle Amazon S3'den bazı durumlarda kaybolabilirler.</value>
   </data>
   <data name="btnCustomUploaderClearUploaders.Text" xml:space="preserve">
     <value>Yükleyicileri temizle</value>
+  </data>
+  <data name="btnTwitterNameUpdate.Text" xml:space="preserve">
+    <value>Güncelle</value>
+  </data>
+  <data name="btnCustomUploaderArgUpdate.Text" xml:space="preserve">
+    <value>Güncelle</value>
+  </data>
+  <data name="btnCustomUploaderRegexpUpdate.Text" xml:space="preserve">
+    <value>Güncelle</value>
+  </data>
+  <data name="chCustomUploaderArgumentsName.Text" xml:space="preserve">
+    <value>Ad</value>
+  </data>
+  <data name="chCustomUploaderArgumentsValue.Text" xml:space="preserve">
+    <value>Değer</value>
+  </data>
+  <data name="btnCustomUploaderHeaderAdd.Text" xml:space="preserve">
+    <value>Ekle</value>
+  </data>
+  <data name="btnCustomUploaderHeaderRemove.Text" xml:space="preserve">
+    <value>Kaldır</value>
+  </data>
+  <data name="btnCustomUploaderHeaderUpdate.Text" xml:space="preserve">
+    <value>Güncelle</value>
+  </data>
+  <data name="btnPomfTest.Text" xml:space="preserve">
+    <value>Hepsini test et</value>
+  </data>
+  <data name="btnRefreshSeafileAccInfo.Text" xml:space="preserve">
+    <value>Yenile</value>
+  </data>
+  <data name="btnSeafileCheckAPIURL.Text" xml:space="preserve">
+    <value>Doğrula</value>
+  </data>
+  <data name="btnSeafileCheckAuthToken.Text" xml:space="preserve">
+    <value>Doğrula</value>
+  </data>
+  <data name="btnSeafileGetAuthToken.Text" xml:space="preserve">
+    <value>Al</value>
+  </data>
+  <data name="btnSeafileLibraryPasswordValidate.Text" xml:space="preserve">
+    <value>Denetle</value>
+  </data>
+  <data name="btnSeafilePathValidate.Text" xml:space="preserve">
+    <value>Denetle</value>
+  </data>
+  <data name="cbSeafileCreateShareableURL.Text" xml:space="preserve">
+    <value>Paylaşılabilir adres yarat</value>
+  </data>
+  <data name="cbSeafileIgnoreInvalidCert.Text" xml:space="preserve">
+    <value>Geçersiz SSL sertifika hatasını yoksay</value>
+  </data>
+  <data name="chCustomUploaderHeadersName.Text" xml:space="preserve">
+    <value>İsim</value>
+  </data>
+  <data name="chCustomUploaderHeadersValue.Text" xml:space="preserve">
+    <value>Değer</value>
+  </data>
+  <data name="colSeafileLibraryEncrypted.Text" xml:space="preserve">
+    <value>Şifreli</value>
+  </data>
+  <data name="colSeafileLibraryName.Text" xml:space="preserve">
+    <value>İsim</value>
+  </data>
+  <data name="colSeafileLibrarySize.Text" xml:space="preserve">
+    <value>Boyut</value>
+  </data>
+  <data name="tpCustomUploaderArguments.Text" xml:space="preserve">
+    <value>Argümanlar</value>
+  </data>
+  <data name="tpCustomUploaderHeaders.Text" xml:space="preserve">
+    <value>Başlıklar</value>
+  </data>
+  <data name="lblLambdaUploadURL.Text" xml:space="preserve">
+    <value>Link adresi:</value>
+  </data>
+  <data name="lblPomfResultURL.Text" xml:space="preserve">
+    <value>Sonuç adresi:</value>
+  </data>
+  <data name="lblPomfUploadURL.Text" xml:space="preserve">
+    <value>Yükleme adresi:</value>
+  </data>
+  <data name="lblPomfUploaders.Text" xml:space="preserve">
+    <value>Yükleyiciler:</value>
+  </data>
+  <data name="lblSeafileSharePassword.Text" xml:space="preserve">
+    <value>Paylaşma şifresi:</value>
+  </data>
+  <data name="lblSeafileDaysToExpire.Text" xml:space="preserve">
+    <value>Son kullanma (gün):</value>
+  </data>
+  <data name="grpSeafileShareSettings.Text" xml:space="preserve">
+    <value>Paylaşma ayarları</value>
+  </data>
+  <data name="lblSeafileLibraryPassword.Text" xml:space="preserve">
+    <value>Kütüphane şifresi:</value>
+  </data>
+  <data name="lblSeafilePath.Text" xml:space="preserve">
+    <value>Yol:</value>
+  </data>
+  <data name="txtSeafileUploadLocationRefresh.Text" xml:space="preserve">
+    <value>Yenile</value>
+  </data>
+  <data name="lblSeafileSelectLibrary.Text" xml:space="preserve">
+    <value>Kütüphane seç:</value>
+  </data>
+  <data name="lblSeafileAccInfoEmail.Text" xml:space="preserve">
+    <value>Eposta:</value>
+  </data>
+  <data name="lblSeafileAccInfoUsage.Text" xml:space="preserve">
+    <value>Kullanım:</value>
+  </data>
+  <data name="grpSeafileAccInfo.Text" xml:space="preserve">
+    <value>Hesap bilgisi</value>
+  </data>
+  <data name="lblSeafileUsername.Text" xml:space="preserve">
+    <value>Eposta:</value>
+  </data>
+  <data name="lblSeafilePassword.Text" xml:space="preserve">
+    <value>Şifre:</value>
+  </data>
+  <data name="grpSeafileObtainAuthToken.Text" xml:space="preserve">
+    <value>Yetki fişini al</value>
+  </data>
+  <data name="lblSeafileAuthToken.Text" xml:space="preserve">
+    <value>Yetki fişi:</value>
+  </data>
+  <data name="lblSeafileWritePermNotif.Text" xml:space="preserve">
+    <value>Yazma izni olmuyan kütüphaneler gizli.
+Şifreli kütüphane kullanmak paylaşmayı devre dışı bırakır.</value>
+  </data>
+  <data name="lblStreamableUsername.Text" xml:space="preserve">
+    <value>Kullanıcı ismi:</value>
+  </data>
+  <data name="lblStreamablePassword.Text" xml:space="preserve">
+    <value>Şifre:</value>
+  </data>
+  <data name="cbStreamableAnonymous.Text" xml:space="preserve">
+    <value>Anonim</value>
+  </data>
+  <data name="btnCustomUploaderRegexAddSyntax.Text" xml:space="preserve">
+    <value>URL bölümüne sözdizimini ekle</value>
+  </data>
+  <data name="btnCustomUploaderJsonAddSyntax.Text" xml:space="preserve">
+    <value>URL bölümüne sözdizimini ekle</value>
+  </data>
+  <data name="btnCustomUploaderXmlSyntaxAdd.Text" xml:space="preserve">
+    <value>URL bölümüne sözdizimini ekle</value>
+  </data>
+  <data name="lblCustomUploaderJsonPathExample.Text" xml:space="preserve">
+    <value>Örnekler:
+
+Files[0].URL
+store.book[0].title</value>
+  </data>
+  <data name="lblCustomUploaderXPathExample.Text" xml:space="preserve">
+    <value>Örnekler:
+
+/Files/File[1]/URL
+/store/book[1]/title</value>
+  </data>
+  <data name="lblSulAPIKey.Text" xml:space="preserve">
+    <value>API anahtarı:</value>
+  </data>
+  <data name="btnCustomUploadersExportAll.Text" xml:space="preserve">
+    <value>Hepsi...</value>
   </data>
 </root>

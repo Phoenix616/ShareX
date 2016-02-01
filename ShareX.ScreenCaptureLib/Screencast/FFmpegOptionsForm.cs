@@ -2,7 +2,7 @@
 
 /*
     ShareX - A program that allows you to take screenshots and share any file type
-    Copyright (c) 2007-2015 ShareX Team
+    Copyright (c) 2007-2016 ShareX Team
 
     This program is free software; you can redistribute it and/or
     modify it under the terms of the GNU General Public License
@@ -33,7 +33,7 @@ using System.Windows.Forms;
 
 namespace ShareX.ScreenCaptureLib
 {
-    public partial class FFmpegOptionsForm : Form
+    public partial class FFmpegOptionsForm : BaseForm
     {
         public ScreencastOptions Options { get; private set; }
         public string DefaultToolsPath { get; set; }
@@ -43,7 +43,6 @@ namespace ShareX.ScreenCaptureLib
         public FFmpegOptionsForm(ScreencastOptions options)
         {
             InitializeComponent();
-            Icon = ShareXResources.Icon;
             Options = options;
 
             eiFFmpeg.ObjectType = typeof(FFmpegOptions);
@@ -61,19 +60,21 @@ namespace ShareX.ScreenCaptureLib
             settingsLoaded = false;
 
             // General
+
+#if STEAM
+            cbOverrideFFmpegPath.Checked = Options.FFmpeg.OverrideCLIPath;
+            gbFFmpegExe.Enabled = Options.FFmpeg.OverrideCLIPath;
+#else
+            cbOverrideFFmpegPath.Visible = false;
+#endif
+
+            txtFFmpegPath.Text = Options.FFmpeg.CLIPath;
+            txtFFmpegPath.SelectionStart = txtFFmpegPath.TextLength;
+
             RefreshSourcesAsync();
 
             cboVideoCodec.SelectedIndex = (int)Options.FFmpeg.VideoCodec;
             cboAudioCodec.SelectedIndex = (int)Options.FFmpeg.AudioCodec;
-
-            string cli = "ffmpeg.exe";
-            if (string.IsNullOrEmpty(Options.FFmpeg.CLIPath) && File.Exists(cli))
-            {
-                Options.FFmpeg.CLIPath = cli;
-            }
-
-            txtFFmpegPath.Text = Options.FFmpeg.CLIPath;
-            txtFFmpegPath.SelectionStart = txtFFmpegPath.TextLength;
 
             tbUserArgs.Text = Options.FFmpeg.UserArgs;
 
@@ -164,10 +165,62 @@ namespace ShareX.ScreenCaptureLib
                 lblVorbisQuality.Text = Resources.FFmpegOptionsForm_UpdateUI_Quality_ + " " + Options.FFmpeg.Vorbis_qscale;
                 lblMP3Quality.Text = Resources.FFmpegOptionsForm_UpdateUI_Quality_ + " " + Options.FFmpeg.MP3_qscale;
 
+                bool isValidAudioCodec = true;
+                FFmpegVideoCodec videoCodec = (FFmpegVideoCodec)cboVideoCodec.SelectedIndex;
+
+                if (videoCodec == FFmpegVideoCodec.libvpx)
+                {
+                    FFmpegAudioCodec audioCodec = (FFmpegAudioCodec)cboAudioCodec.SelectedIndex;
+
+                    if (audioCodec != FFmpegAudioCodec.libvorbis)
+                    {
+                        isValidAudioCodec = false;
+                    }
+                }
+
+                pbAudioCodecWarning.Visible = !isValidAudioCodec;
+                pbx264PresetWarning.Visible = (FFmpegPreset)cbx264Preset.SelectedIndex > FFmpegPreset.fast;
+
                 if (!Options.FFmpeg.UseCustomCommands)
                 {
                     txtCommandLinePreview.Text = Options.GetFFmpegArgs();
                 }
+            }
+        }
+
+        private void cbOverrideFFmpegPath_CheckedChanged(object sender, EventArgs e)
+        {
+#if STEAM
+            Options.FFmpeg.OverrideCLIPath = cbOverrideFFmpegPath.Checked;
+            gbFFmpegExe.Enabled = Options.FFmpeg.OverrideCLIPath;
+#endif
+        }
+
+        private void txtFFmpegPath_TextChanged(object sender, EventArgs e)
+        {
+            Options.FFmpeg.CLIPath = txtFFmpegPath.Text;
+
+#if !STEAM
+            Color backColor = Color.FromArgb(255, 200, 200);
+
+            try
+            {
+                if (File.Exists(Options.FFmpeg.FFmpegPath))
+                {
+                    backColor = Color.FromArgb(200, 255, 200);
+                }
+            }
+            catch { }
+
+            txtFFmpegPath.BackColor = backColor;
+#endif
+        }
+
+        private void buttonFFmpegBrowse_Click(object sender, EventArgs e)
+        {
+            if (Helpers.BrowseFile(Resources.FFmpegOptionsForm_buttonFFmpegBrowse_Click_Browse_for_ffmpeg_exe, txtFFmpegPath, Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles)))
+            {
+                RefreshSourcesAsync();
             }
         }
 
@@ -328,20 +381,6 @@ namespace ShareX.ScreenCaptureLib
             UpdateUI();
         }
 
-        private void tbFFmpegPath_TextChanged(object sender, EventArgs e)
-        {
-            Options.FFmpeg.CLIPath = txtFFmpegPath.Text;
-            txtFFmpegPath.BackColor = File.Exists(txtFFmpegPath.Text) ? Color.FromArgb(200, 255, 200) : Color.FromArgb(255, 200, 200);
-        }
-
-        private void buttonFFmpegBrowse_Click(object sender, EventArgs e)
-        {
-            if (Helpers.BrowseFile(Resources.FFmpegOptionsForm_buttonFFmpegBrowse_Click_Browse_for_ffmpeg_exe, txtFFmpegPath, Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles)))
-            {
-                RefreshSourcesAsync();
-            }
-        }
-
         private void tbUserArgs_TextChanged(object sender, EventArgs e)
         {
             Options.FFmpeg.UserArgs = tbUserArgs.Text;
@@ -382,15 +421,15 @@ namespace ShareX.ScreenCaptureLib
 
         private void btnTest_Click(object sender, EventArgs e)
         {
-            if (File.Exists(Options.FFmpeg.CLIPath))
+            if (File.Exists(Options.FFmpeg.FFmpegPath))
             {
                 try
                 {
                     using (Process process = new Process())
                     {
                         ProcessStartInfo psi = new ProcessStartInfo("cmd.exe");
-                        psi.Arguments = "/k ffmpeg " + Options.GetFFmpegCommands();
-                        psi.WorkingDirectory = Path.GetDirectoryName(Options.FFmpeg.CLIPath);
+                        psi.Arguments = $"/k {Path.GetFileName(Options.FFmpeg.FFmpegPath)} {Options.GetFFmpegCommands()}";
+                        psi.WorkingDirectory = Path.GetDirectoryName(Options.FFmpeg.FFmpegPath);
 
                         process.StartInfo = psi;
                         process.Start();
@@ -405,7 +444,7 @@ namespace ShareX.ScreenCaptureLib
 
         private void btnCopyPreview_Click(object sender, EventArgs e)
         {
-            ClipboardHelpers.CopyText("ffmpeg " + Options.GetFFmpegCommands());
+            ClipboardHelpers.CopyText($"{Path.GetFileName(Options.FFmpeg.FFmpegPath)} {Options.GetFFmpegCommands()}");
         }
 
         private void cbCustomCommands_CheckedChanged(object sender, EventArgs e)

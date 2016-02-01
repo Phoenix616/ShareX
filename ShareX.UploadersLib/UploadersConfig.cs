@@ -2,7 +2,7 @@
 
 /*
     ShareX - A program that allows you to take screenshots and share any file type
-    Copyright (c) 2007-2015 ShareX Team
+    Copyright (c) 2007-2016 ShareX Team
 
     This program is free software; you can redistribute it and/or
     modify it under the terms of the GNU General Public License
@@ -140,13 +140,6 @@ namespace ShareX.UploadersLib
         public string CopyUploadPath = "ShareX/%y/%mo";
         public CopyURLType CopyURLType = CopyURLType.Shortened;
 
-        // Hubic
-
-        public OAuth2Info HubicOAuth2Info = null;
-        public HubicOpenstackAuthInfo HubicOpenstackAuthInfo = null;
-        public HubicFolderInfo HubicSelectedFolder = Hubic.RootFolder;
-        public bool HubicPublish = false;
-
         // Google Drive
 
         public OAuth2Info GoogleDriveOAuth2Info = null;
@@ -257,6 +250,35 @@ namespace ShareX.UploadersLib
 
         public LambdaSettings LambdaSettings = new LambdaSettings();
 
+        // Pomf
+
+        public PomfUploader PomfUploader = new PomfUploader("https://pomf.cat/upload.php", "http://a.pomf.cat");
+
+        // s-ul
+
+        public string SulAPIKey = string.Empty;
+
+        // Seafile
+
+        public string SeafileAPIURL = "";
+        public string SeafileAuthToken = "";
+        public string SeafileRepoID = "";
+        public string SeafilePath = "/";
+        public bool SeafileIsLibraryEncrypted = false;
+        public string SeafileEncryptedLibraryPassword = "";
+        public bool SeafileCreateShareableURL = true;
+        public bool SeafileIgnoreInvalidCert = false;
+        public int SeafileShareDaysToExpire = 0;
+        public string SeafileSharePassword = "";
+        public string SeafileAccInfoEmail = "";
+        public string SeafileAccInfoUsage = "";
+
+        // Streamable
+
+        public string StreamableUsername = "";
+        public string StreamablePassword = "";
+        public bool StreamableAnonymous = true;
+
         #endregion File uploaders
 
         #region URL shorteners
@@ -281,9 +303,6 @@ namespace ShareX.UploadersLib
         // adf.ly
         public string AdFlyAPIKEY = String.Empty;
         public string AdFlyAPIUID = String.Empty;
-
-        // lnku.co
-        public string LnkUAPIKEY = string.Empty;
 
         // coinurl.com
         public string CoinURLUUID = string.Empty;
@@ -341,12 +360,10 @@ namespace ShareX.UploadersLib
                 return IsValid((UrlShortenerType)destination);
             }
 
-            /*
             if (destination is URLSharingServices)
             {
                 return IsValid((URLSharingServices)destination);
             }
-            */
 
             return true;
         }
@@ -369,6 +386,8 @@ namespace ShareX.UploadersLib
                     return OAuth2Info.CheckOAuth(PicasaOAuth2Info);
                 case ImageDestination.Twitter:
                     return TwitterOAuthInfoList != null && TwitterOAuthInfoList.IsValidIndex(TwitterSelectedAccount) && OAuthInfo.CheckOAuth(TwitterOAuthInfoList[TwitterSelectedAccount]);
+                case ImageDestination.Chevereto:
+                    return !string.IsNullOrEmpty(CheveretoWebsite) && !string.IsNullOrEmpty(CheveretoAPIKey);
                 case ImageDestination.CustomImageUploader:
                     return CustomUploadersList != null && CustomUploadersList.IsValidIndex(CustomImageUploaderSelected);
             }
@@ -393,41 +412,52 @@ namespace ShareX.UploadersLib
             {
                 case FileDestination.Dropbox:
                     return OAuth2Info.CheckOAuth(DropboxOAuth2Info);
-                case FileDestination.Copy:
-                    return OAuthInfo.CheckOAuth(CopyOAuthInfo);
-                case FileDestination.GoogleDrive:
-                    return OAuth2Info.CheckOAuth(GoogleDriveOAuth2Info);
-                case FileDestination.SendSpace:
-                    return SendSpaceAccountType == AccountType.Anonymous || (!string.IsNullOrEmpty(SendSpaceUsername) && !string.IsNullOrEmpty(SendSpacePassword));
-                case FileDestination.Minus:
-                    return MinusConfig != null && MinusConfig.MinusUser != null;
-                case FileDestination.Box:
-                    return OAuth2Info.CheckOAuth(BoxOAuth2Info);
-                case FileDestination.Ge_tt:
-                    return Ge_ttLogin != null && !string.IsNullOrEmpty(Ge_ttLogin.AccessToken);
-                case FileDestination.Localhostr:
-                    return !string.IsNullOrEmpty(LocalhostrEmail) && !string.IsNullOrEmpty(LocalhostrPassword);
-                case FileDestination.CustomFileUploader:
-                    return CustomUploadersList != null && CustomUploadersList.IsValidIndex(CustomFileUploaderSelected);
                 case FileDestination.FTP:
                     return FTPAccountList != null && FTPAccountList.IsValidIndex(FTPSelectedFile);
-                case FileDestination.SharedFolder:
-                    return LocalhostAccountList != null && LocalhostAccountList.IsValidIndex(LocalhostSelectedFiles);
-                case FileDestination.Email:
-                    return !string.IsNullOrEmpty(EmailSmtpServer) && EmailSmtpPort > 0 && !string.IsNullOrEmpty(EmailFrom) && !string.IsNullOrEmpty(EmailPassword);
-                case FileDestination.Jira:
-                    return OAuthInfo.CheckOAuth(JiraOAuthInfo);
+                case FileDestination.OneDrive:
+                    return OAuth2Info.CheckOAuth(OneDriveOAuth2Info);
+                case FileDestination.GoogleDrive:
+                    return OAuth2Info.CheckOAuth(GoogleDriveOAuth2Info);
+                case FileDestination.Copy:
+                    return OAuthInfo.CheckOAuth(CopyOAuthInfo);
+                case FileDestination.Box:
+                    return OAuth2Info.CheckOAuth(BoxOAuth2Info);
                 case FileDestination.Mega:
                     return MegaAuthInfos != null && MegaAuthInfos.Email != null && MegaAuthInfos.Hash != null && MegaAuthInfos.PasswordAesKey != null;
-                case FileDestination.Pushbullet:
-                    return PushbulletSettings != null && !string.IsNullOrEmpty(PushbulletSettings.UserAPIKey) && PushbulletSettings.DeviceList != null &&
-                        PushbulletSettings.DeviceList.IsValidIndex(PushbulletSettings.SelectedDevice);
+                case FileDestination.AmazonS3:
+                    return AmazonS3Settings != null && !string.IsNullOrEmpty(AmazonS3Settings.AccessKeyID) && !string.IsNullOrEmpty(AmazonS3Settings.SecretAccessKey) &&
+                        !string.IsNullOrEmpty(AmazonS3Settings.Bucket) && AmazonS3.GetCurrentRegion(AmazonS3Settings) != AmazonS3.UnknownEndpoint;
                 case FileDestination.OwnCloud:
                     return !string.IsNullOrEmpty(OwnCloudHost) && !string.IsNullOrEmpty(OwnCloudUsername) && !string.IsNullOrEmpty(OwnCloudPassword);
                 case FileDestination.MediaFire:
                     return !string.IsNullOrEmpty(MediaFireUsername) && !string.IsNullOrEmpty(MediaFirePassword);
+                case FileDestination.Pushbullet:
+                    return PushbulletSettings != null && !string.IsNullOrEmpty(PushbulletSettings.UserAPIKey) && PushbulletSettings.DeviceList != null &&
+                        PushbulletSettings.DeviceList.IsValidIndex(PushbulletSettings.SelectedDevice);
+                case FileDestination.SendSpace:
+                    return SendSpaceAccountType == AccountType.Anonymous || (!string.IsNullOrEmpty(SendSpaceUsername) && !string.IsNullOrEmpty(SendSpacePassword));
+                case FileDestination.Minus:
+                    return MinusConfig != null && MinusConfig.MinusUser != null;
+                case FileDestination.Ge_tt:
+                    return Ge_ttLogin != null && !string.IsNullOrEmpty(Ge_ttLogin.AccessToken);
+                case FileDestination.Localhostr:
+                    return !string.IsNullOrEmpty(LocalhostrEmail) && !string.IsNullOrEmpty(LocalhostrPassword);
+                case FileDestination.Jira:
+                    return OAuthInfo.CheckOAuth(JiraOAuthInfo);
                 case FileDestination.Lambda:
                     return LambdaSettings != null && !string.IsNullOrEmpty(LambdaSettings.UserAPIKey);
+                case FileDestination.Pomf:
+                    return PomfUploader != null && !string.IsNullOrEmpty(PomfUploader.UploadURL);
+                case FileDestination.Sul:
+                    return !string.IsNullOrEmpty(SulAPIKey);
+                case FileDestination.Seafile:
+                    return !string.IsNullOrEmpty(SeafileAPIURL) && !string.IsNullOrEmpty(SeafileAuthToken) && !string.IsNullOrEmpty(SeafileRepoID);
+                case FileDestination.SharedFolder:
+                    return LocalhostAccountList != null && LocalhostAccountList.IsValidIndex(LocalhostSelectedFiles);
+                case FileDestination.Email:
+                    return !string.IsNullOrEmpty(EmailSmtpServer) && EmailSmtpPort > 0 && !string.IsNullOrEmpty(EmailFrom) && !string.IsNullOrEmpty(EmailPassword);
+                case FileDestination.CustomFileUploader:
+                    return CustomUploadersList != null && CustomUploadersList.IsValidIndex(CustomFileUploaderSelected);
             }
 
             return true;
@@ -437,16 +467,14 @@ namespace ShareX.UploadersLib
         {
             switch (destination)
             {
-                case UrlShortenerType.Google:
-                    return GoogleURLShortenerAccountType == AccountType.Anonymous || OAuth2Info.CheckOAuth(GoogleURLShortenerOAuth2Info);
                 case UrlShortenerType.BITLY:
                     return OAuth2Info.CheckOAuth(BitlyOAuth2Info);
+                case UrlShortenerType.Google:
+                    return GoogleURLShortenerAccountType == AccountType.Anonymous || OAuth2Info.CheckOAuth(GoogleURLShortenerOAuth2Info);
                 case UrlShortenerType.YOURLS:
                     return !string.IsNullOrEmpty(YourlsAPIURL) && (!string.IsNullOrEmpty(YourlsSignature) || (!string.IsNullOrEmpty(YourlsUsername) && !string.IsNullOrEmpty(YourlsPassword)));
                 case UrlShortenerType.AdFly:
                     return !string.IsNullOrEmpty(AdFlyAPIKEY) && !string.IsNullOrEmpty(AdFlyAPIUID);
-                case UrlShortenerType.LnkU:
-                    return !string.IsNullOrEmpty(LnkUAPIKEY);
                 case UrlShortenerType.CoinURL:
                     return !string.IsNullOrEmpty(CoinURLUUID);
                 case UrlShortenerType.Polr:

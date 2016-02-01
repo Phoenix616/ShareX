@@ -37,27 +37,29 @@
             this.lblMike = new System.Windows.Forms.Label();
             this.rtbCredits = new System.Windows.Forms.RichTextBox();
             this.rtbShareXInfo = new System.Windows.Forms.RichTextBox();
-            this.lblOwners = new System.Windows.Forms.Label();
             this.cLogo = new ShareX.HelpersLib.Canvas();
             this.uclUpdate = new ShareX.HelpersLib.UpdateCheckerLabel();
             this.pbMikeURL = new System.Windows.Forms.PictureBox();
             this.pbAU = new System.Windows.Forms.PictureBox();
             this.pbBerkURL = new System.Windows.Forms.PictureBox();
             this.pbTR = new System.Windows.Forms.PictureBox();
+            this.lblTeam = new System.Windows.Forms.Label();
+            this.lblSteamBuild = new System.Windows.Forms.Label();
+            this.pbSteam = new System.Windows.Forms.PictureBox();
+            this.pbLogo = new System.Windows.Forms.PictureBox();
             ((System.ComponentModel.ISupportInitialize)(this.pbMikeURL)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pbAU)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pbBerkURL)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pbTR)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pbSteam)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pbLogo)).BeginInit();
             this.SuspendLayout();
             // 
             // lblProductName
             // 
             resources.ApplyResources(this.lblProductName, "lblProductName");
             this.lblProductName.BackColor = System.Drawing.Color.Transparent;
-            this.lblProductName.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.lblProductName.ForeColor = System.Drawing.Color.RoyalBlue;
             this.lblProductName.Name = "lblProductName";
-            this.lblProductName.Click += new System.EventHandler(this.lblProductName_Click);
             // 
             // lblBerk
             // 
@@ -76,7 +78,7 @@
             // rtbCredits
             // 
             resources.ApplyResources(this.rtbCredits, "rtbCredits");
-            this.rtbCredits.BackColor = System.Drawing.Color.WhiteSmoke;
+            this.rtbCredits.BackColor = System.Drawing.Color.White;
             this.rtbCredits.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.rtbCredits.Name = "rtbCredits";
             this.rtbCredits.ReadOnly = true;
@@ -84,17 +86,12 @@
             // 
             // rtbShareXInfo
             // 
-            this.rtbShareXInfo.BackColor = System.Drawing.Color.WhiteSmoke;
+            this.rtbShareXInfo.BackColor = System.Drawing.Color.White;
             this.rtbShareXInfo.BorderStyle = System.Windows.Forms.BorderStyle.None;
             resources.ApplyResources(this.rtbShareXInfo, "rtbShareXInfo");
             this.rtbShareXInfo.Name = "rtbShareXInfo";
             this.rtbShareXInfo.ReadOnly = true;
             this.rtbShareXInfo.LinkClicked += new System.Windows.Forms.LinkClickedEventHandler(this.rtb_LinkClicked);
-            // 
-            // lblOwners
-            // 
-            resources.ApplyResources(this.lblOwners, "lblOwners");
-            this.lblOwners.Name = "lblOwners";
             // 
             // cLogo
             // 
@@ -145,12 +142,44 @@
             this.pbTR.Name = "pbTR";
             this.pbTR.TabStop = false;
             // 
+            // lblTeam
+            // 
+            resources.ApplyResources(this.lblTeam, "lblTeam");
+            this.lblTeam.Name = "lblTeam";
+            // 
+            // lblSteamBuild
+            // 
+            resources.ApplyResources(this.lblSteamBuild, "lblSteamBuild");
+            this.lblSteamBuild.BackColor = System.Drawing.Color.Transparent;
+            this.lblSteamBuild.Name = "lblSteamBuild";
+            // 
+            // pbSteam
+            // 
+            this.pbSteam.BackColor = System.Drawing.Color.Transparent;
+            this.pbSteam.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.pbSteam.Image = global::ShareX.Properties.Resources.steam;
+            resources.ApplyResources(this.pbSteam, "pbSteam");
+            this.pbSteam.Name = "pbSteam";
+            this.pbSteam.TabStop = false;
+            this.pbSteam.Click += new System.EventHandler(this.pbSteam_Click);
+            // 
+            // pbLogo
+            // 
+            resources.ApplyResources(this.pbLogo, "pbLogo");
+            this.pbLogo.BackColor = System.Drawing.Color.Transparent;
+            this.pbLogo.Name = "pbLogo";
+            this.pbLogo.TabStop = false;
+            this.pbLogo.MouseDown += new System.Windows.Forms.MouseEventHandler(this.pbLogo_MouseDown);
+            // 
             // AboutForm
             // 
             resources.ApplyResources(this, "$this");
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.BackColor = System.Drawing.Color.WhiteSmoke;
-            this.Controls.Add(this.lblOwners);
+            this.BackColor = System.Drawing.Color.White;
+            this.Controls.Add(this.pbLogo);
+            this.Controls.Add(this.pbSteam);
+            this.Controls.Add(this.lblSteamBuild);
+            this.Controls.Add(this.lblTeam);
             this.Controls.Add(this.rtbShareXInfo);
             this.Controls.Add(this.rtbCredits);
             this.Controls.Add(this.lblBerk);
@@ -164,11 +193,14 @@
             this.Controls.Add(this.cLogo);
             this.MaximizeBox = false;
             this.Name = "AboutForm";
+            this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.AboutForm_FormClosed);
             this.Shown += new System.EventHandler(this.AboutForm_Shown);
             ((System.ComponentModel.ISupportInitialize)(this.pbMikeURL)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pbAU)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pbBerkURL)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pbTR)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pbSteam)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pbLogo)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -186,7 +218,10 @@
         private HelpersLib.Canvas cLogo;
         private System.Windows.Forms.RichTextBox rtbCredits;
         private System.Windows.Forms.RichTextBox rtbShareXInfo;
-        private System.Windows.Forms.Label lblOwners;
         private HelpersLib.UpdateCheckerLabel uclUpdate;
+        private System.Windows.Forms.Label lblTeam;
+        private System.Windows.Forms.Label lblSteamBuild;
+        private System.Windows.Forms.PictureBox pbSteam;
+        private System.Windows.Forms.PictureBox pbLogo;
     }
 }

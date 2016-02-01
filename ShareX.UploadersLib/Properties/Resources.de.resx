@@ -250,4 +250,13 @@ Hergestellte Ordner:</value>
   <data name="UploadersConfigForm_HubicListFolders_Hubic_refresh_folders_list_failed" xml:space="preserve">
     <value>Hubic Erneuerung der Ordnerliste fehlgeschlagen</value>
   </data>
+  <data name="UploadersConfigForm_FTPOpenClient_Unable_to_find_valid_FTP_account_" xml:space="preserve">
+    <value>Kann kein gültiges FTP Konto finden.</value>
+  </data>
+  <data name="UploadersConfigForm_FTPOpenClient_FTP_client_only_supports_FTP_or_FTPS_" xml:space="preserve">
+    <value>Das FTP-Programm unterstützt nur FTP oder FTPS.</value>
+  </data>
+  <data name="Pomf_Upload_Please_select_one_of_the_Pomf_uploaders_from__Destination_settings_window____Pomf_tab__" xml:space="preserve">
+    <value>Bitte wähle einen der Pomf Hochlader vom Pomf Tab im Zieleinstellungs-Fenster aus.</value>
+  </data>
 </root>

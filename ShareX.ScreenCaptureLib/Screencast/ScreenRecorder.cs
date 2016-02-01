@@ -2,7 +2,7 @@
 
 /*
     ShareX - A program that allows you to take screenshots and share any file type
-    Copyright (c) 2007-2015 ShareX Team
+    Copyright (c) 2007-2016 ShareX Team
 
     This program is free software; you can redistribute it and/or
     modify it under the terms of the GNU General Public License
@@ -35,7 +35,6 @@ namespace ShareX.ScreenCaptureLib
     public class ScreenRecorder : IDisposable
     {
         public bool IsRecording { get; private set; }
-        public bool WriteCompressed { get; set; }
 
         public int FPS
         {
@@ -90,8 +89,9 @@ namespace ShareX.ScreenCaptureLib
 
         public ScreencastOptions Options { get; set; }
 
-        public delegate void ProgressEventHandler(int progress);
+        public event Action RecordingStarted;
 
+        public delegate void ProgressEventHandler(int progress);
         public event ProgressEventHandler EncodingProgressChanged;
 
         private int fps, delay, frameCount, previousProgress;
@@ -121,6 +121,7 @@ namespace ShareX.ScreenCaptureLib
                 default:
                 case ScreenRecordOutput.FFmpeg:
                     ffmpegCli = new FFmpegHelper(Options);
+                    ffmpegCli.RecordingStarted += OnRecordingStarted;
                     break;
                 case ScreenRecordOutput.GIF:
                     imgCache = new HardDiskCache(Options);
@@ -147,6 +148,7 @@ namespace ShareX.ScreenCaptureLib
                 }
                 else
                 {
+                    OnRecordingStarted();
                     RecordUsingCache();
                 }
             }
@@ -236,6 +238,14 @@ namespace ShareX.ScreenCaptureLib
             if (!string.IsNullOrEmpty(sourceFilePath) && File.Exists(sourceFilePath))
             {
                 encoder.Encode(sourceFilePath, targetFilePath);
+            }
+        }
+
+        protected void OnRecordingStarted()
+        {
+            if (RecordingStarted != null)
+            {
+                RecordingStarted();
             }
         }
 

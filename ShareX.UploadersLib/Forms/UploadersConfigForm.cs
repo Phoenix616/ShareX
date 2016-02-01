@@ -2,7 +2,7 @@
 
 /*
     ShareX - A program that allows you to take screenshots and share any file type
-    Copyright (c) 2007-2015 ShareX Team
+    Copyright (c) 2007-2016 ShareX Team
 
     This program is free software; you can redistribute it and/or
     modify it under the terms of the GNU General Public License
@@ -44,24 +44,24 @@ namespace ShareX.UploadersLib
         public UploadersConfig Config { get; private set; }
 
         private ImageList uploadersImageList;
+        private URLType urlType = URLType.URL;
 
         public UploadersConfigForm(UploadersConfig uploadersConfig)
         {
             Config = uploadersConfig;
             InitializeComponent();
+            Icon = ShareXResources.Icon;
 
             if (!string.IsNullOrEmpty(Config.FilePath))
             {
                 Text += " - " + Config.FilePath;
             }
-
-            Icon = ShareXResources.Icon;
         }
 
         private void UploadersConfigForm_Shown(object sender, EventArgs e)
         {
             FormSettings();
-            LoadSettings(Config);
+            LoadSettings();
         }
 
         private void UploadersConfigForm_Resize(object sender, EventArgs e)
@@ -78,10 +78,9 @@ namespace ShareX.UploadersLib
             AddIconToTab(tpAmazonS3, Resources.AmazonS3);
             AddIconToTab(tpBitly, Resources.Bitly);
             AddIconToTab(tpBox, Resources.Box);
-            AddIconToTab(tpCopy, Resources.Copy);
-            AddIconToTab(tpHubic, Resources.Hubic);
             AddIconToTab(tpChevereto, Resources.Chevereto);
             AddIconToTab(tpCoinURL, Resources.CoinURL);
+            AddIconToTab(tpCopy, Resources.Copy);
             AddIconToTab(tpCustomUploaders, Resources.globe_network);
             AddIconToTab(tpDropbox, Resources.Dropbox);
             AddIconToTab(tpEmail, Resources.mail);
@@ -96,29 +95,30 @@ namespace ShareX.UploadersLib
             AddIconToTab(tpImageShack, Resources.ImageShack);
             AddIconToTab(tpImgur, Resources.Imgur);
             AddIconToTab(tpJira, Resources.jira);
-            AddIconToTab(tpLnkU, Resources.LnkU);
+            AddIconToTab(tpLambda, Resources.Lambda);
             AddIconToTab(tpMediaFire, Resources.MediaFire);
             AddIconToTab(tpMega, Resources.Mega);
             AddIconToTab(tpMinus, Resources.Minus);
             AddIconToTab(tpOneDrive, Resources.OneDrive);
+            AddIconToTab(tpOneTimeSecret, Resources.OneTimeSecret);
             AddIconToTab(tpOwnCloud, Resources.OwnCloud);
-            AddIconToTab(tpPastebin, Resources.Pastebin);
             AddIconToTab(tpPaste_ee, Resources.page_white_text);
+            AddIconToTab(tpPastebin, Resources.Pastebin);
             AddIconToTab(tpPhotobucket, Resources.Photobucket);
             AddIconToTab(tpPicasa, Resources.Picasa);
+            AddIconToTab(tpPolr, Resources.Polr);
+            AddIconToTab(tpPomf, Resources.Pomf);
             AddIconToTab(tpPushbullet, Resources.Pushbullet);
+            AddIconToTab(tpSeafile, Resources.Seafile);
+            AddIconToTab(tpSul, Resources.Sul);
+            AddIconToTab(tpStreamable, Resources.Streamable);
             AddIconToTab(tpSendSpace, Resources.SendSpace);
             AddIconToTab(tpSharedFolder, Resources.server_network);
             AddIconToTab(tpTinyPic, Resources.TinyPic);
             AddIconToTab(tpTwitter, Resources.Twitter);
+            AddIconToTab(tpUp1, Resources.Up1);
             AddIconToTab(tpUpaste, Resources.Upaste);
             AddIconToTab(tpYourls, Resources.Yourls);
-            AddIconToTab(tpLambda, Resources.Lambda);
-            AddIconToTab(tpUp1, Resources.Up1);
-            AddIconToTab(tpOneTimeSecret, Resources.OneTimeSecret);
-            AddIconToTab(tpPolr, Resources.Polr);
-
-            tcFileUploaders.TabPages.Remove(tpHubic);
 
             ttlvMain.ImageList = uploadersImageList;
             ttlvMain.MainTabControl = tcUploaders;
@@ -129,6 +129,7 @@ namespace ShareX.UploadersLib
             CodeMenu.Create(txtAmazonS3ObjectPrefix, ReplCodeMenuEntry.n, ReplCodeMenuEntry.t, ReplCodeMenuEntry.pn);
             CodeMenu.Create(txtMediaFirePath, ReplCodeMenuEntry.n, ReplCodeMenuEntry.t, ReplCodeMenuEntry.pn);
             CodeMenu.Create(txtCustomUploaderArgValue, ReplCodeMenuEntry.n);
+            CodeMenu.Create(txtCustomUploaderHeaderValue, ReplCodeMenuEntry.n);
 
             txtCustomUploaderLog.AddContextMenu();
 
@@ -162,7 +163,7 @@ namespace ShareX.UploadersLib
             tp.ImageKey = tp.Name;
         }
 
-        public void LoadSettings(UploadersConfig uploadersConfig)
+        public void LoadSettings()
         {
             #region Image uploaders
 
@@ -371,16 +372,6 @@ namespace ShareX.UploadersLib
             cbBoxShare.Checked = Config.BoxShare;
             lblBoxFolderID.Text = Resources.UploadersConfigForm_LoadSettings_Selected_folder_ + " " + Config.BoxSelectedFolder.name;
 
-            // Hubic
-
-            if (OAuth2Info.CheckOAuth(Config.HubicOAuth2Info))
-            {
-                oauth2Hubic.Status = OAuthLoginStatus.LoginSuccessful;
-                btnHubicRefreshFolders.Enabled = true;
-            }
-
-            cbHubicPublishLink.Checked = Config.HubicPublish;
-
             // Ge.tt
 
             if (Config.Ge_ttLogin != null && !string.IsNullOrEmpty(Config.Ge_ttLogin.AccessToken))
@@ -443,29 +434,6 @@ namespace ShareX.UploadersLib
                     cboSharedFolderFiles.SelectedIndex = Config.LocalhostSelectedFiles.Between(0, ucLocalhostAccounts.lbAccounts.Items.Count - 1);
                 }
             }
-
-            // Custom uploaders
-
-            lbCustomUploaderList.Items.Clear();
-
-            if (Config.CustomUploadersList == null)
-            {
-                Config.CustomUploadersList = new List<CustomUploaderItem>();
-            }
-            else
-            {
-                foreach (CustomUploaderItem customUploader in Config.CustomUploadersList)
-                {
-                    lbCustomUploaderList.Items.Add(customUploader.Name);
-                }
-
-                PrepareCustomUploaderList();
-            }
-
-            cbCustomUploaderRequestType.Items.AddRange(Enum.GetNames(typeof(CustomUploaderRequestType)));
-            cbCustomUploaderResponseType.Items.AddRange(Helpers.GetLocalizedEnumDescriptions<ResponseType>());
-
-            CustomUploaderClearFields();
 
             // Jira
 
@@ -565,10 +533,45 @@ namespace ShareX.UploadersLib
             // Lambda
 
             txtLambdaApiKey.Text = Config.LambdaSettings.UserAPIKey;
+            cbLambdaUploadURL.Items.AddRange(Lambda.UploadURLs);
+            cbLambdaUploadURL.SelectedItem = Config.LambdaSettings.UploadURL;
+
+            // Pomf
+
+            if (Config.PomfUploader == null) Config.PomfUploader = new PomfUploader();
+            cbPomfUploaders.Items.AddRange(Pomf.Uploaders.ToArray());
+            txtPomfUploadURL.Text = Config.PomfUploader.UploadURL;
+            txtPomfResultURL.Text = Config.PomfUploader.ResultURL;
+
+            // Seafile
+
+            cbSeafileAPIURL.Text = Config.SeafileAPIURL;
+            txtSeafileAuthToken.Text = Config.SeafileAuthToken;
+            txtSeafileDirectoryPath.Text = Config.SeafilePath;
+            txtSeafileLibraryPassword.Text = Config.SeafileEncryptedLibraryPassword;
+            txtSeafileLibraryPassword.ReadOnly = Config.SeafileIsLibraryEncrypted;
+            btnSeafileLibraryPasswordValidate.Enabled = !Config.SeafileIsLibraryEncrypted;
+            cbSeafileCreateShareableURL.Checked = Config.SeafileCreateShareableURL;
+            cbSeafileIgnoreInvalidCert.Checked = Config.SeafileIgnoreInvalidCert;
+            nudSeafileExpireDays.Value = Config.SeafileShareDaysToExpire;
+            txtSeafileSharePassword.Text = Config.SeafileSharePassword;
+            txtSeafileAccInfoEmail.Text = Config.SeafileAccInfoEmail;
+            txtSeafileAccInfoUsage.Text = Config.SeafileAccInfoUsage;
+
+            // Streamable
+
+            cbStreamableAnonymous.Checked = Config.StreamableAnonymous;
+            txtStreamablePassword.Text = Config.StreamablePassword;
+            txtStreamableUsername.Text = Config.StreamableUsername;
+            if (Config.StreamableAnonymous)
+            {
+                txtStreamableUsername.Enabled = false;
+                txtStreamablePassword.Enabled = false;
+            }
 
             #endregion File uploaders
 
-            #region URL Shorteners
+            #region URL shorteners
 
             // Google URL Shortener
 
@@ -601,10 +604,6 @@ namespace ShareX.UploadersLib
             txtAdflyAPIKEY.Text = Config.AdFlyAPIKEY;
             txtAdflyAPIUID.Text = Config.AdFlyAPIUID;
 
-            // lnku.co
-
-            txtLnkUAPIKEY.Text = Config.LnkUAPIKEY;
-
             // coinurl.com
 
             txtCoinURLUUID.Text = Config.CoinURLUUID;
@@ -614,27 +613,57 @@ namespace ShareX.UploadersLib
             txtPolrAPIHostname.Text = Config.PolrAPIHostname;
             txtPolrAPIKey.Text = Config.PolrAPIKey;
 
-            #endregion URL Shorteners
+            #endregion URL shorteners
 
-            #region Other Services
+            #region Other uploaders
 
             // Twitter
 
-            lvTwitterAccounts.Items.Clear();
+            lbTwitterAccounts.Items.Clear();
 
             foreach (OAuthInfo twitterOAuth in Config.TwitterOAuthInfoList)
             {
-                lvTwitterAccounts.Items.Add(twitterOAuth.Description);
+                lbTwitterAccounts.Items.Add(twitterOAuth.Description);
             }
 
-            lvTwitterAccounts.Select(Config.TwitterSelectedAccount);
+            if (CheckTwitterAccounts())
+            {
+                lbTwitterAccounts.SelectedIndex = Config.TwitterSelectedAccount;
+            }
 
             TwitterUpdateSelected();
 
             cbTwitterSkipMessageBox.Checked = Config.TwitterSkipMessageBox;
             txtTwitterDefaultMessage.Text = Config.TwitterDefaultMessage;
 
-            #endregion Other Services
+            // Custom uploaders
+
+            lbCustomUploaderList.Items.Clear();
+
+            if (Config.CustomUploadersList == null)
+            {
+                Config.CustomUploadersList = new List<CustomUploaderItem>();
+            }
+            else
+            {
+                foreach (CustomUploaderItem customUploader in Config.CustomUploadersList)
+                {
+                    lbCustomUploaderList.Items.Add(customUploader.Name);
+                }
+
+                PrepareCustomUploaderList();
+            }
+
+#if DEBUG
+            btnCustomUploadersExportAll.Visible = true;
+#endif
+
+            cbCustomUploaderRequestType.Items.AddRange(Enum.GetNames(typeof(CustomUploaderRequestType)));
+            cbCustomUploaderResponseType.Items.AddRange(Helpers.GetLocalizedEnumDescriptions<ResponseType>());
+
+            CustomUploaderClearFields();
+
+            #endregion Other uploaders
         }
 
         #region Image Uploaders
@@ -1177,69 +1206,6 @@ namespace ShareX.UploadersLib
         }
 
         #endregion Copy
-
-        #region Hubic
-
-        private void oAuth2Hubic_OpenButtonClicked()
-        {
-            HubicAuthOpen();
-        }
-
-        private void oAuth2Hubic_CompleteButtonClicked(string code)
-        {
-            HubicAuthComplete(code);
-        }
-
-        private void oAuth2Hubic_RefreshButtonClicked()
-        {
-            HubicAuthRefresh();
-        }
-
-        private void oAuth2Hubic_ClearButtonClicked()
-        {
-            Config.HubicOAuth2Info = null;
-            Config.HubicOpenstackAuthInfo = null;
-        }
-
-        private void btnHubicRefreshFolders_Click(object sender, EventArgs e)
-        {
-            HubicListFolders(Hubic.RootFolder);
-        }
-
-        private void lvHubicFolders_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            if (lvHubicFolders.SelectedItems.Count > 0)
-            {
-                ListViewItem lvi = lvHubicFolders.SelectedItems[0];
-                HubicFolderInfo folder = lvi.Tag as HubicFolderInfo;
-                if (folder != null)
-                {
-                    lblHubicSelectedFolder.Text = Resources.UploadersConfigForm_LoadSettings_Selected_folder_ + " " + folder.name;
-                    Config.HubicSelectedFolder = folder;
-                }
-            }
-        }
-
-        private void lvHubicFolders_MouseDoubleClick(object sender, MouseEventArgs e)
-        {
-            if (e.Button == MouseButtons.Left && lvHubicFolders.SelectedItems.Count > 0)
-            {
-                ListViewItem lvi = lvHubicFolders.SelectedItems[0];
-                HubicFolderInfo folder = lvi.Tag as HubicFolderInfo;
-                if (folder != null)
-                {
-                    lvHubicFolders.Items.Clear();
-                    HubicListFolders(folder);
-                }
-            }
-        }
-
-        private void cbHubicPublishLink_CheckedChanged(object sender, EventArgs e)
-        {
-            Config.HubicPublish = cbHubicPublishLink.Checked;
-        }
-
-        #endregion Hubic
 
         #region OneDrive
 
@@ -2078,7 +2044,7 @@ namespace ShareX.UploadersLib
 
         private void lambdaInfoLabel_Click(object sender, EventArgs e)
         {
-            URLHelpers.OpenURL("https://lambda.sx/usercp");
+            URLHelpers.OpenURL("https://lambda.sx/user/manage");
         }
 
         private void txtLambdaApiKey_TextChanged(object sender, EventArgs e)
@@ -2086,7 +2052,349 @@ namespace ShareX.UploadersLib
             Config.LambdaSettings.UserAPIKey = txtLambdaApiKey.Text;
         }
 
+        private void cbLambdaUploadURL_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (cbLambdaUploadURL.SelectedIndex > -1)
+            {
+                string url = cbLambdaUploadURL.SelectedItem as string;
+
+                if (url != null)
+                {
+                    Config.LambdaSettings.UploadURL = url;
+                }
+            }
+        }
+
         #endregion Lambda
+
+        #region Pomf
+
+        private void cbPomfUploaders_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (cbPomfUploaders.SelectedIndex > -1)
+            {
+                PomfUploader uploader = cbPomfUploaders.SelectedItem as PomfUploader;
+
+                if (uploader != null)
+                {
+                    txtPomfUploadURL.Text = uploader.UploadURL;
+                    txtPomfResultURL.Text = uploader.ResultURL;
+                }
+            }
+        }
+
+        private void btnPomfTest_Click(object sender, EventArgs e)
+        {
+            btnPomfTest.Enabled = false;
+            btnPomfTest.Text = "Testing...";
+            string result = null;
+
+            TaskEx.Run(() =>
+            {
+                result = Pomf.TestClones();
+            },
+            () =>
+            {
+                if (!IsDisposed)
+                {
+                    btnPomfTest.Text = "Test all";
+                    btnPomfTest.Enabled = true;
+
+                    if (!string.IsNullOrEmpty(result))
+                    {
+                        MessageBox.Show(result, "Pomf test results", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    }
+                }
+            });
+        }
+
+        private void txtPomfUploadURL_TextChanged(object sender, EventArgs e)
+        {
+            Config.PomfUploader.UploadURL = txtPomfUploadURL.Text;
+        }
+
+        private void txtPomfResultURL_TextChanged(object sender, EventArgs e)
+        {
+            Config.PomfUploader.ResultURL = txtPomfResultURL.Text;
+        }
+
+        #endregion Pomf
+
+        #region Sul
+
+        private void txtSulAPIKey_TextChanged(object sender, EventArgs e)
+        {
+            Config.SulAPIKey = txtSulAPIKey.Text;
+        }
+
+        #endregion Sul
+
+        #region Seafile
+
+        private void cbSeafileAPIURL_TextChanged(object sender, EventArgs e)
+        {
+            Config.SeafileAPIURL = cbSeafileAPIURL.Text;
+        }
+
+        private void btnSeafileCheckAPIURL_Click(object sender, EventArgs e)
+        {
+            if (string.IsNullOrEmpty(cbSeafileAPIURL.Text))
+            {
+                return;
+            }
+
+            Seafile sf = new Seafile(cbSeafileAPIURL.Text, null, null);
+            bool checkReturned = sf.CheckAPIURL();
+
+            if (checkReturned)
+            {
+                MessageBox.Show(Resources.UploadersConfigForm_TestFTPAccount_Connected_, "ShareX", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+            else
+            {
+                MessageBox.Show(Resources.UploadersConfigForm_Error, "ShareX", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void txtSeafileAuthToken_TextChanged(object sender, EventArgs e)
+        {
+            Config.SeafileAuthToken = txtSeafileAuthToken.Text;
+        }
+
+        private void btnSeafileCheckAuthToken_Click(object sender, EventArgs e)
+        {
+            if (string.IsNullOrEmpty(txtSeafileAuthToken.Text) || string.IsNullOrEmpty(cbSeafileAPIURL.Text))
+            {
+                return;
+            }
+
+            Seafile sf = new Seafile(cbSeafileAPIURL.Text, txtSeafileAuthToken.Text, null);
+            bool checkReturned = sf.CheckAuthToken();
+
+            if (checkReturned)
+            {
+                MessageBox.Show(Resources.UploadersConfigForm_Login_successful, "ShareX", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+            else
+            {
+                MessageBox.Show(Resources.UploadersConfigForm_Error, "ShareX", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void txtSeafilePassword_KeyUp(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Return)
+            {
+                btnSeafileGetAuthToken.PerformClick();
+            }
+        }
+
+        private void btnSeafileGetAuthToken_Click(object sender, EventArgs e)
+        {
+            string username = txtSeafileUsername.Text;
+            string password = txtSeafilePassword.Text;
+
+            if (!string.IsNullOrEmpty(username) && !string.IsNullOrEmpty(password))
+            {
+                try
+                {
+                    Seafile sf = new Seafile(cbSeafileAPIURL.Text, null, null);
+                    string authToken = sf.GetAuthToken(username, password);
+
+                    if (!string.IsNullOrEmpty(authToken))
+                    {
+                        txtSeafileUsername.Text = "";
+                        txtSeafilePassword.Text = "";
+                        Config.SeafileAuthToken = authToken;
+                        txtSeafileAuthToken.Text = authToken;
+                        btnRefreshSeafileAccInfo.PerformClick();
+                        Config.SeafileRepoID = sf.GetOrMakeDefaultLibrary(authToken);
+                        txtSeafileUploadLocationRefresh.PerformClick();
+                        MessageBox.Show(Resources.UploadersConfigForm_Login_successful, "ShareX", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    }
+                    else
+                    {
+                        MessageBox.Show(Resources.UploadersConfigForm_Login_failed, "ShareX", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    DebugHelper.WriteException(ex);
+                    MessageBox.Show(ex.ToString(), Resources.UploadersConfigForm_Error, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            }
+        }
+
+        private void cbSeafileCreateShareableURL_CheckedChanged(object sender, EventArgs e)
+        {
+            Config.SeafileCreateShareableURL = cbSeafileCreateShareableURL.Checked;
+        }
+
+        private void cbSeafileIgnoreInvalidCert_CheckedChanged(object sender, EventArgs e)
+        {
+            Config.SeafileIgnoreInvalidCert = cbSeafileIgnoreInvalidCert.Checked;
+        }
+
+        private void btnRefreshSeafileAccInfo_Click(object sender, EventArgs e)
+        {
+            if (string.IsNullOrEmpty(txtSeafileAuthToken.Text) || string.IsNullOrEmpty(cbSeafileAPIURL.Text))
+            {
+                return;
+            }
+
+            Seafile sf = new Seafile(cbSeafileAPIURL.Text, txtSeafileAuthToken.Text, null);
+            Seafile.SeafileCheckAccInfoResponse SeafileCheckAccInfoResponse = sf.GetAccountInfo();
+
+            if (SeafileCheckAccInfoResponse == null)
+            {
+                MessageBox.Show(Resources.UploadersConfigForm_Login_failed, "ShareX", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+            txtSeafileAccInfoEmail.Text = SeafileCheckAccInfoResponse.email;
+            txtSeafileAccInfoUsage.Text = SeafileCheckAccInfoResponse.usage.ToSizeString() + " / " + SeafileCheckAccInfoResponse.total.ToSizeString();
+        }
+
+        private void txtSeafileUploadLocationRefresh_Click(object sender, EventArgs e)
+        {
+            if (string.IsNullOrEmpty(txtSeafileAuthToken.Text) || string.IsNullOrEmpty(cbSeafileAPIURL.Text))
+            {
+                return;
+            }
+            lvSeafileLibraries.Items.Clear();
+
+            Seafile sf = new Seafile(cbSeafileAPIURL.Text, txtSeafileAuthToken.Text, null);
+            List<Seafile.SeafileLibraryObj> SeafileLibraries = sf.GetLibraries();
+
+            foreach (var SeafileLibrary in SeafileLibraries)
+            {
+                if (SeafileLibrary.permission == "rw")
+                {
+                    ListViewItem libraryItem = lvSeafileLibraries.Items.Add(SeafileLibrary.name);
+                    libraryItem.Name = SeafileLibrary.id;
+                    libraryItem.Tag = SeafileLibrary;
+                    libraryItem.SubItems.Add(SeafileLibrary.size.ToSizeString());
+                    if (SeafileLibrary.encrypted)
+                    {
+                        libraryItem.SubItems.Add("\u221A");
+                    }
+                    if (SeafileLibrary.id == Config.SeafileRepoID)
+                    {
+                        libraryItem.Selected = true;
+                    }
+                }
+            }
+        }
+
+        private void lvSeafileLibraries_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            int selIndex = lvSeafileLibraries.SelectedIndex;
+            if (selIndex > -1)
+            {
+                ListViewItem selectedItem = lvSeafileLibraries.Items[selIndex];
+                Config.SeafileRepoID = selectedItem.Name;
+                Seafile.SeafileLibraryObj SealileLibraryInfo = (Seafile.SeafileLibraryObj)selectedItem.Tag;
+                if (SealileLibraryInfo.encrypted)
+                {
+                    Config.SeafileIsLibraryEncrypted = true;
+                    txtSeafileLibraryPassword.ReadOnly = false;
+                    btnSeafileLibraryPasswordValidate.Enabled = true;
+                }
+                else
+                {
+                    Config.SeafileIsLibraryEncrypted = false;
+                    txtSeafileLibraryPassword.ReadOnly = true;
+                    txtSeafileLibraryPassword.Text = "";
+                    Config.SeafileEncryptedLibraryPassword = "";
+                    btnSeafileLibraryPasswordValidate.Enabled = false;
+                }
+            }
+        }
+
+        private void txtSeafileDirectoryPath_TextChanged(object sender, EventArgs e)
+        {
+            Config.SeafilePath = txtSeafileDirectoryPath.Text;
+        }
+
+        private void btnSeafilePathValidate_Click(object sender, EventArgs e)
+        {
+            if (string.IsNullOrEmpty(Config.SeafilePath) || string.IsNullOrEmpty(Config.SeafileAPIURL) || string.IsNullOrEmpty(Config.SeafileAuthToken) || string.IsNullOrEmpty(Config.SeafileRepoID))
+            {
+                return;
+            }
+
+            Seafile sf = new Seafile(cbSeafileAPIURL.Text, txtSeafileAuthToken.Text, Config.SeafileRepoID);
+            bool checkReturned = sf.ValidatePath(txtSeafileDirectoryPath.Text);
+
+            if (checkReturned)
+            {
+                MessageBox.Show(Resources.UploadersConfigForm_TestFTPAccount_Connected_, "ShareX", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+            else
+            {
+                MessageBox.Show(Resources.UploadersConfigForm_Error, "ShareX", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void txtSeafileLibraryPassword_TextChanged(object sender, EventArgs e)
+        {
+            if (Config.SeafileIsLibraryEncrypted)
+            {
+                Config.SeafileEncryptedLibraryPassword = txtSeafileLibraryPassword.Text;
+            }
+        }
+
+        private void btnSeafileLibraryPasswordValidate_Click(object sender, EventArgs e)
+        {
+            if (string.IsNullOrEmpty(Config.SeafileEncryptedLibraryPassword) || string.IsNullOrEmpty(Config.SeafileAPIURL) || string.IsNullOrEmpty(Config.SeafileAuthToken) || string.IsNullOrEmpty(Config.SeafileRepoID))
+            {
+                return;
+            }
+
+            Seafile sf = new Seafile(cbSeafileAPIURL.Text, txtSeafileAuthToken.Text, Config.SeafileRepoID);
+            bool checkReturned = sf.DecryptLibrary(txtSeafileLibraryPassword.Text);
+
+            if (checkReturned)
+            {
+                MessageBox.Show(Resources.UploadersConfigForm_TestFTPAccount_Connected_, "ShareX", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+            else
+            {
+                MessageBox.Show(Resources.UploadersConfigForm_Error, "ShareX", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void nudSeafileExpireDays_ValueChanged(object sender, EventArgs e)
+        {
+            Config.SeafileShareDaysToExpire = (int)nudSeafileExpireDays.Value;
+        }
+
+        private void txtSeafileSharePassword_TextChanged(object sender, EventArgs e)
+        {
+            Config.SeafileSharePassword = txtSeafileSharePassword.Text;
+        }
+
+        #endregion Seafile
+
+        #region Streamable
+
+        private void cboxStreamableAnonymous_CheckedChanged(object sender, EventArgs e)
+        {
+            Config.StreamableAnonymous = cbStreamableAnonymous.Checked;
+            txtStreamableUsername.Enabled = !Config.StreamableAnonymous;
+            txtStreamablePassword.Enabled = !Config.StreamableAnonymous;
+        }
+
+        private void txtStreamableUsername_TextChanged(object sender, EventArgs e)
+        {
+            Config.StreamableUsername = txtStreamableUsername.Text;
+        }
+
+        private void txtStreamablePassword_TextChanged(object sender, EventArgs e)
+        {
+            Config.StreamablePassword = txtStreamablePassword.Text;
+        }
+
+        #endregion Streamable
 
         #endregion File Uploaders
 
@@ -2189,15 +2497,6 @@ namespace ShareX.UploadersLib
 
         #endregion adf.ly
 
-        #region LnkU.co
-
-        private void txtLnkUAPIKEY_TextChanged(object sender, EventArgs e)
-        {
-            Config.LnkUAPIKEY = txtLnkUAPIKEY.Text;
-        }
-
-        #endregion LnkU.co
-
         #region CoinURL
 
         private void txtCoinURLUUID_TextChanged(object sender, EventArgs e)
@@ -2231,43 +2530,43 @@ namespace ShareX.UploadersLib
         {
             OAuthInfo oauth = new OAuthInfo();
             Config.TwitterOAuthInfoList.Add(oauth);
-            lvTwitterAccounts.Items.Add(oauth.Description);
-            lvTwitterAccounts.SelectLast();
+            lbTwitterAccounts.Items.Add(oauth.Description);
+            lbTwitterAccounts.SelectedIndex = lbTwitterAccounts.Items.Count - 1;
 
             TwitterUpdateSelected();
         }
 
         private void btnTwitterRemove_Click(object sender, EventArgs e)
         {
-            int selected = lvTwitterAccounts.SelectedIndex;
+            int selected = lbTwitterAccounts.SelectedIndex;
 
             if (selected > -1)
             {
-                lvTwitterAccounts.Items.RemoveAt(selected);
+                lbTwitterAccounts.Items.RemoveAt(selected);
                 Config.TwitterOAuthInfoList.RemoveAt(selected);
 
-                if (lvTwitterAccounts.Items.Count > 0)
+                if (lbTwitterAccounts.Items.Count > 0)
                 {
-                    lvTwitterAccounts.SelectedIndex = selected >= lvTwitterAccounts.Items.Count ? lvTwitterAccounts.Items.Count - 1 : selected;
+                    lbTwitterAccounts.SelectedIndex = selected >= lbTwitterAccounts.Items.Count ? lbTwitterAccounts.Items.Count - 1 : selected;
                 }
             }
 
             TwitterUpdateSelected();
         }
 
-        private void lvTwitterAccounts_SelectedIndexChanged(object sender, EventArgs e)
+        private void lbTwitterAccounts_SelectedIndexChanged(object sender, EventArgs e)
         {
             TwitterUpdateSelected();
         }
 
-        private void txtTwitterDescription_TextChanged(object sender, EventArgs e)
+        private void btnTwitterNameUpdate_Click(object sender, EventArgs e)
         {
             OAuthInfo oauth = GetSelectedTwitterAccount();
 
             if (oauth != null)
             {
                 oauth.Description = txtTwitterDescription.Text;
-                lvTwitterAccounts.SelectedItems[0].Text = oauth.Description;
+                lbTwitterAccounts.Items[lbTwitterAccounts.SelectedIndex] = oauth.Description;
             }
         }
 
@@ -2350,6 +2649,11 @@ namespace ShareX.UploadersLib
             AddCustomUploader(obj as CustomUploaderItem);
         }
 
+        private void btnCustomUploadersExportAll_Click(object sender, EventArgs e)
+        {
+            CustomUploaderExportAll();
+        }
+
         private void btnCustomUploaderClearUploaders_Click(object sender, EventArgs e)
         {
             if (MessageBox.Show("Remove all custom uploaders?", "ShareX", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
@@ -2398,6 +2702,11 @@ namespace ShareX.UploadersLib
             }
         }
 
+        private void btnCustomUploaderRegexHelp_Click(object sender, EventArgs e)
+        {
+            URLHelpers.OpenURL("http://regexone.com");
+        }
+
         private void lvCustomUploaderRegexps_SelectedIndexChanged(object sender, EventArgs e)
         {
             string regex = string.Empty;
@@ -2408,11 +2717,13 @@ namespace ShareX.UploadersLib
             }
 
             txtCustomUploaderRegexp.Text = regex;
+
+            btnCustomUploaderRegexAddSyntax.Enabled = lvCustomUploaderRegexps.SelectedItems.Count > 0;
         }
 
-        private void lvCustomUploaderRegexps_MouseDoubleClick(object sender, MouseEventArgs e)
+        private void btnCustomUploaderRegexAddSyntax_Click(object sender, EventArgs e)
         {
-            if (e.Button == MouseButtons.Left && lvCustomUploaderRegexps.SelectedIndices.Count > 0)
+            if (lvCustomUploaderRegexps.SelectedIndices.Count > 0)
             {
                 int selectedIndex = lvCustomUploaderRegexps.SelectedIndices[0];
                 string regex = lvCustomUploaderRegexps.Items[selectedIndex].Text;
@@ -2426,30 +2737,113 @@ namespace ShareX.UploadersLib
                     {
                         if (match.Groups.Count > 1 && !string.IsNullOrEmpty(match.Groups[1].Value))
                         {
-                            syntax = string.Format("${0},{1}$", selectedIndex + 1, match.Groups[1].Value);
+                            syntax = string.Format("$regex:{0},{1}$", selectedIndex + 1, match.Groups[1].Value);
                         }
                         else
                         {
-                            syntax = string.Format("${0},1$", selectedIndex + 1);
+                            syntax = string.Format("$regex:{0},1$", selectedIndex + 1);
                         }
                     }
                     else
                     {
-                        syntax = string.Format("${0}$", selectedIndex + 1);
+                        syntax = string.Format("$regex:{0}$", selectedIndex + 1);
                     }
 
-                    txtCustomUploaderURL.AppendText(syntax);
+                    AddTextToActiveURLField(syntax);
                 }
             }
+        }
+
+        private void txtCustomUploaderJsonPath_TextChanged(object sender, EventArgs e)
+        {
+            btnCustomUploaderJsonAddSyntax.Enabled = !string.IsNullOrEmpty(txtCustomUploaderJsonPath.Text);
+        }
+
+        private void btnCustomUploadJsonPathHelp_Click(object sender, EventArgs e)
+        {
+            URLHelpers.OpenURL("http://goessner.net/articles/JsonPath/");
+        }
+
+        private void btnCustomUploaderJsonAddSyntax_Click(object sender, EventArgs e)
+        {
+            string syntax = txtCustomUploaderJsonPath.Text;
+
+            if (!string.IsNullOrEmpty(syntax))
+            {
+                if (syntax.StartsWith("$."))
+                {
+                    syntax = syntax.Substring(2);
+                }
+
+                syntax = string.Format("$json:{0}$", syntax);
+                AddTextToActiveURLField(syntax);
+            }
+        }
+
+        private void txtCustomUploaderXPath_TextChanged(object sender, EventArgs e)
+        {
+            btnCustomUploaderXmlSyntaxAdd.Enabled = !string.IsNullOrEmpty(txtCustomUploaderXPath.Text);
+        }
+
+        private void btnCustomUploaderXPathHelp_Click(object sender, EventArgs e)
+        {
+            URLHelpers.OpenURL("http://www.w3schools.com/xsl/xpath_syntax.asp");
+        }
+
+        private void btnCustomUploaderXmlSyntaxAdd_Click(object sender, EventArgs e)
+        {
+            string syntax = txtCustomUploaderXPath.Text;
+
+            if (!string.IsNullOrEmpty(syntax))
+            {
+                syntax = string.Format("$xml:{0}$", syntax);
+                AddTextToActiveURLField(syntax);
+            }
+        }
+
+        private void txtCustomUploaderURL_Enter(object sender, EventArgs e)
+        {
+            urlType = URLType.URL;
+        }
+
+        private void txtCustomUploaderThumbnailURL_Enter(object sender, EventArgs e)
+        {
+            urlType = URLType.ThumbnailURL;
+        }
+
+        private void txtCustomUploaderDeletionURL_Enter(object sender, EventArgs e)
+        {
+            urlType = URLType.DeletionURL;
+        }
+
+        private void AddTextToActiveURLField(string text)
+        {
+            TextBox tb;
+
+            switch (urlType)
+            {
+                default:
+                case URLType.URL:
+                    tb = txtCustomUploaderURL;
+                    break;
+                case URLType.ThumbnailURL:
+                    tb = txtCustomUploaderThumbnailURL;
+                    break;
+                case URLType.DeletionURL:
+                    tb = txtCustomUploaderDeletionURL;
+                    break;
+            }
+
+            tb.AppendText(text);
         }
 
         private void btnCustomUploaderArgAdd_Click(object sender, EventArgs e)
         {
             string name = txtCustomUploaderArgName.Text;
-            string value = txtCustomUploaderArgValue.Text;
 
             if (!string.IsNullOrEmpty(name))
             {
+                string value = txtCustomUploaderArgValue.Text;
                 lvCustomUploaderArguments.Items.Add(name).SubItems.Add(value);
                 txtCustomUploaderArgName.Text = string.Empty;
                 txtCustomUploaderArgValue.Text = string.Empty;
@@ -2465,15 +2859,18 @@ namespace ShareX.UploadersLib
             }
         }
 
-        private void btnCustomUploaderArgEdit_Click(object sender, EventArgs e)
+        private void btnCustomUploaderArgUpdate_Click(object sender, EventArgs e)
         {
-            string name = txtCustomUploaderArgName.Text;
-            string value = txtCustomUploaderArgValue.Text;
-
-            if (lvCustomUploaderArguments.SelectedItems.Count > 0 && !string.IsNullOrEmpty(name))
+            if (lvCustomUploaderArguments.SelectedItems.Count > 0)
             {
-                lvCustomUploaderArguments.SelectedItems[0].Text = name;
-                lvCustomUploaderArguments.SelectedItems[0].SubItems[1].Text = value;
+                string name = txtCustomUploaderArgName.Text;
+
+                if (!string.IsNullOrEmpty(name))
+                {
+                    string value = txtCustomUploaderArgValue.Text;
+                    lvCustomUploaderArguments.SelectedItems[0].Text = name;
+                    lvCustomUploaderArguments.SelectedItems[0].SubItems[1].Text = value;
+                }
             }
         }
 
@@ -2490,6 +2887,58 @@ namespace ShareX.UploadersLib
 
             txtCustomUploaderArgName.Text = name;
             txtCustomUploaderArgValue.Text = value;
+        }
+
+        private void btnCustomUploaderHeaderAdd_Click(object sender, EventArgs e)
+        {
+            string name = txtCustomUploaderHeaderName.Text;
+
+            if (!string.IsNullOrEmpty(name))
+            {
+                string value = txtCustomUploaderHeaderValue.Text;
+                lvCustomUploaderHeaders.Items.Add(name).SubItems.Add(value);
+                txtCustomUploaderHeaderName.Text = string.Empty;
+                txtCustomUploaderHeaderValue.Text = string.Empty;
+                txtCustomUploaderHeaderName.Focus();
+            }
+        }
+
+        private void btnCustomUploaderHeaderRemove_Click(object sender, EventArgs e)
+        {
+            if (lvCustomUploaderHeaders.SelectedItems.Count > 0)
+            {
+                lvCustomUploaderHeaders.SelectedItems[0].Remove();
+            }
+        }
+
+        private void btnCustomUploaderHeaderUpdate_Click(object sender, EventArgs e)
+        {
+            if (lvCustomUploaderHeaders.SelectedItems.Count > 0)
+            {
+                string name = txtCustomUploaderHeaderName.Text;
+
+                if (!string.IsNullOrEmpty(name))
+                {
+                    string value = txtCustomUploaderHeaderValue.Text;
+                    lvCustomUploaderHeaders.SelectedItems[0].Text = name;
+                    lvCustomUploaderHeaders.SelectedItems[0].SubItems[1].Text = value;
+                }
+            }
+        }
+
+        private void lvCustomUploaderHeaders_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            string name = string.Empty;
+            string value = string.Empty;
+
+            if (lvCustomUploaderHeaders.SelectedItems.Count > 0)
+            {
+                name = lvCustomUploaderHeaders.SelectedItems[0].Text;
+                value = lvCustomUploaderHeaders.SelectedItems[0].SubItems[1].Text;
+            }
+
+            txtCustomUploaderHeaderName.Text = name;
+            txtCustomUploaderHeaderValue.Text = value;
         }
 
         private void cbCustomUploaderImageUploader_SelectedIndexChanged(object sender, EventArgs e)

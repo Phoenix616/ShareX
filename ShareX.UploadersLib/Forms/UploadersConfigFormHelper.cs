@@ -2,7 +2,7 @@
 
 /*
     ShareX - A program that allows you to take screenshots and share any file type
-    Copyright (c) 2007-2015 ShareX Team
+    Copyright (c) 2007-2016 ShareX Team
 
     This program is free software; you can redistribute it and/or
     modify it under the terms of the GNU General Public License
@@ -883,122 +883,6 @@ namespace ShareX.UploadersLib
 
         #endregion Box
 
-        #region Hubic
-
-        public void HubicAuthOpen()
-        {
-            try
-            {
-                OAuth2Info oauth = new OAuth2Info(APIKeys.HubicClientID, APIKeys.HubicClientSecret);
-                HubicOpenstackAuthInfo osauth = new HubicOpenstackAuthInfo();
-
-                string url = new Hubic(oauth, osauth).GetAuthorizationURL();
-
-                if (!string.IsNullOrEmpty(url))
-                {
-                    Config.HubicOAuth2Info = oauth;
-                    Config.HubicOpenstackAuthInfo = osauth;
-                    URLHelpers.OpenURL(url);
-                    DebugHelper.WriteLine("HubicAuthOpen - Authorization URL is opened: " + url);
-                }
-                else
-                {
-                    DebugHelper.WriteLine("HubicAuthOpen - Authorization URL is empty.");
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.ToString(), Resources.UploadersConfigForm_Error, MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-        }
-
-        public void HubicAuthComplete(string code)
-        {
-            try
-            {
-                if (!string.IsNullOrEmpty(code) && Config.HubicOAuth2Info != null)
-                {
-                    bool result = new Hubic(Config.HubicOAuth2Info, Config.HubicOpenstackAuthInfo).GetAccessToken(code);
-
-                    if (result)
-                    {
-                        oauth2Hubic.Status = OAuthLoginStatus.LoginSuccessful;
-                        MessageBox.Show(Resources.UploadersConfigForm_Login_successful, "ShareX", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                    }
-                    else
-                    {
-                        oauth2Hubic.Status = OAuthLoginStatus.LoginFailed;
-                        MessageBox.Show(Resources.UploadersConfigForm_Login_failed, "ShareX", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    }
-
-                    btnHubicRefreshFolders.Enabled = result;
-                    btnHubicRefreshFolders.PerformClick();
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.ToString(), Resources.UploadersConfigForm_Error, MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-        }
-
-        public void HubicAuthRefresh()
-        {
-            try
-            {
-                if (OAuth2Info.CheckOAuth(Config.HubicOAuth2Info))
-                {
-                    bool result = new Hubic(Config.HubicOAuth2Info, Config.HubicOpenstackAuthInfo).RefreshAccessToken();
-
-                    if (result)
-                    {
-                        oauth2Hubic.Status = OAuthLoginStatus.LoginSuccessful;
-                        MessageBox.Show(Resources.UploadersConfigForm_Login_successful, "ShareX", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                    }
-                    else
-                    {
-                        oauth2Hubic.Status = OAuthLoginStatus.LoginFailed;
-                        MessageBox.Show(Resources.UploadersConfigForm_Login_failed, "ShareX", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.ToString(), Resources.UploadersConfigForm_Error, MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-        }
-
-        public void HubicListFolders(HubicFolderInfo fileInfo)
-        {
-            lvHubicFolders.Items.Clear();
-
-            if (!OAuth2Info.CheckOAuth(Config.HubicOAuth2Info))
-            {
-                MessageBox.Show(Resources.UploadersConfigForm_ListFolders_Authentication_required_, Resources.UploadersConfigForm_HubicListFolders_Hubic_refresh_folders_list_failed,
-                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
-            }
-            else
-            {
-                Hubic hubic = new Hubic(Config.HubicOAuth2Info, Config.HubicOpenstackAuthInfo);
-                List<HubicFolderInfo> folders = hubic.GetFiles(fileInfo);
-                if (folders != null && folders.Count != 0)
-                {
-                    foreach (HubicFolderInfo folder in folders.Where(x => x.content_type == "application/directory" && x.name[0] != '.'))
-                    {
-                        HubicAddFolder(folder);
-                    }
-                }
-            }
-        }
-
-        private void HubicAddFolder(HubicFolderInfo folder)
-        {
-            ListViewItem lvi = new ListViewItem(folder.name);
-            lvi.Tag = folder;
-            lvHubicFolders.Items.Add(lvi);
-        }
-
-        #endregion Hubic
-
         #region OneDrive
 
         public void OneDriveAuthOpen()
@@ -1470,7 +1354,7 @@ namespace ShareX.UploadersLib
 
         private bool TwitterUpdateSelected()
         {
-            Config.TwitterSelectedAccount = lvTwitterAccounts.SelectedIndex;
+            Config.TwitterSelectedAccount = lbTwitterAccounts.SelectedIndex;
 
             if (Config.TwitterSelectedAccount > -1)
             {
@@ -1776,6 +1660,31 @@ namespace ShareX.UploadersLib
             LoadCustomUploader(new CustomUploaderItem());
         }
 
+        private void CustomUploaderExportAll()
+        {
+            if (Config.CustomUploadersList != null)
+            {
+                for (int i = 0; i < lbCustomUploaderList.Items.Count; i++)
+                {
+                    lbCustomUploaderList.SelectedIndex = i;
+                    UpdateCustomUploader();
+                }
+
+                using (FolderSelectDialog fsd = new FolderSelectDialog())
+                {
+                    if (fsd.ShowDialog())
+                    {
+                        foreach (CustomUploaderItem item in Config.CustomUploadersList)
+                        {
+                            string json = eiCustomUploaders.Serialize(item);
+                            string filepath = Path.Combine(fsd.FileName, item.Name + ".json");
+                            File.WriteAllText(filepath, json, Encoding.UTF8);
+                        }
+                    }
+                }
+            }
+        }
+
         private void CustomUploaderFixSelectedUploader(int removedIndex)
         {
             if (Config.CustomImageUploaderSelected == removedIndex) Config.CustomImageUploaderSelected = 0;
@@ -1829,55 +1738,112 @@ namespace ShareX.UploadersLib
 
         private void LoadCustomUploader(CustomUploaderItem customUploader)
         {
-            txtCustomUploaderName.Text = customUploader.Name;
+            txtCustomUploaderName.Text = customUploader.Name ?? "";
 
             cbCustomUploaderRequestType.SelectedIndex = (int)customUploader.RequestType;
-            txtCustomUploaderRequestURL.Text = customUploader.RequestURL;
-            txtCustomUploaderFileForm.Text = customUploader.FileFormName;
+            txtCustomUploaderRequestURL.Text = customUploader.RequestURL ?? "";
+            txtCustomUploaderFileForm.Text = customUploader.FileFormName ?? "";
             txtCustomUploaderFileForm.Enabled = customUploader.RequestType == CustomUploaderRequestType.POST;
 
-            txtCustomUploaderArgName.Text = string.Empty;
-            txtCustomUploaderArgValue.Text = string.Empty;
+            txtCustomUploaderArgName.Text = "";
+            txtCustomUploaderArgValue.Text = "";
             lvCustomUploaderArguments.Items.Clear();
-            foreach (KeyValuePair<string, string> arg in customUploader.Arguments)
+            if (customUploader.Arguments != null)
             {
-                lvCustomUploaderArguments.Items.Add(arg.Key).SubItems.Add(arg.Value);
+                foreach (KeyValuePair<string, string> arg in customUploader.Arguments)
+                {
+                    lvCustomUploaderArguments.Items.Add(arg.Key).SubItems.Add(arg.Value);
+                }
+            }
+
+            txtCustomUploaderHeaderName.Text = "";
+            txtCustomUploaderHeaderValue.Text = "";
+            lvCustomUploaderHeaders.Items.Clear();
+            if (customUploader.Headers != null)
+            {
+                foreach (KeyValuePair<string, string> arg in customUploader.Headers)
+                {
+                    lvCustomUploaderHeaders.Items.Add(arg.Key).SubItems.Add(arg.Value);
+                }
             }
 
             cbCustomUploaderResponseType.SelectedIndex = (int)customUploader.ResponseType;
-            txtCustomUploaderRegexp.Text = string.Empty;
+            txtCustomUploaderRegexp.Text = "";
             lvCustomUploaderRegexps.Items.Clear();
-            foreach (string regexp in customUploader.RegexList)
+            if (customUploader.RegexList != null)
             {
-                lvCustomUploaderRegexps.Items.Add(regexp);
+                foreach (string regexp in customUploader.RegexList)
+                {
+                    lvCustomUploaderRegexps.Items.Add(regexp);
+                }
             }
+            txtCustomUploaderJsonPath.Text = "";
+            txtCustomUploaderXPath.Text = "";
 
-            txtCustomUploaderURL.Text = customUploader.URL;
-            txtCustomUploaderThumbnailURL.Text = customUploader.ThumbnailURL;
-            txtCustomUploaderDeletionURL.Text = customUploader.DeletionURL;
+            txtCustomUploaderURL.Text = customUploader.URL ?? "";
+            txtCustomUploaderThumbnailURL.Text = customUploader.ThumbnailURL ?? "";
+            txtCustomUploaderDeletionURL.Text = customUploader.DeletionURL ?? "";
         }
 
         private CustomUploaderItem GetCustomUploaderFromFields()
         {
             CustomUploaderItem item = new CustomUploaderItem(txtCustomUploaderName.Text);
-            foreach (ListViewItem lvItem in lvCustomUploaderArguments.Items)
-            {
-                item.Arguments.Add(lvItem.Text, lvItem.SubItems[1].Text);
-            }
 
             item.RequestType = (CustomUploaderRequestType)cbCustomUploaderRequestType.SelectedIndex;
-            item.RequestURL = txtCustomUploaderRequestURL.Text;
-            item.FileFormName = txtCustomUploaderFileForm.Text;
 
-            item.ResponseType = (ResponseType)cbCustomUploaderResponseType.SelectedIndex;
-            foreach (ListViewItem lvItem in lvCustomUploaderRegexps.Items)
+            item.RequestURL = txtCustomUploaderRequestURL.Text;
+
+            if (!string.IsNullOrEmpty(txtCustomUploaderFileForm.Text))
             {
-                item.RegexList.Add(lvItem.Text);
+                item.FileFormName = txtCustomUploaderFileForm.Text;
             }
 
-            item.URL = txtCustomUploaderURL.Text;
-            item.ThumbnailURL = txtCustomUploaderThumbnailURL.Text;
-            item.DeletionURL = txtCustomUploaderDeletionURL.Text;
+            if (lvCustomUploaderArguments.Items.Count > 0)
+            {
+                item.Arguments = new Dictionary<string, string>();
+
+                foreach (ListViewItem lvItem in lvCustomUploaderArguments.Items)
+                {
+                    item.Arguments.Add(lvItem.Text, lvItem.SubItems[1].Text);
+                }
+            }
+
+            if (lvCustomUploaderHeaders.Items.Count > 0)
+            {
+                item.Headers = new Dictionary<string, string>();
+
+                foreach (ListViewItem lvItem in lvCustomUploaderHeaders.Items)
+                {
+                    item.Headers.Add(lvItem.Text, lvItem.SubItems[1].Text);
+                }
+            }
+
+            item.ResponseType = (ResponseType)cbCustomUploaderResponseType.SelectedIndex;
+
+            if (lvCustomUploaderRegexps.Items.Count > 0)
+            {
+                item.RegexList = new List<string>();
+
+                foreach (ListViewItem lvItem in lvCustomUploaderRegexps.Items)
+                {
+                    item.RegexList.Add(lvItem.Text);
+                }
+            }
+
+            if (!string.IsNullOrEmpty(txtCustomUploaderURL.Text))
+            {
+                item.URL = txtCustomUploaderURL.Text;
+            }
+
+            if (!string.IsNullOrEmpty(txtCustomUploaderThumbnailURL.Text))
+            {
+                item.ThumbnailURL = txtCustomUploaderThumbnailURL.Text;
+            }
+
+            if (!string.IsNullOrEmpty(txtCustomUploaderDeletionURL.Text))
+            {
+                item.DeletionURL = txtCustomUploaderDeletionURL.Text;
+            }
 
             return item;
         }

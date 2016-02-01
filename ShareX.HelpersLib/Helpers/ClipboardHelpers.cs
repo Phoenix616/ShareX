@@ -2,7 +2,7 @@
 
 /*
     ShareX - A program that allows you to take screenshots and share any file type
-    Copyright (c) 2007-2015 ShareX Team
+    Copyright (c) 2007-2016 ShareX Team
 
     This program is free software; you can redistribute it and/or
     modify it under the terms of the GNU General Public License
@@ -27,6 +27,8 @@ using System;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
+using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Windows.Forms;
 
@@ -35,6 +37,8 @@ namespace ShareX.HelpersLib
     public static class ClipboardHelpers
     {
         private const int RetryTimes = 20, RetryDelay = 100;
+        private const string FORMAT_PNG = "PNG";
+        private const string FORMAT_17 = "Format17";
 
         private static readonly object ClipboardLock = new object();
 
@@ -100,23 +104,21 @@ namespace ShareX.HelpersLib
 
         public static bool CopyImage(Image img)
         {
-            if (HelpersOptions.UseAlternativeCopyImage)
-            {
-                return CopyImageAlternative(img);
-            }
-
-            return CopyImageDefault(img);
-        }
-
-        private static bool CopyImageDefault(Image img)
-        {
             if (img != null)
             {
                 try
                 {
-                    IDataObject data = new DataObject();
-                    data.SetData(DataFormats.Bitmap, true, img);
-                    return CopyData(data);
+                    if (HelpersOptions.UseAlternativeCopyImage)
+                    {
+                        return CopyImageAlternative(img);
+                    }
+
+                    if (HelpersOptions.DefaultCopyImageFillBackground)
+                    {
+                        return CopyImageDefaultFillBackground(img, Color.White);
+                    }
+
+                    return CopyImageDefault(img);
                 }
                 catch (Exception e)
                 {
@@ -127,32 +129,46 @@ namespace ShareX.HelpersLib
             return false;
         }
 
+        private static bool CopyImageDefault(Image img)
+        {
+            IDataObject dataObject = new DataObject();
+            dataObject.SetData(DataFormats.Bitmap, true, img);
+
+            return CopyData(dataObject);
+        }
+
+        private static bool CopyImageDefaultFillBackground(Image img, Color background)
+        {
+            using (Bitmap bmp = img.CreateEmptyBitmap(PixelFormat.Format24bppRgb))
+            using (Graphics g = Graphics.FromImage(bmp))
+            {
+                g.Clear(background);
+                g.DrawImage(img, 0, 0, img.Width, img.Height);
+
+                IDataObject dataObject = new DataObject();
+                dataObject.SetData(DataFormats.Bitmap, true, bmp);
+
+                return CopyData(dataObject);
+            }
+        }
+
         private static bool CopyImageAlternative(Image img)
         {
-            if (img != null)
+            using (MemoryStream msPNG = new MemoryStream())
+            using (MemoryStream msBMP = new MemoryStream())
+            using (MemoryStream msDIB = new MemoryStream())
             {
-                try
-                {
-                    IDataObject data = new DataObject();
-                    using (MemoryStream msPNG = new MemoryStream())
-                    using (MemoryStream msBMP = new MemoryStream())
-                    using (MemoryStream msDIB = new MemoryStream())
-                    {
-                        img.Save(msPNG, ImageFormat.Png);
-                        data.SetData("PNG", false, msPNG);
-                        img.Save(msBMP, ImageFormat.Bmp);
-                        msBMP.CopyStreamTo(msDIB, 14, (int)msBMP.Length - 14);
-                        data.SetData(DataFormats.Dib, true, msDIB);
-                        return CopyData(data);
-                    }
-                }
-                catch (Exception e)
-                {
-                    DebugHelper.WriteException(e, "Clipboard copy image alternative failed.");
-                }
-            }
+                IDataObject dataObject = new DataObject();
 
-            return false;
+                img.Save(msPNG, ImageFormat.Png);
+                dataObject.SetData("PNG", false, msPNG);
+
+                img.Save(msBMP, ImageFormat.Bmp);
+                msBMP.CopyStreamTo(msDIB, 14, (int)msBMP.Length - 14);
+                dataObject.SetData(DataFormats.Dib, true, msDIB);
+
+                return CopyData(dataObject);
+            }
         }
 
         public static bool CopyFile(string path)
@@ -171,9 +187,10 @@ namespace ShareX.HelpersLib
             {
                 try
                 {
-                    IDataObject data = new DataObject();
-                    data.SetData(DataFormats.FileDrop, true, paths);
-                    return CopyData(data);
+                    IDataObject dataObject = new DataObject();
+                    dataObject.SetData(DataFormats.FileDrop, true, paths);
+
+                    return CopyData(dataObject);
                 }
                 catch (Exception e)
                 {
@@ -220,6 +237,118 @@ namespace ShareX.HelpersLib
             }
 
             return false;
+        }
+
+        public static Image GetImage()
+        {
+            try
+            {
+                lock (ClipboardLock)
+                {
+                    if (HelpersOptions.UseAlternativeGetImage)
+                    {
+                        return GetImageAlternative();
+                    }
+
+                    return Clipboard.GetImage();
+                }
+            }
+            catch (Exception e)
+            {
+                DebugHelper.WriteException(e, "Clipboard get image failed.");
+            }
+
+            return null;
+        }
+
+        private static Image GetImageAlternative()
+        {
+            IDataObject dataObject = Clipboard.GetDataObject();
+
+            if (dataObject != null)
+            {
+                string[] dataFormats = dataObject.GetFormats(false);
+
+                if (dataFormats.Contains(FORMAT_PNG))
+                {
+                    using (MemoryStream ms = dataObject.GetData(FORMAT_PNG) as MemoryStream)
+                    {
+                        if (ms != null)
+                        {
+                            using (Image img = Image.FromStream(ms))
+                            {
+                                return (Image)img.Clone();
+                            }
+                        }
+                    }
+                }
+                else
+                {
+                    foreach (string format in new[] { DataFormats.Dib, FORMAT_17 })
+                    {
+                        if (dataFormats.Contains(format))
+                        {
+                            using (MemoryStream ms = dataObject.GetData(format) as MemoryStream)
+                            {
+                                if (ms != null)
+                                {
+                                    try
+                                    {
+                                        Image img = GetDIBImage(ms);
+
+                                        if (img != null)
+                                        {
+                                            return img;
+                                        }
+                                    }
+                                    catch (Exception e)
+                                    {
+                                        DebugHelper.WriteException(e);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+
+                if (dataObject.GetDataPresent(DataFormats.Bitmap, true))
+                {
+                    return dataObject.GetData(DataFormats.Bitmap, true) as Image;
+                }
+            }
+
+            return null;
+        }
+
+        private static Image GetDIBImage(MemoryStream ms)
+        {
+            byte[] dib = ms.ToArray();
+
+            BITMAPINFOHEADER infoHeader = Helpers.ByteArrayToStructure<BITMAPINFOHEADER>(dib);
+
+            IntPtr gcHandle = IntPtr.Zero;
+
+            try
+            {
+                GCHandle handle = GCHandle.Alloc(dib, GCHandleType.Pinned);
+                gcHandle = GCHandle.ToIntPtr(handle);
+
+                if (infoHeader.biSizeImage == 0)
+                {
+                    infoHeader.biSizeImage = (uint)(infoHeader.biWidth * infoHeader.biHeight * (infoHeader.biBitCount >> 3));
+                }
+
+                return new Bitmap(infoHeader.biWidth, infoHeader.biHeight, -(int)(infoHeader.biSizeImage / infoHeader.biHeight),
+                    infoHeader.biBitCount == 32 ? PixelFormat.Format32bppArgb : PixelFormat.Format24bppRgb,
+                    new IntPtr((long)handle.AddrOfPinnedObject() + infoHeader.OffsetToPixels + (infoHeader.biHeight - 1) * (int)(infoHeader.biSizeImage / infoHeader.biHeight)));
+            }
+            finally
+            {
+                if (gcHandle != IntPtr.Zero)
+                {
+                    GCHandle.FromIntPtr(gcHandle).Free();
+                }
+            }
         }
     }
 }
